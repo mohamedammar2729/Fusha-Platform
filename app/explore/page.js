@@ -2,7 +2,7 @@ import React from "react";
 import ReadyPrograms from "../Components/ReadyPrograms";
 import Container from "@mui/material/Container";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 async function fetchPrograms() {
   const res = await fetch("http://localhost:4000/api/readyprogram", {
