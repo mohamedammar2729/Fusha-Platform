@@ -16,7 +16,7 @@ import {
   BackButton,
   ShareButton,
 } from "../styledComponent/TripType/StyledTripType";
-
+// final program component
 export default function FinalProgram() {
   const [hasMounted, setHasMounted] = useState(false); // Tracks if the client is mounted
   const [userprogram, setUserProgram] = useState([]);
