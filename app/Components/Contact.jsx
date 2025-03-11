@@ -11,6 +11,7 @@ import {
   ImageContainer,
 } from "../styledComponent/CustomerRatings/styledCustomerRatings";
 
+// contact component
 const Contact = () => {
   return (
     <FeedbackContainer>
