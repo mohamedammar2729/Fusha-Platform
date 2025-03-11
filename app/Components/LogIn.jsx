@@ -13,7 +13,7 @@ import {
   FormContainer,
   LeftSection,
   RightSection,
-  StyledTypography
+  StyledTypography,
 } from "../styledComponent/Login/styledLogin";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
@@ -27,7 +27,7 @@ const MemoizedTypography = React.memo(({ children, ...props }) => (
 const MemoizedStyledTextField = React.memo(({ children, ...props }) => (
   <StyledTextField {...props}>{children}</StyledTextField>
 ));
-
+// login component
 const LogIn = () => {
   const [showPassword, setShowPassword] = useState({
     password: false,
@@ -139,67 +139,64 @@ const LogIn = () => {
       <RightSection>
         <FormContainer>
           <h2 style={{ textAlign: "center" }}>تسجيل الدخول</h2>
-            <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <MemoizedStyledTextField
-            fullWidth
-            margin="dense"
-            label="البريد الإلكتروني"
-            variant="outlined"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <MemoizedStyledTextField
-            fullWidth
-            margin="dense"
-            label="الرقم السري"
-            type={showPassword.password ? "text" : "password"}
-            variant="outlined"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => handleClickShowPassword("password")}
-                    edge="end"
-                  >
-                    {showPassword.password ? (
-                      <VisibilityOutlinedIcon />
-                    ) : (
-                      <VisibilityOffOutlinedIcon />
-                    )}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            required
-          />
-          {error && (
-            <MemoizedTypography
-              $sx={{ textAlign: "center", color: "red", marginBottom: 2 }}
-            >
-              {error}
+              fullWidth
+              margin="dense"
+              label="البريد الإلكتروني"
+              variant="outlined"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <MemoizedStyledTextField
+              fullWidth
+              margin="dense"
+              label="الرقم السري"
+              type={showPassword.password ? "text" : "password"}
+              variant="outlined"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => handleClickShowPassword("password")}
+                      edge="end"
+                    >
+                      {showPassword.password ? (
+                        <VisibilityOutlinedIcon />
+                      ) : (
+                        <VisibilityOffOutlinedIcon />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              required
+            />
+            {error && (
+              <MemoizedTypography
+                $sx={{ textAlign: "center", color: "red", marginBottom: 2 }}
+              >
+                {error}
+              </MemoizedTypography>
+            )}
+            <StyledButton variant="contained" type="submit">
+              تسجيل الدخول
+            </StyledButton>
+            <MemoizedTypography $sx={{ textAlign: "center" }}>
+              ليس لديك حساب؟{" "}
+              <StyledLink href="/register" $sx={{ ml: 1 }}>
+                سجل الآن
+              </StyledLink>
             </MemoizedTypography>
-          )}
-          <StyledButton
-            variant="contained"
-            type="submit"
-          >
-            تسجيل الدخول
-          </StyledButton>
-          <MemoizedTypography $sx={{ textAlign: "center" }}>
-            ليس لديك حساب؟{" "}
-            <StyledLink href="/register" $sx={{ ml: 1 }}>
-              سجل الآن
-            </StyledLink>
-          </MemoizedTypography>
-          <MemoizedTypography $sx={{ textAlign: "center" }}>
-            <StyledLink href="/forgot-password" $sx={{ ml: 1 }}>
-              هل نسيت كلمة المرور؟
-            </StyledLink>
-          </MemoizedTypography>
-        </form>
+            <MemoizedTypography $sx={{ textAlign: "center" }}>
+              <StyledLink href="/forgot-password" $sx={{ ml: 1 }}>
+                هل نسيت كلمة المرور؟
+              </StyledLink>
+            </MemoizedTypography>
+          </form>
         </FormContainer>
       </RightSection>
     </Container>
