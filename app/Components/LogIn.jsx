@@ -2,7 +2,7 @@
 import React, { useState, useCallback } from "react";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
-
+import useRouter from "next/router";
 import {
   StyledButton,
   StyledLink,
@@ -41,6 +41,7 @@ const LogIn = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  const router = useRouter();
   const handleSubmit = useCallback(
     (e) => {
       e.preventDefault();
@@ -60,7 +61,8 @@ const LogIn = () => {
           const { token } = response.data;
           localStorage.setItem("user", JSON.stringify(response.data.user));
           localStorage.setItem("token", token);
-          window.location.href = "/Fusha-Platform";
+          router.push("/Fusha-Platform");
+          
         })
         .catch((err) => {
           const serverError =
