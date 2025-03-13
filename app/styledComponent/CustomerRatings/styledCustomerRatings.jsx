@@ -8,12 +8,12 @@ export const FeedbackContainer = styled.div`
   height: 100vh;
 `;
 
-export const ImageContainer = styled.div`
-  width: 40%;
-  height: 455px;
-  background: url("/ConnectUs.png") no-repeat center center/cover;
-  border-radius: 10px 0 0 10px;
-`;
+// export const ImageContainer = styled.div`
+//   width: 40%;
+//   height: 455px;
+//   background: url("/ConnectUs.png") no-repeat center center/cover;
+//   border-radius: 10px 0 0 10px;
+// `;
 
 export const FormContainer = styled.div`
   width: 35%;

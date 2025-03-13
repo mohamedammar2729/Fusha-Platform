@@ -8,15 +8,29 @@ import {
   InputField,
   TextArea,
   SubmitButton,
-  ImageContainer,
 } from "../styledComponent/CustomerRatings/styledCustomerRatings";
+import Box from "@mui/material/Box";
+import Image from "next/image";
 
 // contact component
 const Contact = () => {
   return (
     <FeedbackContainer>
       {/* الصورة الجانبية */}
-      <ImageContainer />
+      <Box
+        style={{ width: "40%", height: "455px", borderRadius: "10px 0 0 10px" }}
+      >
+        <Image
+          src="/ConnectUs.png"
+          width={500}
+          height={500}
+          alt="ConnectUs"
+          sx={{
+            objectFit: "cover",
+            borderRadius: "10px 0 0 10px",
+          }}
+        />
+      </Box>
 
       {/* النموذج */}
       <FormContainer>

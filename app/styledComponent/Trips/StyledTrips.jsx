@@ -66,9 +66,6 @@ export const MyMyBox = styled(Box)`
     margin-top: 1.5rem;
   }
 `;
-  
-  
-
 
 export const MYYStyledWrapper = stf.div`
   display: flex;
@@ -187,12 +184,11 @@ export const StyledBox = styled(Box)`
   border-radius: 15px;
   animation: ${fadeIn} 0.6s ease-in-out;
   @media (max-width: 1650px) {
-    width: 80%;
-    flex-wrap: wrap;
+    width: 100%;
+    flex-wrap: "no-wrap";
   }
   @media (max-width: 1250px) {
     width: 105%;
-
   }
 `;
 
@@ -212,9 +208,11 @@ export const CircleButton = styled(Button)`
   &:hover {
     animation: ${buttonHover} 0.6s ease-in-out;
   }
-
-  @media (max-width: 1250px) {
-    width: 100%;
+  @media (max-width: 1820px) {
+    font-size: 15px;
   }
-
+  @media (max-width: 900px) {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
 `;
