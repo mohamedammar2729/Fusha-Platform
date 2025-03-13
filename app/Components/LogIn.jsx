@@ -52,10 +52,10 @@ const LogIn = () => {
       }
       // fix server error after deployment
       axios
-        .post(
-          "https://github.com/mohamedammar2729/Fusha-Platform.git/api/login",
-          { email, password }
-        )
+        .post("https://iti-server-production.up.railway.app/api/login", {
+          email,
+          password,
+        })
         .then((response) => {
           const { token } = response.data;
           localStorage.setItem("user", JSON.stringify(response.data.user));
