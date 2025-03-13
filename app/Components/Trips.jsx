@@ -69,74 +69,92 @@ const Trips = () => {
       {items.map((item) => {
         const programNames = item.selectedTripPlaces[0].split(" -- ");
         return (
-          <Box
+          <MyMyBox
             sx={{
-              fontFamily: "Arial, sans-serif",
-              padding: "3rem",
-              backgroundColor: "#e1efff",
-              mt: "2rem",
-              borderRadius: "0px 0px 25px 25px",
-              position: "relative",
-              width: "42.8%",
+              paddingTop: "0.9rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              marginTop: "2rem",
             }}
-            key={item._id}
           >
-            <BookmarkRemoveOutlinedIcon
-              sx={{
-                position: "absolute",
-                top: "10px",
-                right: "10px",
-                cursor: "pointer",
-                color: "red",
-              }}
-              onClick={() => handleDelete(item._id)}
-            />
-            <Grid
-              container
-              spacing={2}
-              justifyContent="end"
-              sx={{ marginBottom: "1rem" }}
-            >
-              <StyledBox
-                sx={{
-                  justifyContent: "space-between",
-                  flexDirection: { xs: "column", md: "row" },
-                }}
-              >
-                <CircleButton> {`الميزانية :- ${item.budget}`}</CircleButton>
-                <CircleButton>{`الموقع :- ${item.locate}`} </CircleButton>
-                <CircleButton>{`عدد الاشخاص :- ${item.numberOfPersons}`}</CircleButton>
-                <CircleButton>
-                  {" "}
-                  {` نوع رحلتك :- ${item.typeOfProgram}`}{" "}
-                </CircleButton>
-              </StyledBox>
-            </Grid>
-            <StyledBox >
-              <CircleButton>
-                {`  البرنامج :- ${item.selectedTripPlaces[0]}`}
-              </CircleButton>
-            </StyledBox>
-            <MYYStyledWrapper>
-              {item.images.map((image, index) => (
-                <div className="card-container" key={index}>
-                  <div className="card">
-                    <div className="img-content">
-                      <img
-                        src={image}
-                        width={200}
-                        height={150}
-                        alt={`Trip ${index}`}
-                      />
-                    </div>
-                    <div className="content">
-                      <p className="heading">{programNames[index]}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </MYYStyledWrapper>
-          </Box>
+            {items.map((item) => {
+              const programNames = item.selectedTripPlaces[0].split(" -- ");
+              return (
+                <Box
+                  sx={{
+                    fontFamily: "Arial, sans-serif",
+                    padding: "3rem",
+                    backgroundColor: "#e1efff",
+                    mt: "2rem",
+                    borderRadius: "0px 0px 25px 25px",
+                    position: "relative",
+                    width: "58.5%",
+                  }}
+                  key={item._id}
+                >
+                  <BookmarkRemoveOutlinedIcon
+                    sx={{
+                      position: "absolute",
+                      top: "10px",
+                      right: "10px",
+                      cursor: "pointer",
+                      color: "red",
+                    }}
+                    onClick={() => handleDelete(item._id)}
+                  />
+                  <Grid
+                    container
+                    spacing={2}
+                    justifyContent="end"
+                    sx={{ marginBottom: "1rem" }}
+                  >
+                    <StyledBox
+                      sx={{
+                        justifyContent: "space-between",
+                        flexDirection: { xs: "column", md: "row" },
+                      }}
+                    >
+                      <CircleButton>
+                        {" "}
+                        {`الميزانية :- ${item.budget}`}
+                      </CircleButton>
+                      <CircleButton>{`الموقع :- ${item.locate}`} </CircleButton>
+                      <CircleButton>{`عدد الاشخاص :- ${item.numberOfPersons}`}</CircleButton>
+                      <CircleButton>
+                        {" "}
+                        {` نوع رحلتك :- ${item.typeOfProgram}`}{" "}
+                      </CircleButton>
+                    </StyledBox>
+                  </Grid>
+                  <StyledBox>
+                    <CircleButton>
+                      {`  البرنامج :- ${item.selectedTripPlaces[0]}`}
+                    </CircleButton>
+                  </StyledBox>
+                  <MYYStyledWrapper>
+                    {item.images.map((image, index) => (
+                      <div className="card-container" key={index}>
+                        <div className="card">
+                          <div className="img-content">
+                            <img
+                              src={image}
+                              width={200}
+                              height={150}
+                              alt={`Trip ${index}`}
+                            />
+                          </div>
+                          <div className="content">
+                            <p className="heading">{programNames[index]}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </MYYStyledWrapper>
+                </Box>
+              );
+            })}
+          </MyMyBox>
         );
       })}
     </MyMyBox>
