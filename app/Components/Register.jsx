@@ -127,9 +127,12 @@ const Register = () => {
         email,
         password,
       };
-
+        // fix server error after deployment
       axios
-        .post("http://localhost:4000/api/user", payload)
+        .post(
+          "https://github.com/mohamedammar2729/Fusha-Platform.git/api/user",
+          payload
+        )
         .then((response) => {
           console.log(response.data.user);
           setShowSuccessCard(true); // Show the success card

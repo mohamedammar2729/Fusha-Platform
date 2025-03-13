@@ -50,9 +50,12 @@ const LogIn = () => {
         setError("الرجاء ملء جميع الحقول");
         return;
       }
-
+      // fix server error after deployment
       axios
-        .post("http://localhost:4000/api/login", { email, password })
+        .post(
+          "https://github.com/mohamedammar2729/Fusha-Platform.git/api/login",
+          { email, password }
+        )
         .then((response) => {
           const { token } = response.data;
           localStorage.setItem("user", JSON.stringify(response.data.user));
