@@ -6,6 +6,7 @@ export const PageContainer = styled.div`
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
+  width: 100%;
   padding-top: 250px;
   position: relative;
 `;
@@ -34,14 +35,15 @@ export const ProfileIcons = styled.div`
   z-index: 100;
   white-space: nowrap;
 
-  @media (max-width: 1550px) {
+  @media (max-width: 2200px) {
     width: ${({ trips }) => (trips === "true" ? "63%" : "63%")};
     top: 15rem;
     flex-wrap: wrap;
   }
   @media (max-width: 880px) {
-    width: ${({ trips }) => (trips === "true" ? "80%" : "70%")};
-    top: 14rem;
+    width: ${({ trips }) => (trips === "true" ? "66.6%" : "70%")};
+    top: 15rem;
+    flex-wrap: nowrap;
   }
 `;
 
@@ -56,8 +58,12 @@ export const IconWrapper = styled.div`
   transition: background 0.3s ease;
 
   span {
-    color: black;
+    color: #ffffff;
     font-size: 19px;
+    @media (max-width: 830px) {
+      font-size: 15px;
+      color: white;
+    }
   }
 
   &:hover {

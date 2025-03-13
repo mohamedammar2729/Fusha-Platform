@@ -32,40 +32,7 @@ const buttonHover = keyframes`
   }
 `;
 
-export const MyMyBox = styled(Box)`
-  @media (max-width: 1550px) {
-    width: 137%;
-    flex-wrap: wrap;
-    padding: 12px 0px 0px 0px;
-  }
-  @media (max-width: 1450px) {
-    width: 135%;
-    flex-wrap: wrap;
-    padding: 12px 0px 0px 0px;
-  }
-  @media (max-width: 1250px) {
-    width: 134%;
-    flex-wrap: wrap;
-    padding: 12px 0px 0px 0px;
-  }
-  @media (max-width: 1120px) {
-    width: 133%;
-    flex-wrap: wrap;
-    padding: 12px 0px 0px 0px;
-  }
-
-  @media (max-width: 1050px) {
-    width: 132%;
-    flex-wrap: wrap;
-    padding: 12px 0px 0px 0px;
-  }
-  @media (max-width: 880px) {
-    width: 168%;
-    flex-wrap: wrap;
-    padding: 0px 0px 0px 0px;
-    margin-top: 1.5rem;
-  }
-`;
+export const MyMyBox = styled(Box)``;
 
 export const MYYStyledWrapper = stf.div`
   display: flex;
