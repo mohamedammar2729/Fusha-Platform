@@ -18,9 +18,12 @@ const ReadyPrograms = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("http://localhost:4000/api/readyprogram", {
-        cache: "no-store",
-      });
+      const res = await fetch(
+        "https://iti-server-production.up.railway.app/api/readyprogram",
+        {
+          cache: "no-store",
+        }
+      );
 
       if (res.ok) {
         const data = await res.json();
