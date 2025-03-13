@@ -2,22 +2,27 @@ import React from "react";
 import ReadyPrograms from "../Components/ReadyPrograms";
 import Container from "@mui/material/Container";
 
-// export const dynamic = "force-dynamic";
-
-async function fetchPrograms() {
+export async function getServerSideProps() {
   const res = await fetch("http://localhost:4000/api/readyprogram", {
-    cache: "no-store", // تعطيل التخزين المؤقت للبيانات
+    cache: "no-store",
   });
 
-  if (!res.ok) throw new Error("فشل في جلب البيانات");
+  if (!res.ok) {
+    return {
+      notFound: true,
+    };
+  }
 
-  return res.json();
+  const programsData = await res.json();
+
+  return {
+    props: {
+      programsData,
+    },
+  };
 }
 
-const Page = async () => {
-  const programsData = await fetchPrograms();
-
-
+const Page = ({ programsData }) => {
   return (
     <Container
       maxWidth="lg"
