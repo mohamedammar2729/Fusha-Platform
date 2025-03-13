@@ -26,7 +26,7 @@ const Trips = () => {
 
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/createprogram",
+        "https://iti-server-production.up.railway.app/api/createprogram",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -45,7 +45,7 @@ const Trips = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/api/createprogram/${id}`, {
+      await axios.delete(`https://iti-server-production.up.railway.app/api/createprogram/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
