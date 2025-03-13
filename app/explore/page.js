@@ -2,27 +2,7 @@ import React from "react";
 import ReadyPrograms from "../Components/ReadyPrograms";
 import Container from "@mui/material/Container";
 
-export async function getServerSideProps() {
-  const res = await fetch("http://localhost:4000/api/readyprogram", {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    return {
-      notFound: true,
-    };
-  }
-
-  const programsData = await res.json();
-
-  return {
-    props: {
-      programsData,
-    },
-  };
-}
-
-const Page = ({ programsData }) => {
+const Page = () => {
   return (
     <Container
       maxWidth="lg"
@@ -33,7 +13,7 @@ const Page = ({ programsData }) => {
         marginTop: "6rem",
       }}
     >
-      <ReadyPrograms initialData={programsData} />
+      <ReadyPrograms />
     </Container>
   );
 };
