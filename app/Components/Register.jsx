@@ -129,10 +129,7 @@ const Register = () => {
       };
         // fix server error after deployment
       axios
-        .post(
-          "https://github.com/mohamedammar2729/Fusha-Platform.git/api/user",
-          payload
-        )
+        .post("https://iti-server-production.up.railway.app/api/user", payload)
         .then((response) => {
           console.log(response.data.user);
           setShowSuccessCard(true); // Show the success card
