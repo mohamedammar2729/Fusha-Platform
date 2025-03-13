@@ -64,7 +64,7 @@ export default function FinalProgram() {
     const token = localStorage.getItem("token");
 
     axios
-      .post("http://localhost:4000/api/createprogram", payload, {
+      .post("https://iti-server-production.up.railway.app/api/createprogram", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
