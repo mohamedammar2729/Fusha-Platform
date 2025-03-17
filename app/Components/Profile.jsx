@@ -9,18 +9,19 @@ import {
   ProfileHeader,
   ProfileAvatar,
   ProfileButton,
+  ProfileTextField,
+  StyledNotificationIcon,
+  StyledLogoutIcon,
 } from "../styledComponent/Profile/styledProfile";
 import { FaHeart, FaUserEdit } from "react-icons/fa"; // استيراد الأيقونات
-import NotificationsTwoToneIcon from "@mui/icons-material/NotificationsTwoTone";
-import { StyledTextField } from "../styledComponent/Register/StyledRegister";
 import { IconButton, InputAdornment } from "@mui/material";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import EditIcon from "@mui/icons-material/Edit";
 import Trips from "./Trips";
 import { useSearchParams, useRouter } from "next/navigation";
 import Notifications from "./Notifications";
+import { MyMyBox } from "../styledComponent/Trips/StyledTrips";
 
 const Profile = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -75,12 +76,12 @@ const Profile = () => {
     setLastname("");
   }, []);
 
-const handleLogout = useCallback(() => {
-  localStorage.clear();
-  router.push("/");
-  setUser(null);
-  window.dispatchEvent(new Event("userLogout"));
-}, [router]);
+  const handleLogout = useCallback(() => {
+    localStorage.clear();
+    router.push("/");
+    setUser(null);
+    window.dispatchEvent(new Event("userLogout"));
+  }, [router]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -91,181 +92,179 @@ const handleLogout = useCallback(() => {
       setFirstname(parsedUser.firstname);
       setLastname(parsedUser.lastname);
     }
-   if (showTrips === "true") {
-     setTrips(true);
-   } else {
-     setTrips(false);
-   }
+    if (showTrips === "true") {
+      setTrips(true);
+    } else {
+      setTrips(false);
+    }
   }, [searchParams]);
 
   return (
     <>
+      <PageContainer>
+        <BackgroundImage />
 
-        <PageContainer>
-          <BackgroundImage />
+        <ProfileIcons trips={trips ? "true" : undefined}>
+          <IconWrapper>
+            <FaUserEdit className="icon" style={{ color: "orange" }} />
+            <span
+              onClick={() => {
+                setTrips(false);
+                setNotification(false);
+              }}
+            >
+              تعديل البروفايل
+            </span>
+          </IconWrapper>
+          <IconWrapper style={{ color: "red" }}>
+            <FaHeart className="icon" />
+            <span
+              onClick={() => {
+                setTrips(true);
+                setNotification(false);
+              }}
+            >
+              رحلاتي
+            </span>
+          </IconWrapper>
+          <IconWrapper>
+            <StyledNotificationIcon className="icon" />
+            <span
+              onClick={() => {
+                setNotification(true);
+                setTrips(false);
+              }}
+            >
+              الإشعارات
+            </span>
+          </IconWrapper>
+          <IconWrapper onClick={handleLogout}>
+            <StyledLogoutIcon className="icon" />
+            <span>تسجيل خروج</span>
+          </IconWrapper>
+        </ProfileIcons>
 
-          <ProfileIcons trips={trips ? "true" : undefined}>
-            <IconWrapper>
-              <FaUserEdit className="icon" style={{ color: "orange" }} />
-              <span onClick={() => {setTrips(false) ; setNotification(false)
-              }}>تعديل البروفايل</span>
-            </IconWrapper>
-            <IconWrapper style={{ color: "red" }}>
-              <FaHeart className="icon" />
-              <span onClick={() => {setTrips(true); setNotification(false)}}>رحلاتي</span>
-            </IconWrapper>
-            <IconWrapper>
-              <NotificationsTwoToneIcon
-                className="icon"
-                style={{ color: "#fec20f", fontSize: "38px" }}
-              />
-              <span onClick={()=>{setNotification(true); setTrips(false)}}>الإشعارات</span>
-            </IconWrapper>
-            <IconWrapper onClick={handleLogout}>
-              <LogoutOutlinedIcon
-                className="icon"
-                style={{ color: "lightblue", fontSize: "38px" }}
-              />
-              <span>تسجيل خروج</span>
-            </IconWrapper>
-          </ProfileIcons>
-
-          {!trips && !Notification && (
-            <ProfileContainer>
-              {/* قسم الأيقونات العلوية */}
-        {user &&(
+        {!trips && !Notification && (
+          <ProfileContainer>
+            {/* قسم الأيقونات العلوية */}
+            {user && (
               <ProfileHeader>
                 <ProfileAvatar />
-                
+
                 <h2 style={{ marginBottom: "0px" }}>
-                   {user.firstname} {user.lastname}
+                  {user.firstname} {user.lastname}
                 </h2>
                 <h3 style={{ marginTop: "0px" }}>{user.email}</h3>
-
               </ProfileHeader>
+            )}
 
-              )}
-
-
-              {/* قسم تغيير كلمة المرور */}
-              <form
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  width: "100%",
+            {/* قسم تغيير كلمة المرور */}
+            <form
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <ProfileTextField
+                fullWidth
+                margin="dense"
+                label="الاسم الأول"
+                variant="outlined"
+                value={firstname}
+                onChange={handleFirstnameChange}
+                error={firstnameError}
+                helperText={
+                  firstnameError ? "الاسم الأول يجب أن يحتوي على حروف فقط" : ""
+                }
+                FormHelperTextProps={{
+                  style: { textAlign: "right", color: "red" },
                 }}
-              >
-                <StyledTextField
-                  fullWidth
-                  margin="dense"
-                  label="الاسم الأول"
-                  variant="outlined"
-                  value={firstname}
-                  onChange={handleFirstnameChange}
-                  error={firstnameError}
-                  helperText={
-                    firstnameError
-                      ? "الاسم الأول يجب أن يحتوي على حروف فقط"
-                      : ""
-                  }
-                  FormHelperTextProps={{
-                    style: { textAlign: "right", color: "red" },
-                  }}
-                  required
-                  autoComplete="given-name"
-                  sx={{ width: "75%" }}
-                  InputProps={{
-                    readOnly: !isFirstnameEditable,
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleEditFirstnameClick}
-                          edge="end"
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <StyledTextField
-                  fullWidth
-                  margin="dense"
-                  label="اسم العائلة"
-                  variant="outlined"
-                  value={lastname}
-                  onChange={handleLastnameChange}
-                  error={lastnameError}
-                  helperText={
-                    lastnameError ? "إسم العائلة يجب أن يحتوي علي حروف فقط" : ""
-                  }
-                  FormHelperTextProps={{
-                    style: { textAlign: "right", color: "red" },
-                  }}
-                  required
-                  autoComplete="family-name"
-                  sx={{ width: "75%" }}
-                  InputProps={{
-                    readOnly: !isLastnameEditable,
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleEditLastnameClick}
-                          edge="end"
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                required
+                autoComplete="given-name"
+                InputProps={{
+                  readOnly: !isFirstnameEditable,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleEditFirstnameClick} edge="end">
+                        <EditIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <ProfileTextField
+                fullWidth
+                margin="dense"
+                label="اسم العائلة"
+                variant="outlined"
+                value={lastname}
+                onChange={handleLastnameChange}
+                error={lastnameError}
+                helperText={
+                  lastnameError ? "إسم العائلة يجب أن يحتوي علي حروف فقط" : ""
+                }
+                FormHelperTextProps={{
+                  style: { textAlign: "right", color: "red" },
+                }}
+                required
+                autoComplete="family-name"
+                InputProps={{
+                  readOnly: !isLastnameEditable,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleEditLastnameClick} edge="end">
+                        <EditIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
 
-                <StyledTextField
-                  fullWidth
-                  margin="dense"
-                  label="الرقم السري"
-                  type={showPassword ? "text" : "password"}
-                  variant="outlined"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  error={passwordError}
-                  helperText={
-                    passwordError
-                      ? "يجب أن يحتوي الرقم السري على 8 أحرف على الأقل، حرف كبير واحد ورمز واحد"
-                      : ""
-                  }
-                  FormHelperTextProps={{
-                    style: { textAlign: "right", color: "red" },
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleClickShowPassword}
-                          edge="end"
-                        >
-                          {showPassword ? (
-                            <VisibilityOutlinedIcon />
-                          ) : (
-                            <VisibilityOffOutlinedIcon />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  autoComplete="new-password"
-                  sx={{ width: "75%" }}
-                />
-                <ProfileButton>تأكيد</ProfileButton>
-              </form>
-            </ProfileContainer>
-          )}
-          {Notification && (
-            <Notifications />
-          )}
-          {trips && <Trips />}
-        </PageContainer>
+              <ProfileTextField
+                fullWidth
+                margin="dense"
+                label="الرقم السري"
+                type={showPassword ? "text" : "password"}
+                variant="outlined"
+                value={password}
+                onChange={handlePasswordChange}
+                error={passwordError}
+                helperText={
+                  passwordError
+                    ? "يجب أن يحتوي الرقم السري على 8 أحرف على الأقل، حرف كبير واحد ورمز واحد"
+                    : ""
+                }
+                FormHelperTextProps={{
+                  style: { textAlign: "right", color: "red" },
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleClickShowPassword} edge="end">
+                        {showPassword ? (
+                          <VisibilityOutlinedIcon />
+                        ) : (
+                          <VisibilityOffOutlinedIcon />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                autoComplete="new-password"
+              />
+              <ProfileButton>تأكيد</ProfileButton>
+            </form>
+          </ProfileContainer>
+        )}
+        {Notification && <Notifications />}
+        {trips && (
+          <MyMyBox>
+            <Trips />
+          </MyMyBox>
+        )}
+      </PageContainer>
     </>
   );
 };

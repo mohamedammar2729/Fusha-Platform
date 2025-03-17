@@ -29,7 +29,7 @@ export const FormContainer = styled(Box)({
   flexDirection: "column",
   alignItems: "center",
   maxWidth: "800px",
-  height: "420px",
+  height: "500px",
   margin: "8rem auto",
   direction: "rtl",
   boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.15)",

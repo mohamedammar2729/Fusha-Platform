@@ -22,53 +22,74 @@ const slideIn = keyframes`
   }
 `;
 
-export const MainBox = styled(Box)`
-  display: flex;
-  top: 0;
-  flex-direction: column;
-  @media (min-width: 960px) {
-    flex-direction: row-reverse;
-    height: 80vh;
-  }
-  height: auto;
-  overflow: hidden;
-  background-color: #f4fafd;
-  /* padding-left: 5px; */
-  /* padding-right: 5px; */
-  border-radius: 20px;
-  width: 100%;
-  animation: ${fadeIn} 1s ease-in-out;
-  .css-1vvgi7 {
-    height: 800px;
-    align-items: center;
-  }
-`;
+// Proper way to extend MUI Box
+export const MainBox = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  padding: "20px",
+  width: "100%",
+  maxWidth: "100%",
+  overflow: "hidden",
+  boxSizing: "border-box",
+  height: "auto",
+  backgroundColor: "#f4fafd",
+  borderRadius: "20px",
+  animation: `${fadeIn} 1s ease-in-out`,
 
-export const TextBox = styled(Box)`
-  flex: 1;
-  min-height: 400px;
-  display: flex;
-  flex-direction: column;
-  margin: 0 5rem;
-  justify-content: center;
-  align-items: end;
-  @media (min-width: 960px) {
-    flex: 3.8;
-  }
-  animation: ${slideIn} 1s ease-in-out;
-`;
+  [theme.breakpoints.up("md")]: {
+    flexDirection: "row-reverse",
+    height: "80vh",
+    padding: 0,
+  },
+}));
 
+// Use proper MUI styled API for TextBox
+export const TextBox = styled(Box)(({ theme, textAlign, mb }) => ({
+  flex: 1,
+  minHeight: "300px",
+  display: "flex",
+  flexDirection: "column",
+  margin: "3rem 1rem",
+  justifyContent: "center",
+  alignItems: textAlign === "right" ? "flex-end" : "flex-start",
+  marginBottom: mb ? `${mb * 8}px` : "0",
+  animation: `${slideIn} 1s ease-in-out`,
+
+  [theme.breakpoints.up("sm")]: {
+    margin: "0 2rem",
+    minHeight: "350px",
+  },
+
+  [theme.breakpoints.up("md")]: {
+    flex: 3.8,
+    margin: "0 5rem",
+    minHeight: "400px",
+  },
+}));
+
+// Update SliderBox to prevent overflow
 export const SliderBox = styled(Box)`
   flex: 1;
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
-  justify-content: end;
-  padding: 0 24px;
+  justify-content: center;
+  margin-top: 2.2rem;
+  padding: 10px;
   border-radius: 20px;
+  overflow: hidden;
+
+  @media (min-width: 600px) {
+    padding: 20px;
+  }
+
   @media (min-width: 960px) {
     flex: 8;
+    padding: 0 24px;
+    justify-content: end;
   }
+
   animation: ${fadeIn} 1s ease-in-out;
 `;
 
@@ -85,53 +106,85 @@ export const sliderSettings = {
 
 export const SecondTextBox = styled(Box)`
   flex: 1;
-  min-height: 400px;
+  min-height: 300px;
   display: flex;
   flex-direction: column;
-  margin-right: 2rem;
+  margin-right: 1rem;
   justify-content: center;
   align-items: end;
+  @media (min-width: 600px) {
+    margin-right: 1.5rem;
+    min-height: 350px;
+  }
   @media (min-width: 960px) {
     flex: 3.8;
+    margin-right: 2rem;
+    min-height: 400px;
   }
   animation: ${slideIn} 1s ease-in-out;
 `;
 
+// Update SecondBox to prevent overflow
 export const SecondBox = styled(Box)`
   display: flex;
   flex-direction: column;
   text-align: center;
-  @media (min-width: 960px) {
-    flex-direction: row;
-  }
+  padding: 15px 5px;
   align-items: center;
   justify-content: center;
   box-shadow: 3;
-  padding: 3px;
   gap: 6px;
   border-radius: 20px;
   width: 95%;
+  max-width: 100%;
   margin: 0px auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+
+  @media (min-width: 600px) {
+    padding: 10px;
+  }
+
+  @media (min-width: 960px) {
+    flex-direction: row;
+    padding: 3px;
+  }
 `;
+
 export const RipponBox = styled(Box)`
   position: absolute;
-  top: 39px;
-  right: -78px;
+  display: none;
+  @media (min-width: 600px) {
+    display: block;
+    top: 39px;
+    right: -110px;
+    padding: 10px 100px;
+    font-size: 16px;
+  }
+  @media (min-width: 960px) {
+    right: -78px;
+    padding: 10px 119px;
+    font-size: 20px;
+  }
   background-color: red;
   color: white;
-  padding: 10px 119px;
   transform: rotate(30deg);
   font-weight: bold;
-  font-size: 20px;
   white-space: nowrap;
   box-shadow: 2;
 `;
+
 /* -------------------------2-------------------------------------- */
 
+// Update CategoriesContainer for proper box sizing
 export const CategoriesContainer = stf.div`
   text-align: center;
   padding: 60px 20px;
   background-color: #f4fafd;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 `;
 
 export const CategoriesTitle = stf.h2`
@@ -142,21 +195,46 @@ export const CategoriesTitle = stf.h2`
   text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
 `;
 
+// Update CardsGrid to prevent overflow
 export const CardsGrid = stf.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  grid-template-columns: 1fr;
+  gap: 20px;
   justify-content: center;
-  padding: 40px 10px;
+  padding: 20px 10px;
   margin: 0 auto;
   max-width: 1200px;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    padding: 30px 10px;
+  }
+
+  @media (min-width: 960px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    padding: 40px 10px;
+  }
 `;
 
 export const StyledCard = stf.div`
   position: relative;
   width: 100%;
   max-width: 350px;
-  height: 250px;
+  height: 200px;
+  margin: 0 auto;
+  
+  @media (min-width: 600px) {
+    height: 220px;
+  }
+  
+  @media (min-width: 960px) {
+    height: 250px;
+  }
+  
   border-radius: 15px;
   overflow: hidden;
   cursor: pointer;
@@ -194,7 +272,6 @@ export const StyledCard = stf.div`
   }
 `;
 
-
 export const CardTitle = stf.div`
   position: absolute;
   top: 55%;
@@ -222,14 +299,30 @@ export const CardTitle = stf.div`
 
 /* -------------------------3-------------------------------------- */
 
+// Update DownloadContainer to prevent overflow
 export const DownloadContainer = stf.div`
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  gap: 40px;
-  padding: 60px 20px;
+  gap: 20px;
+  padding: 30px 15px;
   background-color: #f4fafd;
   border-radius: 15px;
+  width: 95%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  overflow-x: hidden;
+
+  @media (min-width: 600px) {
+    gap: 30px;
+    padding: 40px 20px;
+  }
+
+  @media (min-width: 960px) {
+    gap: 40px;
+    padding: 60px 20px;
+  }
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -247,15 +340,38 @@ export const TextContent = stf.div`
 `;
 
 export const Title = stf.h2`
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: #1e3a8a;
   font-weight: bold;
-  margin-bottom: 50px;
+  margin-bottom: 25px;
+  
+  @media (min-width: 600px) {
+    font-size: 1.75rem;
+    margin-bottom: 35px;
+  }
+  
+  @media (min-width: 960px) {
+    font-size: 2rem;
+    margin-bottom: 50px;
+  }
 `;
 
 export const StyledButtons = stf.div`
   display: flex;
-  gap: 45px;
+  gap: 20px;
+
+  @media (min-width: 600px) {
+    gap: 30px;
+  }
+
+  @media (min-width: 960px) {
+    gap: 45px;
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: center;
+  }
 
   @media (max-width: 768px) {
     justify-content: center;
@@ -266,12 +382,22 @@ export const DownloadBtn = stf.a`
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
-  padding: 12px 20px;
+  padding: 10px 15px;
   border-radius: 40px;
   text-decoration: none;
   transition: all 0.1s ease-in-out;
+
+  @media (min-width: 600px) {
+    font-size: 1.3rem;
+    padding: 10px 18px;
+  }
+
+  @media (min-width: 960px) {
+    font-size: 1.5rem;
+    padding: 12px 20px;
+  }
 
   &:hover {
     filter: brightness(1.2);
@@ -279,10 +405,23 @@ export const DownloadBtn = stf.a`
   }
 `;
 
+// Update ImageContent in styledHome.jsx
 export const ImageContent = stf.div`
+  width: 100%;
+  max-width: 550px;
+  
   img {
-    width: 550px;
-    max-width: 100%;
+    width: 100%;
+    height: auto;
+    max-width: 350px;
+    
+    @media (min-width: 600px) {
+      max-width: 450px;
+    }
+    
+    @media (min-width: 960px) {
+      max-width: 550px;
+    }
   }
 `;
 
@@ -306,11 +445,26 @@ export const StyledCard2 = stf.div`
   }
 `;
 
+// Update Swiper settings to prevent overflow
 export const swiperSettings = {
   modules: [Pagination],
   pagination: { clickable: true },
   spaceBetween: 20,
-  slidesPerView: 3,
+  slidesPerView: 1,
+  breakpoints: {
+    480: {
+      slidesPerView: 1,
+    },
+    768: {
+      slidesPerView: 1,
+    },
+    969: {
+      slidesPerView: 2, // Remove dynamic Math.min with testimonials
+    },
+    1200: {
+      slidesPerView: 3, // Remove dynamic Math.min with testimonials
+    },
+  },
   centeredSlides: true,
-  loop: true,
+  // Remove loop setting that might reference testimonials
 };
