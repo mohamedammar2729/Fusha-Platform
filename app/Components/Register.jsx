@@ -20,7 +20,7 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import axios from "axios";
 import { useRouter } from "next/navigation"; // App Router import
 import Card from "./Card"; // Import the Card component
-import Image from "next/image"; 
+import Image from "next/image";
 
 const MemoizedTypography = React.memo(({ children, ...props }) => (
   <Typography {...props}>{children}</Typography>
@@ -127,9 +127,9 @@ const Register = () => {
         email,
         password,
       };
-        // fix server error after deployment
+
       axios
-        .post("https://iti-server-production.up.railway.app/api/user", payload)
+        .post("http://localhost:4000/api/user", payload)
         .then((response) => {
           console.log(response.data.user);
           setShowSuccessCard(true); // Show the success card
@@ -289,7 +289,7 @@ const Register = () => {
                 }
                 FormHelperTextProps={{
                   style: { textAlign: "right", color: "red" },
-                }}          
+                }}
                 required
                 autoComplete="address-level2"
               />
@@ -306,7 +306,7 @@ const Register = () => {
                 }
                 FormHelperTextProps={{
                   style: { textAlign: "right", color: "red" },
-                }}     
+                }}
                 required
                 autoComplete="email"
               />
@@ -320,11 +320,13 @@ const Register = () => {
                 onChange={handlePasswordChange}
                 error={passwordError}
                 helperText={
-                  passwordError ? "يجب أن يحتوي الرقم السري على 8 أحرف على الأقل، حرف كبير واحد ورمز واحد" : ""
+                  passwordError
+                    ? "يجب أن يحتوي الرقم السري على 8 أحرف على الأقل، حرف كبير واحد ورمز واحد"
+                    : ""
                 }
                 FormHelperTextProps={{
                   style: { textAlign: "right", color: "red" },
-                }}     
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -354,12 +356,13 @@ const Register = () => {
                 onChange={handleConfirmPasswordChange}
                 error={confirmPasswordError}
                 helperText={
-                  passwordError ? "تأكيد الرقم السري يجب أن يطابق الرقم السري" : ""
+                  passwordError
+                    ? "تأكيد الرقم السري يجب أن يطابق الرقم السري"
+                    : ""
                 }
                 FormHelperTextProps={{
                   style: { textAlign: "right", color: "red" },
-                }} 
-
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -398,7 +401,15 @@ const Register = () => {
                 سجل حساب جديد
               </StyledButton>
             </form>
-            <MemoizedTypography sx={{ textAlign: "center", marginTop: 2 }}>
+            <MemoizedTypography
+              sx={{
+                textAlign: "center",
+                marginTop: 2,
+                marginBottom: 2, // Add some bottom margin
+                position: "relative", // Ensure it stays in place
+                zIndex: 1,
+              }}
+            >
               هل لديك حساب بالفعل؟{" "}
               <StyledLink href="/login" $sx={{ ml: 1 }}>
                 تسجيل الدخول
@@ -412,5 +423,3 @@ const Register = () => {
 };
 
 export default React.memo(Register);
-
-

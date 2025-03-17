@@ -1,5 +1,8 @@
 "use client";
 import styled from "styled-components";
+import { StyledTextField } from "../Register/StyledRegister";
+import NotificationsTwoToneIcon from "@mui/icons-material/NotificationsTwoTone";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 
 export const PageContainer = styled.div`
   display: flex;
@@ -26,7 +29,6 @@ export const ProfileIcons = styled.div`
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-around;
-  width: ${({ trips }) => (trips === "true" ? "45%" : "33.5%")};
   padding: 15px;
   background: #3b5898;
   border-radius: 15px 15px 0 0;
@@ -35,15 +37,8 @@ export const ProfileIcons = styled.div`
   z-index: 100;
   white-space: nowrap;
 
-  @media (max-width: 2200px) {
-    width: ${({ trips }) => (trips === "true" ? "63%" : "63%")};
-    top: 15rem;
+  @media (max-width: 768px) {
     flex-wrap: wrap;
-  }
-  @media (max-width: 880px) {
-    width: ${({ trips }) => (trips === "true" ? "66.6%" : "70%")};
-    top: 15rem;
-    flex-wrap: nowrap;
   }
 `;
 
@@ -53,16 +48,19 @@ export const IconWrapper = styled.div`
   gap: 12px;
   cursor: pointer;
   font-size: 30px;
-  padding: 10px;
+  padding: 10px 29px;
   border-radius: 35px;
   transition: background 0.3s ease;
 
   span {
     color: #ffffff;
     font-size: 19px;
-    @media (max-width: 830px) {
-      font-size: 15px;
-      color: white;
+
+    @media (max-width: 768px) {
+      font-size: 16px;
+    }
+    @media (max-width: 568px) {
+      font-size: 14px;
     }
   }
 
@@ -72,6 +70,15 @@ export const IconWrapper = styled.div`
 
   &:active {
     background: rgb(200, 230, 255);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+    padding: 5px 10px;
+  }
+  @media (max-width: 568px) {
+    font-size: 14px;
+    padding: 2px 5px;
   }
 `;
 
@@ -104,6 +111,10 @@ export const ProfileButton = styled.button`
   &:hover {
     background: #3b5998;
   }
+  @media (max-width: 768px) {
+    padding: 10px;
+    font-size: 20px;
+  }
 `;
 
 export const ProfileContainer = styled.div`
@@ -114,19 +125,20 @@ export const ProfileContainer = styled.div`
   padding-bottom: 40px;
   border-radius: 0 0 15px 15px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  width: 35.1%;
-  position: relative;
+  padding-right: 14.2rem;
+  padding-left: 14.2rem;
   z-index: 2;
   margin-top: 96.5px;
 
-  @media (max-width: 1550px) {
-    width: 65%;
-    margin-top: 70px;
+  @media (max-width: 768px) {
+    padding-right: 6.7rem;
+    padding-left: 6.7rem;
+    margin-top: 75px;
   }
-  @media (max-width: 880px) {
-    width: 73.5%;
-    margin-top: 50px;
-    padding-top: 50px;
+  @media (max-width: 568px) {
+    padding-right: 3.7rem;
+    padding-left: 3.7rem;
+    margin-top: 60px;
   }
 `;
 
@@ -147,5 +159,37 @@ export const EyeIcon = styled.div`
 
   &:hover {
     color: #000;
+  }
+`;
+
+export const ProfileTextField = styled(StyledTextField)`
+  width: 180%;
+  @media (max-width: 768px) {
+    width: 150%;
+  }
+  @media (max-width: 568px) {
+    width: 120%;
+  }
+`;
+
+export const StyledNotificationIcon = styled(NotificationsTwoToneIcon)`
+  color: #fec20f;
+  font-size: 38px;
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+  @media (max-width: 568px) {
+    font-size: 20px;
+  }
+`;
+
+export const StyledLogoutIcon = styled(LogoutOutlinedIcon)`
+  color: lightblue;
+  font-size: 38px;
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+  @media (max-width: 568px) {
+    font-size: 20px;
   }
 `;

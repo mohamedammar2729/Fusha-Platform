@@ -37,13 +37,11 @@ const MemoizedMyOwnSelect = React.memo(({ children, ...props }) => (
   <MyOwnSelect {...props}>{children}</MyOwnSelect>
 ));
 
-
 export default function Create() {
   const [form, setForm] = useState({ people: "", amount: "", destination: "" });
   const [create, setCreate] = useState(true);
   const searchParams = useSearchParams();
-  const router = useRouter(); 
-
+  const router = useRouter();
 
   const handleSubmit = useCallback(() => {
     localStorage.setItem("formData", JSON.stringify(form));

@@ -1,185 +1,294 @@
-import { styled } from "@mui/material";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import { styled as stf, keyframes } from "styled-components";
+import { styled } from "@mui/material/styles";
+import { keyframes } from "styled-components";
 
-// Define keyframes for animations
 const fadeIn = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+export const MyMyBox = styled("div")`
+  padding: 2rem;
+  max-width: 865px;
+  margin: 8px auto 2rem;
+  animation: ${fadeIn} 0.6s ease-in-out;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    max-width: 90%;
+    margin: 7rem auto 1.5rem;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  @media (max-width: 568px) {
+    padding: 2rem;
+    max-width: 95%;
+    margin: 6rem auto 1rem;
   }
 `;
 
-const buttonHover = keyframes`
-  0% {
-    transform: scale(1);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
+
+export const TripCard = styled("div")`
+  background: white;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  position: relative;
 `;
 
-export const MyMyBox = styled(Box)``;
-
-export const MYYStyledWrapper = stf.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-
-  margin-top: 2rem;
-  justify-content: center;
-
-  .card-container {
-    width: 22.5%;
-    height: 300px;
-    position: relative;
-    // border-radius: 10px;
-    animation: ${fadeIn} 0.6s ease-in-out;
-
-    @media (max-width: 1200px) {
-      width: 90%; 
-    }
-
-    @media (max-width: 768px) {
-      width: 100%; 
-      margin: 0 auto;
-    }
+export const CarouselContainer = styled("div")`
+  background: white;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  position: relative;
+  height: auto;
+  transition: all 0.3s ease;
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   }
 
-  .card-container::before {
-    content: "";
-    z-index: -1;
-    position: absolute;
-    inset: 0;
-  }
-
-  .card {
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    overflow: hidden;
-  }
-
-  .card .img-content {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .card .img-content img {
+  img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .card .content {
-    position: absolute;
-    top: 0;
-    left: 0;
+  .slick-dots {
+    bottom: 10px;
+
+    li button:before {
+      color: white;
+      opacity: 0.7;
+    }
+    li.slick-active button:before {
+      opacity: 1;
+    }
+  }
+`;
+export const CarouselImage = styled("div")`
+  height: 400px;
+  @media (max-width: 768px) {
+    height: 300px;
+  }
+
+  @media (max-width: 568px) {
+    height: 220px;
+  }
+
+  img {
     width: 100%;
     height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #e8e8e8;
-    line-height: 1.5;
-    border-radius: 5px;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(50px);
-    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-  }
-
-  .card .content .heading {
-    font-size: 26px;
-    font-weight: 700;
-    color: #fff;
-    text-align: center;
-  }
-
-  .card:hover .content {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .card:hover .img-content {
-    filter: blur(3px);
-  }
-
-  .card:hover .img-content svg {
-    fill: transparent;
+    object-fit: cover;
   }
 `;
 
-export const StyledCard = styled(Card)`
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  text-align: center;
-  animation: ${fadeIn} 0.6s ease-in-out;
-`;
-
-export const Title = styled(Typography)`
-  font-weight: bold;
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-  animation: ${fadeIn} 0.6s ease-in-out;
-`;
-
-export const StyledBox = styled(Box)`
+export const GradientOverlay = styled("div")`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
   display: flex;
-  width: 100%;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  background-color: #e1efff;
-  border-radius: 15px;
-  animation: ${fadeIn} 0.6s ease-in-out;
-  @media (max-width: 1650px) {
-    width: 100%;
-    flex-wrap: "no-wrap";
-  }
-  @media (max-width: 1250px) {
-    width: 105%;
+  padding: 15px;
+  @media (max-width: 568px) {
+    height: 50px;
+    padding: 10px;
   }
 `;
 
-export const CircleButton = styled(Button)`
-  background-color: #ffffff;
-  border-radius: 25px;
-  border: 1px solid #0a3981;
-  color: #0a3981;
-  font-size: 20px;
-  padding: 5px 1rem;
-  margin: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  animation: ${fadeIn} 0.6s ease-in-out;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  white-space: nowrap;
+export const StatusBadge = styled("div")`
+  display: flex;
+  align-items: center;
+  background-color: ${({ status }) =>
+    status === "completed"
+      ? "#4CAF50"
+      : status === "cancelled"
+      ? "#F44336"
+      : "#2196F3"};
+  border-radius: 18px;
+  padding: 6px 12px;
+  color: white;
 
-  &:hover {
-    animation: ${buttonHover} 0.6s ease-in-out;
+  span {
+    font-size: 12px;
+    margin-right: 5px;
+
+    @media (max-width: 568px) {
+      font-size: 10px;
+    }
   }
-  @media (max-width: 1820px) {
-    font-size: 15px;
+
+  svg {
+    font-size: 16px;
+
+    @media (max-width: 568px) {
+      font-size: 14px;
+    }
   }
-  @media (max-width: 900px) {
-    width: 100%;
-    margin: 0.5rem 0;
+
+  @media (max-width: 568px) {
+    padding: 4px 8px;
+  }
+`;
+
+export const DetailsContainer = styled("div")`
+  padding: 20px;
+  @media (max-width: 768px) {
+    padding: 15px;
+  }
+
+  @media (max-width: 568px) {
+    padding: 12px;
+  }
+`;
+
+export const DetailRow = styled("div")`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  gap: 10px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+`;
+
+export const DetailItem = styled("div")`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  background: rgba(74, 114, 172, 0.08);
+  padding: 10px 15px;
+  border-radius: 12px;
+  min-width: 45%;
+  transition: all 0.3s ease;
+
+  span {
+    font-size: 14px;
+    color: #2d3748;
+    margin-right: 10px;
+    font-weight: 600;
+    @media (max-width: 768px) {
+      font-size: 13px;
+    }
+
+    @media (max-width: 568px) {
+      font-size: 12px;
+    }
+  }
+
+  svg {
+    font-size: 20px;
+    @media (max-width: 768px) {
+      font-size: 13px;
+    }
+
+    @media (max-width: 568px) {
+      font-size: 12px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 8px 12px;
+  }
+
+  @media (max-width: 568px) {
+    padding: 6px 10px;
+  }
+`;
+
+export const TimelineSection = styled("div")`
+  border-top: 1px solid #f0f0f0;
+  padding: 20px 0;
+
+  @media (max-width: 768px) {
+    padding: 15px 0;
+  }
+
+  @media (max-width: 568px) {
+    padding: 12px 0;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2d3250;
+    margin-bottom: 15px;
+    text-align: right;
+    @media (max-width: 768px) {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 568px) {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+  }
+`;
+
+export const TimelineItem = styled("div")`
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 20px;
+  padding-right: 24px;
+  @media (max-width: 568px) {
+    margin-bottom: 15px;
+    padding-right: 18px;
+  }
+
+  span {
+    font-size: 14px;
+    color: #4a5568;
+    font-weight: 500;
+    text-align: right;
+    flex-grow: 1;
+
+    @media (max-width: 768px) {
+      font-size: 13px;
+    }
+
+    @media (max-width: 568px) {
+      font-size: 12px;
+    }
+  }
+`;
+
+export const TimelineDot = styled("div")`
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #4a72ac;
+  margin-left: 10px;
+  flex-shrink: 0;
+  @media (max-width: 568px) {
+    width: 10px;
+    height: 10px;
+    margin-left: 8px;
+  }
+`;
+
+export const TimelineLine = styled("div")`
+  position: absolute;
+  left: 6px;
+  top: 20px;
+  width: 2px;
+  height: 25px;
+  background-color: #4a72ac;
+  opacity: 0.3;
+  @media (max-width: 568px) {
+    left: 5px;
+    top: 15px;
+    height: 20px;
   }
 `;
