@@ -2,22 +2,7 @@ import React from "react";
 import ReadyPrograms from "../Components/ReadyPrograms";
 import Container from "@mui/material/Container";
 
-// export const dynamic = "force-dynamic";
-
-async function fetchPrograms() {
-  const res = await fetch("http://localhost:4000/api/readyprogram", {
-    cache: "no-store", // تعطيل التخزين المؤقت للبيانات
-  });
-
-  if (!res.ok) throw new Error("فشل في جلب البيانات");
-
-  return res.json();
-}
-
-const Page = async () => {
-  const programsData = await fetchPrograms();
-
-
+const Page = () => {
   return (
     <Container
       maxWidth="lg"
@@ -28,7 +13,7 @@ const Page = async () => {
         marginTop: "6rem",
       }}
     >
-      <ReadyPrograms initialData={programsData} />
+      <ReadyPrograms />
     </Container>
   );
 };

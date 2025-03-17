@@ -2,7 +2,6 @@
 import React, { useState, useCallback } from "react";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
-
 import {
   StyledButton,
   StyledLink,
@@ -50,14 +49,18 @@ const LogIn = () => {
         setError("الرجاء ملء جميع الحقول");
         return;
       }
-
+      // fix server error after deployment
       axios
-        .post("http://localhost:4000/api/login", { email, password })
+        .post("https://iti-server-production.up.railway.app/api/login", {
+          email,
+          password,
+        })
         .then((response) => {
           const { token } = response.data;
           localStorage.setItem("user", JSON.stringify(response.data.user));
           localStorage.setItem("token", token);
-          window.location.href = "/";
+          window.location.href = "/Fusha-Platform";
+          
         })
         .catch((err) => {
           const serverError =
