@@ -57,7 +57,7 @@ const LogIn = () => {
           const { token } = response.data;
           localStorage.setItem("user", JSON.stringify(response.data.user));
           localStorage.setItem("token", token);
-          window.location.href = "/";
+          window.location.href = "/Fusha-Platform";
         })
         .catch((err) => {
           const serverError =
