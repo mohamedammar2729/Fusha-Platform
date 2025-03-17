@@ -25,6 +25,7 @@ export const MyMyBox = styled("div")`
   }
 `;
 
+
 export const TripCard = styled("div")`
   background: white;
   border-radius: 25px;
@@ -238,6 +239,7 @@ export const TimelineItem = styled("div")`
   position: relative;
   display: flex;
   align-items: center;
+
   margin-bottom: 20px;
   padding-right: 24px;
   @media (max-width: 568px) {

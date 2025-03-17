@@ -9,6 +9,7 @@ export const PageContainer = styled.div`
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
+  width: 100%;
   padding-top: 250px;
   position: relative;
 `;
@@ -54,6 +55,7 @@ export const IconWrapper = styled.div`
   span {
     color: #ffffff;
     font-size: 19px;
+
     @media (max-width: 768px) {
       font-size: 16px;
     }

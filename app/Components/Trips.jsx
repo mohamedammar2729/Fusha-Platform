@@ -98,6 +98,7 @@ const Trips = () => {
         };
 
         return (
+
           <TripCard key={item._id}>
             {/* Image Carousel */}
             <CarouselContainer>
