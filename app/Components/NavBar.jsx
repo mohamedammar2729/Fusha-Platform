@@ -274,20 +274,27 @@ const NavBar = () => {
           onClose={handleCloseNavMenu}
           sx={{ display: { xs: "block", md: "none" } }}
         >
+          {/* Navigation Links */}
           {navLinks
             .filter((link) => !link.authRequired || user)
             .map((link) => (
-              <Link key={link.href} href={link.href} passHref legacyBehavior>
-                <MemoizedNavItem
-                  onClick={handleCloseNavMenu}
-                  sx={{
-                    textDecoration: "none",
-                    marginTop: "10px",
-                  }}
+              <MenuItem key={link.href} onClick={handleCloseNavMenu}>
+                <Link
+                  href={link.href}
+                  passHref
+                  legacyBehavior
+                  style={{ width: "100%" }}
                 >
-                  {link.label}
-                </MemoizedNavItem>
-              </Link>
+                  <MemoizedNavItem
+                    sx={{
+                      textDecoration: "none",
+                      marginTop: "10px",
+                    }}
+                  >
+                    {link.label}
+                  </MemoizedNavItem>
+                </Link>
+              </MenuItem>
             ))}
 
           {/* Language options */}
@@ -316,11 +323,44 @@ const NavBar = () => {
               العربية
             </MemoizedNavItem>
           </MenuItem>
+
+          {/* Login/Register buttons for mobile - without Fragment */}
+          {!user && // Render the MenuItems directly without Fragment wrapper
+          [
+            <MenuItem key="login" onClick={handleCloseNavMenu}>
+              <Link
+                href="/login"
+                passHref
+                legacyBehavior
+                style={{ width: "100%" }}
+              >
+                <MemoizedNavItem
+                  sx={{ textDecoration: "none", fontWeight: 550 }}
+                >
+                  تسجيل دخول
+                </MemoizedNavItem>
+              </Link>
+            </MenuItem>,
+            <MenuItem key="register" onClick={handleCloseNavMenu}>
+              <Link
+                href="/register"
+                passHref
+                legacyBehavior
+                style={{ width: "100%" }}
+              >
+                <MemoizedNavItem
+                  sx={{ textDecoration: "none", fontWeight: 550 }}
+                >
+                  سجل الان
+                </MemoizedNavItem>
+              </Link>
+            </MenuItem>,
+          ]}
         </Menu>
 
         <Box
           sx={{
-            display: "flex",
+            display: { xs: "none", sm: "flex" }, // Hide on xs screens, show on sm and up
             alignItems: "center",
             flexGrow: 0,
             gap: 2,
