@@ -9,7 +9,6 @@ export const PageContainer = styled.div`
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  width: 100%;
   padding-top: 250px;
   position: relative;
 `;
@@ -23,6 +22,9 @@ export const BackgroundImage = styled.div`
   left: 0;
   right: 0;
   filter: blur(4px);
+  @media (max-width: 414px) {
+    height: 250px;
+  }
 `;
 
 export const ProfileIcons = styled.div`
@@ -40,6 +42,12 @@ export const ProfileIcons = styled.div`
   @media (max-width: 768px) {
     flex-wrap: wrap;
   }
+  @media (max-width: 414px) {
+    // خاص بشاشات iPhone
+    top: 12rem;
+    padding: 10px;
+    gap: 8px;
+  }
 `;
 
 export const IconWrapper = styled.div`
@@ -55,7 +63,6 @@ export const IconWrapper = styled.div`
   span {
     color: #ffffff;
     font-size: 19px;
-
     @media (max-width: 768px) {
       font-size: 16px;
     }
@@ -79,6 +86,14 @@ export const IconWrapper = styled.div`
   @media (max-width: 568px) {
     font-size: 14px;
     padding: 2px 5px;
+  }
+  @media (max-width: 414px) {
+    padding: 5px 15px;
+    gap: 8px;
+
+    span {
+      font-size: 14px;
+    }
   }
 `;
 
@@ -115,6 +130,12 @@ export const ProfileButton = styled.button`
     padding: 10px;
     font-size: 20px;
   }
+
+  @media (max-width: 414px) {
+    width: 80%;
+    padding: 10px;
+    font-size: 18px;
+  }
 `;
 
 export const ProfileContainer = styled.div`
@@ -139,6 +160,13 @@ export const ProfileContainer = styled.div`
     padding-right: 3.7rem;
     padding-left: 3.7rem;
     margin-top: 60px;
+  }
+
+  @media (max-width: 414px) {
+    padding-right: 1rem;
+    padding-left: 1rem;
+    margin-top: 50px;
+    width: 90%;
   }
 `;
 
@@ -169,6 +197,11 @@ export const ProfileTextField = styled(StyledTextField)`
   }
   @media (max-width: 568px) {
     width: 120%;
+  }
+
+  @media (max-width: 414px) {
+    width: 100%;
+    margin: 8px 0;
   }
 `;
 
