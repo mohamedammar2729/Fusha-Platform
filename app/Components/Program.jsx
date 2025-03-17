@@ -35,7 +35,7 @@ const Program = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/places");
+        const response = await axios.get("https://iti-server-production.up.railway.app/api/places");
         setPlaces(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);

@@ -2,6 +2,7 @@
 import React, { useState, useCallback } from "react";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
+
 import {
   StyledButton,
   StyledLink,
@@ -26,7 +27,7 @@ const MemoizedTypography = React.memo(({ children, ...props }) => (
 const MemoizedStyledTextField = React.memo(({ children, ...props }) => (
   <StyledTextField {...props}>{children}</StyledTextField>
 ));
-// login component
+
 const LogIn = () => {
   const [showPassword, setShowPassword] = useState({
     password: false,
@@ -49,18 +50,14 @@ const LogIn = () => {
         setError("الرجاء ملء جميع الحقول");
         return;
       }
-      // fix server error after deployment
+
       axios
-        .post("https://iti-server-production.up.railway.app/api/login", {
-          email,
-          password,
-        })
+        .post("https://iti-server-production.up.railway.app/api/login", { email, password })
         .then((response) => {
           const { token } = response.data;
           localStorage.setItem("user", JSON.stringify(response.data.user));
           localStorage.setItem("token", token);
-          window.location.href = "/Fusha-Platform";
-          
+          window.location.href = "/";
         })
         .catch((err) => {
           const serverError =
@@ -82,7 +79,7 @@ const LogIn = () => {
             alt="Background"
             fill
             priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 480px) 100vw, (max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             style={{
               objectFit: "cover",
               filter: "blur(3px) brightness(0.9)",
@@ -141,7 +138,7 @@ const LogIn = () => {
       </LeftSection>
       <RightSection>
         <FormContainer>
-          <h2 style={{ textAlign: "center" }}>تسجيل الدخول</h2>
+          <h2>تسجيل الدخول</h2>
           <form onSubmit={handleSubmit}>
             <MemoizedStyledTextField
               fullWidth

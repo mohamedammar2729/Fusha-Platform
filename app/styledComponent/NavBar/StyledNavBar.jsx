@@ -8,10 +8,10 @@ import Button from "@mui/material/Button";
 import { styled as stf } from "styled-components";
 import AppBar from "@mui/material/AppBar";
 import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
 export const NavBarWrapper = styled(AppBar)`
   background: rgba(255, 255, 255, 0.1); /* More transparent */
-  backdrop-filter: blur(4px); /* Slight blur effect */
   box-shadow: none; /* Remove shadow */
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   color: #000;
