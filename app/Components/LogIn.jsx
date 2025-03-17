@@ -52,7 +52,7 @@ const LogIn = () => {
       }
 
       axios
-        .post("http://localhost:4000/api/login", { email, password })
+        .post("https://iti-server-production.up.railway.app/api/login", { email, password })
         .then((response) => {
           const { token } = response.data;
           localStorage.setItem("user", JSON.stringify(response.data.user));
