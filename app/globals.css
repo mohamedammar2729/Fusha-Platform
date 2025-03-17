@@ -40,3 +40,14 @@ img[src$=".svg"] {
   width: auto;
   height: auto;
 }
+
+@media (max-width: 414px) {
+  body {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  .ProfileContainer {
+    transform: scale(0.98);
+  }
+}
