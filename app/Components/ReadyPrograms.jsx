@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Rating from "@mui/material/Rating";
 import IconButton from "@mui/material/IconButton";
@@ -12,9 +12,24 @@ import {
   StyledWrapper,
 } from "../styledComponent/ReadyPrograms/StyledReadyPrograms";
 
-const ReadyPrograms = ({ initialData }) => {
+const ReadyPrograms = () => {
   const [bookmarked, setBookmarked] = useState({});
-  const [items, setItems] = useState(initialData); // استخدام البيانات الأولية من السيرفر
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch("http://localhost:4000/api/readyprogram", {
+        cache: "no-store",
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setItems(data);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleBookmarkClick = (id) => {
     setBookmarked((prev) => ({
