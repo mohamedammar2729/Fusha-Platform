@@ -45,7 +45,7 @@ const Trips = () => {
 
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/createprogram",
+        "https://iti-server-production.up.railway.app/api/createprogram",
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setItems(response.data);
