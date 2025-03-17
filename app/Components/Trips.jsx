@@ -1,17 +1,36 @@
 "use client";
-
 import React, { useEffect, useState, useCallback } from "react";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid2";
-import BookmarkRemoveOutlinedIcon from "@mui/icons-material/BookmarkRemoveOutlined";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import {
-  CircleButton,
   MyMyBox,
   MYYStyledWrapper,
-  StyledBox,
+  StatusBadge,
+  DetailItemWrapper,
+  TimelineDot,
+  TimelineLine,
+  TripCard,
+  CarouselContainer,
+  GradientOverlay,
+  DetailsContainer,
+  DetailRow,
+  DetailItem,
+  TimelineSection,
+  TimelineItem,
+  CarouselImage,
 } from "../styledComponent/Trips/StyledTrips";
-import { useRouter } from "next/navigation";
+import {
+  Place as PlaceIcon,
+  People as PeopleIcon,
+  Category as CategoryIcon,
+  AttachMoney as AttachMoneyIcon,
+  Schedule as ScheduleIcon,
+  DeleteOutline as DeleteIcon,
+} from "@mui/icons-material";
 
 const Trips = () => {
   const [items, setItems] = useState([]);
@@ -20,18 +39,14 @@ const Trips = () => {
 
   const fetchData = useCallback(async () => {
     if (!token) {
-      router.push("/"); // Redirect to login if token is missing
+      router.push("/");
       return;
     }
 
     try {
       const response = await axios.get(
-        "https://iti-server-production.up.railway.app/api/createprogram",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        "http://localhost:4000/api/createprogram",
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setItems(response.data);
     } catch (error) {
@@ -45,98 +60,110 @@ const Trips = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`https://iti-server-production.up.railway.app/api/createprogram/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      await axios.delete(`http://localhost:4000/api/createprogram/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      fetchData(); // Refresh the component after delete process
+      fetchData();
     } catch (error) {
       console.error("Error deleting data:", error);
     }
   };
 
+  const carouselSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+  };
+
   return (
-    <MyMyBox
-      sx={{
-        padding: "2rem",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        marginTop: "2rem",
-      }}
-    >
+    <MyMyBox>
       {items.map((item) => {
-        const programNames = item.selectedTripPlaces[0].split(" -- ");
+        const places = item.selectedTripPlaces[0]?.split(" -- ") || [];
+        const statusConfig = {
+          completed: {
+            color: "#4CAF50",
+            text: "مكتملة",
+            icon: <ScheduleIcon />,
+          },
+          upcoming: { color: "#2196F3", text: "قادمة", icon: <ScheduleIcon /> },
+          cancelled: {
+            color: "#F44336",
+            text: "ملغاة",
+            icon: <ScheduleIcon />,
+          },
+        };
+
         return (
-          <Box
-            sx={{
-              fontFamily: "Arial, sans-serif",
-              padding: "3rem",
-              backgroundColor: "#e1efff",
-              mt: "2rem",
-              borderRadius: "0px 0px 25px 25px",
-              position: "relative",
-              width: "42.8%",
-            }}
-            key={item._id}
-          >
-            <BookmarkRemoveOutlinedIcon
-              sx={{
-                position: "absolute",
-                top: "10px",
-                right: "10px",
-                cursor: "pointer",
-                color: "red",
-              }}
-              onClick={() => handleDelete(item._id)}
-            />
-            <Grid
-              container
-              spacing={2}
-              justifyContent="end"
-              sx={{ marginBottom: "1rem" }}
-            >
-              <StyledBox
-                sx={{
-                  justifyContent: "space-between",
-                  flexDirection: { xs: "column", md: "row" },
-                }}
-              >
-                <CircleButton> {`الميزانية :- ${item.budget}`}</CircleButton>
-                <CircleButton>{`الموقع :- ${item.locate}`} </CircleButton>
-                <CircleButton>{`عدد الاشخاص :- ${item.numberOfPersons}`}</CircleButton>
-                <CircleButton>
-                  {" "}
-                  {` نوع رحلتك :- ${item.typeOfProgram}`}{" "}
-                </CircleButton>
-              </StyledBox>
-            </Grid>
-            <StyledBox >
-              <CircleButton>
-                {`  البرنامج :- ${item.selectedTripPlaces[0]}`}
-              </CircleButton>
-            </StyledBox>
-            <MYYStyledWrapper>
-              {item.images.map((image, index) => (
-                <div className="card-container" key={index}>
-                  <div className="card">
-                    <div className="img-content">
-                      <img
-                        src={image}
-                        width={200}
-                        height={150}
-                        alt={`Trip ${index}`}
-                      />
-                    </div>
-                    <div className="content">
-                      <p className="heading">{programNames[index]}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </MYYStyledWrapper>
-          </Box>
+
+          <TripCard key={item._id}>
+            {/* Image Carousel */}
+            <CarouselContainer>
+              <Slider {...carouselSettings}>
+                {item.images.map((image, index) => (
+                  <CarouselImage key={index}>
+                    <img src={image} alt={`Trip ${index}`} />
+                  </CarouselImage>
+                ))}
+              </Slider>
+
+              {/* Gradient Overlay */}
+              <GradientOverlay>
+                <DeleteIcon
+                  sx={{ color: "white", cursor: "pointer" }}
+                  onClick={() => handleDelete(item._id)}
+                />
+                <StatusBadge status={item.status || "upcoming"}>
+                  {statusConfig[item.status]?.icon}
+                  <span>{statusConfig[item.status]?.text}</span>
+                </StatusBadge>
+              </GradientOverlay>
+            </CarouselContainer>
+
+            {/* Details Section */}
+            <DetailsContainer>
+              <DetailRow>
+                <DetailItem>
+                  <AttachMoneyIcon sx={{ color: "#f1c40f" }} />
+                  <span>{item.budget.toLocaleString()} جنيه</span>
+                </DetailItem>
+                <DetailItem>
+                  <PlaceIcon sx={{ color: "#e74c3c" }} />
+                  <span>{item.locate}</span>
+                </DetailItem>
+              </DetailRow>
+
+              <DetailRow>
+                <DetailItem>
+                  <PeopleIcon sx={{ color: "#4a72ac" }} />
+                  <span>{item.numberOfPersons} أشخاص</span>
+                </DetailItem>
+                <DetailItem>
+                  <CategoryIcon sx={{ color: "#2ecc71" }} />
+                  <span>{item.typeOfProgram}</span>
+                </DetailItem>
+              </DetailRow>
+
+              {/* Timeline */}
+              <TimelineSection>
+                <h3>خط سير الرحلة</h3>
+                {places.map((place, index) => (
+                  <TimelineItem
+                    key={index}
+                    isLast={index === places.length - 1}
+                  >
+                    <TimelineDot />
+                    {index !== places.length - 1 && <TimelineLine />}{" "}
+                    {/* Fix the condition */}
+                    <span>{place}</span>
+                  </TimelineItem>
+                ))}
+              </TimelineSection>
+            </DetailsContainer>
+          </TripCard>
         );
       })}
     </MyMyBox>
