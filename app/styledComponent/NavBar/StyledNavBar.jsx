@@ -379,6 +379,7 @@ export const DarkmodeButton = stf.div`
 `;
 
 export const Menu = styled(MuiMenu)`
+  z-index: 9999 !important; // Ensure menu appears above other elements
   .MuiPaper-root {
     background-color: #fff;
     border: 1px solid #ddd;
