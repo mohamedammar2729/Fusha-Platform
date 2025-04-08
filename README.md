@@ -2,7 +2,6 @@
 
 <p align="center">
   <img width="297" alt="logo" src="https://github.com/user-attachments/assets/ef6b9564-6dcc-45fd-9e53-0cdccfdbbeb4" />
-" alt="Fusha Platform Logo" width="200"/>
   <br>
   <em>Making travel planning simple and enjoyable</em>
 </p>
