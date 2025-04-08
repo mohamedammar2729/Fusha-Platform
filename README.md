@@ -1,691 +1,348 @@
-# Fasaha Project - Low-Level Design Documentation
+# Fusha Platform (فسحة)
 
-## Table of Contents
-1. [Introduction](#introduction)
-2. [System Architecture](#system-architecture)
-3. [Frontend Architecture](#frontend-architecture)
-4. [Backend Architecture](#backend-architecture)
-5. [Database Design](#database-design)
-6. [Authentication and Authorization](#authentication-and-authorization)
-7. [Feature Modules](#feature-modules)
-8. [UI/UX Design](#uiux-design)
-9. [State Management](#state-management)
-10. [Third-Party Integrations](#third-party-integrations)
-11. [API Endpoints](#api-endpoints)
-12. [Future Enhancements](#future-enhancements)
+<p align="center">
+  <img src="https://i.ibb.co/placeholder-image/fusha-logo.png" alt="Fusha Platform Logo" width="200"/>
+  <br>
+  <em>Making travel planning simple and enjoyable</em>
+</p>
 
-## Introduction
+## 🌟 Overview
 
-### Project Overview
-Fasaha is a comprehensive travel planning platform that serves two primary user types:
-- **Regular Users**: Can discover places, create trips, and plan their travel itineraries
-- **Sellers**: Can register their places (restaurants, hotels, tourist attractions, etc.) and access analytics about user engagement
+Fusha Platform (فسحة) is a comprehensive trip planning application designed to simplify the process of creating personalized travel experiences. Users can easily design their perfect outing by selecting locations, setting budgets, defining the number of travelers, and choosing from various activity types - all in a user-friendly Arabic interface.
 
-The application facilitates trip planning by allowing users to select places to visit and organize them into personalized itineraries. Sellers benefit from increased visibility and access to user engagement data.
+<p align="center">
+  <a href="https://fusha-platform.vercel.app">🔗 Live Demo</a> •
+  <a href="#installation">⚙️ Installation</a> •
+  <a href="#features">✨ Features</a> •
+  <a href="#technical-architecture">🏗️ Architecture</a>
+</p>
 
-### Technology Stack
-- **Frontend**: Next.js, React.js, Material-UI, Styled-Components, Framer Motion
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB (with Mongoose ODM)
-- **Authentication**: JWT (JSON Web Tokens)
-- **State Management**: React Context and local state
-- **Styling**: CSS-in-JS (Styled Components), Material-UI theming
-- **Animations**: Framer Motion for UI animations
+## ✨ Features
 
-## System Architecture
+### For Travelers
+- **Personalized Trip Creation**: Build your own trip with customizable parameters
+- **Trip Type Selection**: Choose from various trip types (cultural, recreational, family, romantic, marine, touristic, adventure, religious)
+- **Budget Management**: Plan trips according to your specific budget
+- **Location-based Planning**: Explore options in different Egyptian destinations
+- **Place Selection**: Add specific attractions and activities to your itinerary
+- **Ready-made Programs**: Browse curated trip suggestions
+- **Trip History**: View and manage your past and upcoming trips
+- **Bookmarking**: Save favorite destinations and programs for later
+- **Rating System**: Rate and review places you've visited
 
-### High-Level Architecture
+### For Sellers/Service Providers
+- **Place Listing**: Add your services or attraction to the platform
+- **Customer Engagement**: Connect with potential customers
+- **Analytics Dashboard**: Track visitor interest and engagement
 
-The system follows a client-server architecture with the following components:
+## 🛠️ Technology Stack
 
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│                 │     │                 │     │                 │
-│  Client (Next.js)│<───>│ Server (Express)│<───>│ MongoDB Database│
-│                 │     │                 │     │                 │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-```
+### Frontend
+- **Next.js 15**: React framework with App Router for server components
+- **React 19**: UI library for building component-based interfaces
+- **Material UI 6**: Modern React UI framework with customized theming
+- **Styled Components**: CSS-in-JS styling with animations and responsive design
+- **Framer Motion**: Animation library for smooth transitions
+- **Axios**: HTTP client for API requests with interceptors for token handling
+- **React Slick/Swiper**: Carousel components for image galleries
+- **JWT Decode**: Client-side token validation
 
-1. **Client (Next.js application)**:
-   - Provides the user interface for both regular users and sellers
-   - Handles client-side routing and rendering
-   - Manages UI state and interactions
-   - Different views based on user type (regular vs. seller)
+### Backend
+- **Node.js**: JavaScript runtime for server-side code
+- **Express**: Web application framework for Node.js with route handling
+- **MongoDB**: NoSQL database for data storage with Atlas cloud hosting
+- **Mongoose**: MongoDB object modeling with schema validation
+- **JWT**: Authentication using JSON Web Tokens with refresh token rotation
+- **bcrypt**: Password hashing library for secure credential storage
+- **AJV**: JSON schema validation for request payloads
+- **dotenv**: Environment variable management
 
-2. **Server (Express.js)**:
-   - Processes API requests from the client
-   - Handles authentication and authorization
-   - Communicates with the database for CRUD operations
-   - Implements business logic for trip creation, place registration, etc.
-
-3. **Database (MongoDB)**:
-   - Stores user data, places, trips, reviews, etc.
-   - Connected via Mongoose ODM for schema validation and querying
-
-## Frontend Architecture
-
-### Component Structure
-
-The frontend follows a modular component-based architecture with the following key categories:
-
-1. **Core Components**:
-   - `NavBar.jsx` and `NavBarV2.jsx`: Navigation bars for regular users and sellers respectively
-   - `Layout.js`: Main layout component with theme handling and appropriate navigation based on user type
-   
-2. **User Journey Components**:
-   - `Register.jsx`: User registration process with multi-step form
-   - `LogIn.jsx`: Authentication component
-   - `TripType.jsx`: Trip category selection 
-   - `Create.jsx`: Trip creation flow
-   - `Program.jsx`: View for building travel programs
-   - `FinalProgram.jsx`: Final view of the created trip
-   
-3. **Seller-specific Components**:
-   - `AddPlace.jsx`: Multi-step form for registering a new place
-   - `Review.jsx`: Review management and analytics
-   - `HomeV2.jsx`: Seller-focused homepage
-   
-4. **Home Components**:
-   - `Home.jsx`: Regular user homepage
-   - Various subcomponents in the HomeV2 folder for seller dashboard
-   
-5. **Shared/Utility Components**:
-   - `Card.jsx`: Reusable card component for displaying information
-   - `AutoCloseSelect.jsx`: Select component with auto-close behavior
-   - `SuccessCard.jsx`: Component for displaying success messages
-
-### Component Hierarchy
+## 🏗️ Technical Architecture
 
 ```
-App
-├── ThemeProvider
-│   └── Layout
-│       ├── NavBar/NavBarV2 (based on user type)
-│       └── Page content
-│           ├── Home/HomeV2 (based on user type)
-│           ├── Register
-│           ├── LogIn
-│           ├── Create
-│           ├── Program
-│           ├── FinalProgram
-│           ├── AddPlace
-│           ├── Review
-│           └── ...
+┌─────────────────┐       ┌─────────────────┐      ┌─────────────────┐
+│                 │       │                 │      │                 │
+│  Next.js Client │◄─────►│  Express Server │◄────►│  MongoDB Atlas  │
+│  (React App)    │  API  │  (Node.js)      │  ODM │  (Database)     │
+│                 │       │                 │      │                 │
+└─────────────────┘       └─────────────────┘      └─────────────────┘
 ```
-
-### Routing Structure
-
-The application uses Next.js routing with the following key routes:
-
-- `/`: Homepage (different view for regular users vs. sellers)
-- `/register`: User registration
-- `/login`: Authentication
-- `/create`: Trip creation flow
-- `/program`: Program view
-- `/finalprogram`: Final program view
-- `/addplace`: Place registration (sellers only)
-- `/review`: Review management (sellers only)
-- `/profile`: User profile
-- `/contact`: Contact page
-
-### Styling Approach
-
-The application uses a combination of styling approaches:
-
-1. **Styled Components**: For complex styled elements with dynamic properties
-```jsx
-const HeaderTitle = styled.h2`
-  color: ${(props) => props.themeColors.text};
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-`;
-```
-
-2. **Material-UI**: For consistent UI components with theme support
-```jsx
-<Typography 
-  variant="h5" 
-  sx={{ 
-    color: darkMode ? theme.colors.primary : theme.colors.text,
-    fontWeight: 600 
-  }}
->
-  إنشاء حساب جديد
-</Typography>
-```
-
-3. **Theme Support**: Context-based theming with light and dark modes
-```jsx
-const { darkMode, theme } = useTheme();
-```
-
-## Backend Architecture
-
-### Server Structure
-
-The backend follows an Express.js structure with:
-
-1. **Main Application Entry**: `app.js`
-   - Sets up Express server
-   - Configures middleware
-   - Connects to MongoDB
-   - Defines API routes
-
-2. **Routes**:
-   - `user.js`: User management
-   - `login.js`: Authentication
-   - `places.js`: Places management
-   - `readyprogram.js`: Pre-defined travel programs
-   - `createprogram.js`: User-created travel programs
-   - `home.js`: Homepage data
-   - `avatar.js`: User profile images
-
-3. **Models**:
-   - `userModel.js`: User schema and methods
-   - `placesModel.js`: Places schema
-   - `createprogramModel.js`: User programs schema
-   - `readyprogramModel.js`: Pre-defined programs schema
-   - `homeModel.js`: Homepage data schema
-   - `avatarModel.js`: Avatar data schema
-
-4. **Middleware**:
-   - `createprogramValidatorMW.js`: Validates travel program creation requests
-   - `loginValidatorMW.js`: Validates login requests
-   - `UserValidatorMW.js`: Validates user registration requests
-
-5. **Utilities**:
-   - `loginValidator.js`: Schema validation for login
-   - `usersValidator.js`: Schema validation for user registration
-
-### Middleware Chain
-
-```
-┌─────────────┐    ┌─────────────┐    ┌───────────────┐    ┌───────────┐
-│ Express.json│───>│CORS Handling│───>│Route-specific │───>│ Controller│
-│ Middleware  │    │ Middleware  │    │ Middleware    │    │ Functions │
-└─────────────┘    └─────────────┘    └───────────────┘    └───────────┘
-```
-
-## Database Design
-
-### Data Models
-
-1. **User Model**:
-```javascript
-const userSchema = new mongoose.Schema({
-  firstname: { type: String, required: true, minlength: 3, maxlength: 20 },
-  lastname: { type: String, required: true, minlength: 3, maxlength: 20 },
-  city: { type: String, required: true },
-  email: { 
-    type: String, 
-    required: true, 
-    unique: true,
-    validate: { validator: function (value) {}, message: "email is not valid" }
-  },
-  password: { type: String, required: true, minlength: 8 },
-  userType: { type: String, required: true, enum: ["user", "seller"] },
-  profileImage: { type: String },
-  refershToken: { type: String }
-});
-```
-
-2. **Places Model**:
-```javascript
-const tripPlacesSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  description: { type: String, required: true },
-  price: { type: String, required: true },
-  rate: { type: Number, required: true },
-  image: { src: String },
-  category: { type: String, required: true }
-});
-```
-
-3. **Create Program Model**:
-```javascript
-const createProgramSchema = new mongoose.Schema({
-  numberOfPersons: { type: Number, required: true },
-  locate: { type: String, required: true },
-  budget: { type: Number, required: true },
-  typeOfProgram: { type: String, required: true },
-  selectedTripPlaces: { type: Array, required: true },
-  images: { type: Array, required: true },
-  register_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
-});
-```
-
-4. **Ready Program Model**:
-```javascript
-const readyProgramSchema = new mongoose.Schema({
-  type_trip: { type: String, required: true },
-  person_num: { type: Number, required: true },
-  budget: { type: Number, required: true },
-  location: { type: String, required: true },
-  images: {
-    src1: String,
-    src2: String,
-    src3: String,
-    src4: String
-  }
-});
-```
-
-### Database Relationships
-
-```
-User (1) ──────┐
-               │
-               ▼
-       CreateProgram (N)
-
-Seller (1) ────┐
-               │
-               ▼
-        Places (N)
-```
-
-- One user can create multiple programs
-- One seller can register multiple places
-- Programs can include multiple places
-
-## Authentication and Authorization
 
 ### Authentication Flow
-
-1. **Registration**:
-   - User submits registration form with personal details and user type (user or seller)
-   - Backend validates the input data
-   - Password is hashed with bcrypt
-   - User is saved to the database
-   - JWT token is generated and returned to the client
-   - A refresh token is also generated and stored
-
-2. **Login**:
-   - User submits email and password
-   - Backend validates credentials
-   - If valid, JWT access token and refresh token are issued
-   - Access token is sent in response
-   - Refresh token is set as an HTTP-only cookie
-
-3. **Token Refresh**:
-   - When access token expires, client requests a new token using the refresh token
-   - Server validates the refresh token and issues a new access token
-   - The user remains authenticated without re-login
-
-### Authorization
-
-Authorization is implemented using JWT middleware that verifies tokens and extracts user information:
-
-```javascript
-const authHeader = req.headers["authorization"];
-const token = authHeader && authHeader.split(" ")[1];
-
-if (!token) {
-  return res.status(403).json({ error: "Access denied" });
-}
-
-try {
-  const verified = jwt.verify(token, process.env.JWT_SECRET);
-  req.user = verified;
-  next();
-} catch (err) {
-  res.status(400).json({ error: "Invalid token" });
-}
+```
+1. User Login → 2. Server validates credentials → 3. JWT issued (access + refresh)
+4. Client stores tokens → 5. Access token used for requests → 6. Token refresh when expired
 ```
 
-## Feature Modules
+## 📁 Project Structure
 
-### User Registration and Profile Management
-
-1. **Multi-step Registration Process**:
-   - Basic information collection (name, location)
-   - Account setup (email, password)
-   - User type selection (regular user or seller)
-   - Profile image upload (optional)
-
-2. **Profile Management**:
-   - View and edit personal details
-   - Change profile picture
-   - View saved trips (for regular users)
-   - View registered places (for sellers)
-
-### Trip Planning (Regular Users)
-
-1. **Trip Creation Flow**:
-   - Specify number of people, destination, budget
-   - Select trip type (family, adventure, cultural, etc.)
-   - Browse and select places to visit
-   - Review and finalize trip itinerary
-
-2. **Trip Management**:
-   - Save trips to profile
-   - Print trip details
-   - Share trips with others
-   - Edit or delete saved trips
-
-### Place Registration (Sellers)
-
-1. **Place Registration Flow**:
-   - Basic information (name, category, description)
-   - Location and contact details
-   - Operating hours and features
-   - Image uploads
-   - Pricing information
-   - Final review and submission
-
-2. **Place Management**:
-   - Review and edit registered places
-   - Monitor place performance
-   - Respond to user reviews
-   - Add promotions or special offers
-
-### Review and Rating System
-
-1. **User Reviews**:
-   - Rate and review visited places
-   - Upload photos with reviews
-   - Like or interact with other reviews
-
-2. **Seller Response**:
-   - View reviews for their places
-   - Respond to customer feedback
-   - Analytics on review sentiment and trends
-
-## UI/UX Design
-
-### Theme System
-
-The application implements a comprehensive theming system with light and dark modes:
-
-```javascript
-// Theme Context
-export const ThemeContext = createContext({
-  darkMode: false,
-  toggleTheme: () => {},
-  theme: {
-    colors: {
-      primary: "#3b5898",
-      secondary: "#4b72ad",
-      accent: "#fec20f",
-      // Additional color definitions
-    }
-  }
-});
+```
+fusha-platform/
+├── app/                    # Next.js application directory
+│   ├── Components/         # React components (NavBar, Cards, etc.)
+│   ├── styledComponent/    # Styled components organized by feature
+│   │   ├── Home/           # Home page styles
+│   │   ├── NavBar/         # Navigation styles
+│   │   ├── Program/        # Trip program styles
+│   │   └── ...             # Other component styles
+│   ├── contact/            # Contact page
+│   ├── create/             # Trip creation pages
+│   ├── home/               # Home page
+│   ├── login/              # Authentication pages
+│   ├── profile/            # User profile pages
+│   ├── program/            # Program selection pages
+│   ├── register/           # User registration page
+│   ├── globals.css         # Global styles
+│   ├── layout.js           # Root layout with providers
+│   └── page.js             # Main entry point
+├── public/                 # Static assets
+│   ├── images/             # Image assets
+│   └── icons/              # Icon assets
+└── server/                 # Backend Node.js server
+    ├── models/             # Mongoose data models
+    │   ├── userModel.js    # User schema and model
+    │   ├── placesModel.js  # Places schema and model
+    │   └── ...             # Other data models
+    ├── routes/             # API route handlers
+    │   ├── user.js         # User registration endpoints
+    │   ├── login.js        # Authentication endpoints
+    │   └── ...             # Other route handlers
+    ├── middlewares/        # Express middlewares
+    │   ├── UserValidatorMW.js   # Request validation
+    │   └── ...             # Other middlewares
+    ├── util/               # Utility functions
+    │   ├── usersValidator.js    # Schema validation
+    │   └── ...             # Other utilities
+    ├── helpers/            # Helper functions
+    │   └── generate_Keys.js      # Security key generation
+    ├── app.js              # Express application setup
+    └── package.json        # Backend dependencies
 ```
 
-### Animation System
+## 🚀 Key Workflow
 
-The application uses Framer Motion for animations:
+1. **User Registration**: Users create an account with personal details
+2. **Trip Creation**:
+   - Set number of people
+   - Define budget
+   - Select location
+   - Choose trip type (cultural, adventure, etc.)
+   - Select places and activities
+3. **Program Customization**: Add specific attractions to the itinerary
+4. **Review & Save**: Review the complete trip plan and save it
+5. **Trip Management**: View past trips, upcoming trips, and share trips with others
 
-```jsx
-// Animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      when: "beforeChildren",
-      staggerChildren: 0.1,
-      duration: 0.5,
-    }
-  }
-};
+## 📱 User Interface
 
-// Implementation
-<motion.div
-  variants={containerVariants}
-  initial="hidden"
-  animate="visible"
->
-  {children}
-</motion.div>
+The application features a responsive, mobile-friendly interface with:
+- RTL (Right-to-Left) layout for Arabic language support
+- Intuitive navigation system with hamburger menu on mobile
+- Interactive elements with smooth animations and transitions
+- Modern card-based design for trip and place selection
+- Step-by-step trip creation process with progress indicators
+- Skeleton loading states for improved perceived performance
+- Toast notifications for user feedback
+
+<p align="center">
+  <img src="https://i.ibb.co/placeholder-image/fusha-mobile.png" alt="Mobile Interface" width="300"/>
+</p>
+
+## 🔒 Authentication System
+
+- JWT-based authentication with refresh token mechanism
+- HTTP-only cookies for secure token storage
+- Protected routes requiring authentication
+- User profile management with secure password updates
+- Secure password handling with bcrypt and salt rounds
+- Token expiration and automatic refresh
+- Session timeout handling
+
+## 🔌 API Endpoints
+
+The platform's backend provides the following key API endpoints:
+
 ```
+# Authentication
+POST   /api/user             # User registration
+POST   /api/login            # User authentication
+GET    /api/refresh-token    # Refresh access token
+POST   /api/logout           # User logout
+
+# Programs
+GET    /api/readyprogram     # List pre-made trip programs
+POST   /api/createprogram    # Save custom trip programs
+GET    /api/trips            # Get user's saved trips
+DELETE /api/trips/:id        # Delete a saved trip
+
+# Places
+GET    /api/places           # Get available places and attractions
+POST   /api/places           # Add a new place (for sellers)
+
+# User
+GET    /api/profile          # Get user profile
+PUT    /api/profile          # Update user profile
+
+# Content
+GET    /api/home             # Get homepage categories
+GET    /api/avatar           # Get user testimonials
+```
+
+## ⚡ Performance Optimizations
+
+- **Server Components**: Utilizing Next.js App Router for improved initial load time
+- **Image Optimization**: Next.js built-in image optimization for faster loading
+- **Code Splitting**: Automatic code splitting for smaller bundles
+- **Lazy Loading**: Components loaded only when needed
+- **Memoization**: React.memo for preventing unnecessary re-renders
+- **Skeleton Loading**: UI placeholders during data fetching
+- **Tree Shaking**: Elimination of unused code in production builds
+
+## 🏃‍♂️ Getting Started
+
+### Prerequisites
+- Node.js (v18 or later)
+- MongoDB instance (local or Atlas)
+- npm or yarn package manager
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/fusha-platform.git
+   cd fusha-platform
+   ```
+
+2. **Install frontend dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Install backend dependencies**
+   ```bash
+   cd ../iti-server
+   npm install
+   ```
+
+4. **Set up environment variables**
+   Create a `.env` file in the server directory with:
+   ```
+   # Database Connection
+   MONGO_URI=your_mongodb_connection_string
+   
+   # Authentication
+   JWT_SECRET=your_jwt_secret_key
+   JWT_REFERSH_SECRET=your_jwt_refresh_secret
+   JWT_EXPIRY=1h
+   JWT_REFRESH_EXPIRY=7d
+   
+   # Server Configuration
+   PORT=4000
+   NODE_ENV=development
+   
+   # Additional Settings
+   CORS_ORIGIN=http://localhost:3000
+   ```
+
+5. **Start the development servers**
+   
+   Frontend:
+   ```bash
+   npm run dev
+   ```
+   
+   Backend:
+   ```bash
+   npm start
+   ```
+
+6. **Access the application**
+   Open your browser and navigate to:
+   ```
+   http://localhost:3000
+   ```
+
+## 🌐 Deployment
+
+### Frontend Deployment
+The Next.js frontend is optimized for deployment on Vercel:
+1. Connect your GitHub repository to Vercel
+2. Configure environment variables
+3. Deploy with a single click
+
+### Backend Deployment
+The Express backend can be deployed to:
+- **Railway**: Easy deployment with GitHub integration
+- **Heroku**: Set up with Procfile and environment variables
+- **Digital Ocean**: Using App Platform or Droplets
+- **AWS**: Using Elastic Beanstalk or EC2
+
+## 🧪 Testing
+
+```bash
+# Run frontend tests
+npm test
+
+# Run backend tests
+cd ../iti-server
+npm test
+```
+
+## 💡 Key Features Implementation
+
+### Trip Creation Flow
+The trip creation process is implemented with a multi-step form using state management:
+1. Initial details (people, budget, location)
+2. Trip type selection with visual indicators
+3. Activity/place selection with filtering
+4. Review and save with summary view
+
+### Dynamic Place Selection
+Places are filtered based on location and trip type selection, using MongoDB aggregation pipelines to deliver relevant results to users.
 
 ### Responsive Design
+The application uses CSS Grid, Flexbox and Media Queries to provide an optimal experience on:
+- Mobile phones (portrait and landscape)
+- Tablets
+- Desktops and large screens
 
-The application implements responsive design with Material-UI breakpoints:
+## 🔮 Roadmap
 
-```jsx
-const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
+- [ ] **Mobile App**: Native mobile application using React Native
+- [ ] **AI Trip Suggestions**: Machine learning for personalized recommendations
+- [ ] **Social Features**: Share trips with friends and family
+- [ ] **Payment Integration**: Book and pay for activities directly
+- [ ] **Offline Support**: PWA capabilities for offline access
+- [ ] **Multi-language Support**: Add English language option
 
-// Conditional rendering based on screen size
-<Box
-  sx={{
-    display: "grid",
-    gridTemplateColumns: {
-      xs: "1fr",
-      sm: "repeat(2, 1fr)",
-      lg: "repeat(4, 1fr)"
-    },
-    gap: 4
-  }}
->
-  {content}
-</Box>
-```
+## 🤝 Contributing
 
-## State Management
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-### Local State
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-Component-level state management using React's `useState` hook:
+## 👨‍💻 Contributors
 
-```jsx
-const [formData, setFormData] = useState({
-  name: "",
-  description: "",
-  category: "",
-  // Additional fields
-});
-```
+<a href="https://github.com/yourusername">
+  <img src="https://github.com/yourusername.png" width="50px" alt="Developer" style="border-radius: 50%;" />
+</a>
 
-### Context API
+## 🙏 Acknowledgements
 
-Global state management with React Context:
+- Material UI for the component library
+- Next.js team for the React framework
+- MongoDB Atlas for database services
+- All contributors and testers of the Fusha Platform
 
-```jsx
-// Theme context provider
-export function ThemeProvider({ children }) {
-  const [darkMode, setDarkMode] = useState(false);
-  
-  const toggleTheme = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.setAttribute("data-theme", !darkMode ? "dark" : "light");
-  };
-  
-  // Define the theme object based on dark mode state
-  const theme = {
-    colors: darkMode ? darkTheme : lightTheme
-  };
-  
-  return (
-    <ThemeContext.Provider value={{ darkMode, toggleTheme, theme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-}
-```
+## 📄 License
 
-### Persisted State
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-State persistence using `localStorage`:
+---
 
-```javascript
-// Save user data to localStorage
-localStorage.setItem(
-  "user",
-  JSON.stringify({
-    ...response.data.user,
-    userType: userType.isSeller ? "seller" : "user",
-  })
-);
-
-// Retrieve data from localStorage
-const userData = localStorage.getItem("user");
-if (userData) {
-  try {
-    const parsedUser = JSON.parse(userData);
-    setUserType(parsedUser.userType || "user");
-  } catch (error) {
-    console.error("Error parsing user data:", error);
-    setUserType("user");
-  }
-}
-```
-
-## Third-Party Integrations
-
-### Material-UI
-
-The application extensively uses Material-UI components:
-
-```jsx
-<Grid container spacing={3}>
-  <Grid item xs={12} md={6}>
-    <TextField
-      fullWidth
-      label="اسم المكان"
-      name="name"
-      value={formData.name}
-      onChange={handleChange}
-      error={!!errors.name}
-      helperText={errors.name}
-      required
-    />
-  </Grid>
-  <Grid item xs={12} md={6}>
-    <FormControl fullWidth error={!!errors.category} required>
-      <InputLabel>الفئة</InputLabel>
-      <Select
-        name="category"
-        value={formData.category}
-        onChange={handleChange}
-      >
-        {placeCategories.map((category) => (
-          <MenuItem key={category.id} value={category.value}>
-            {category.label}
-          </MenuItem>
-        ))}
-      </Select>
-      {errors.category && (
-        <FormHelperText>{errors.category}</FormHelperText>
-      )}
-    </FormControl>
-  </Grid>
-</Grid>
-```
-
-### Styled Components
-
-Used for advanced styling with dynamic properties:
-
-```jsx
-const ProgramHeader = styled.div`
-  text-align: center;
-  margin-bottom: 40px;
-  background: ${(props) =>
-    props.darkMode
-      ? `linear-gradient(135deg, ${props.theme.colors.surface}, ${props.theme.colors.primary})`
-      : `linear-gradient(135deg, ${props.theme.colors.primary}, ${props.theme.colors.primary})`};
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: ${(props) =>
-    props.darkMode
-      ? "0 10px 30px rgba(0, 0, 0, 0.3)"
-      : "0 10px 30px rgba(59, 88, 152, 0.2)"};
-  transition: background 0.3s ease, box-shadow 0.3s ease;
-
-  h1 {
-    font-size: 2.4rem;
-    margin: 0;
-    margin-bottom: 10px;
-  }
-
-  @media (max-width: 768px) {
-    padding: 24px;
-    margin-bottom: 30px;
-    border-radius: 16px;
-
-    h1 {
-      font-size: 1.8rem;
-    }
-  }
-`;
-```
-
-### Framer Motion
-
-Used for animations throughout the application:
-
-```jsx
-<motion.div
-  initial={{ opacity: 0, y: 20 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.6, delay: 0.2 }}
-  viewport={{ once: true }}
->
-  <Typography
-    variant="body1"
-    sx={{
-      fontSize: { xs: "1.1rem", md: "1.25rem" },
-      color: theme.colors.textSecondary,
-      textAlign: "center",
-      maxWidth: 800,
-      mx: "auto",
-      mb: 8
-    }}
-  >
-    {contentText}
-  </Typography>
-</motion.div>
-```
-
-## API Endpoints
-
-### User Management
-
-- `POST /api/user`: Register a new user
-- `GET /api/user/:id`: Get user by ID
-- `PUT /api/user/:id`: Update user information
-
-### Authentication
-
-- `POST /api/login`: User login
-- `GET /api/refereshtoken`: Refresh JWT token
-
-### Trip Management
-
-- `POST /api/createprogram`: Create a new trip program
-- `GET /api/createprogram`: Get all trip programs for the authenticated user
-- `GET /api/createprogram/:id`: Get a specific trip program
-- `DELETE /api/createprogram/:id`: Delete a trip program
-
-### Places Management
-
-- `GET /api/places`: Get all places
-- `GET /api/readyprogram`: Get all ready-made trip programs
-- `GET /api/home`: Get homepage data
-- `POST /api/home`: Create homepage data
-
-## Future Enhancements
-
-Potential improvements for the Fasaha application:
-
-1. **Real-time notifications**: Implement WebSockets for instant notifications about new reviews, bookings, etc.
-
-2. **Advanced analytics for sellers**: Enhance the dashboard with more detailed analytics about visitor demographics, peak times, etc.
-
-3. **Social features**: Allow users to follow each other, share trips, and comment on shared trips.
-
-4. **Mobile application**: Develop mobile versions of the platform for both Android and iOS.
-
-5. **AI-powered recommendations**: Implement AI algorithms to suggest places based on user preferences and past activities.
-
-6. **Multi-language support**: Add support for additional languages beyond Arabic to reach a broader audience.
-
-7. **Booking integration**: Allow direct booking of hotels, restaurants, and activities through the platform.
-
-8. **Payment gateway**: Integrate payment solutions for premium seller accounts and possibly commission-based bookings.
-
-The Fasaha application demonstrates a comprehensive architecture that effectively serves both regular users and sellers with a rich feature set, responsive design, and seamless user experience.
+<p align="center">
+  Made with ❤️ by the Fusha Platform Team
+</p>
