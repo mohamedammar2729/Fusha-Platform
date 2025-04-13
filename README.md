@@ -324,11 +324,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 👨‍💻 Contributors
+## 👨‍💻 Updates
 
-<a href="https://github.com/yourusername">
-  <img src="https://github.com/yourusername.png" width="50px" alt="Developer" style="border-radius: 50%;" />
-</a>
+<p align="center">
+ Version 2.0 comming soon with big features and improvements
+</p>
 
 ## 🙏 Acknowledgements
 
@@ -338,10 +338,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - All contributors and testers of the Fusha Platform
 
 ## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
 
 <p align="center">
   Made with ❤️ by the Fusha Platform Team
