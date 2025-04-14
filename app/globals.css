@@ -436,3 +436,14 @@ html {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px var(--shadow-color);
 }
+
+@media (max-width: 414px) {
+  body {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  .ProfileContainer {
+    transform: scale(0.98);
+  }
+}
