@@ -28,7 +28,7 @@ import {
   Container,
 } from "@mui/material";
 import { useTheme } from "../../../context/ThemeContext";
-import AdminLayout from "../../../components/admin/AdminLayout";
+import AdminLayout from "../../../Components/admin/AdminLayout";
 import { motion } from "framer-motion";
 
 // Icons
