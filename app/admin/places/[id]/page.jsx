@@ -24,8 +24,8 @@ import {
   Tab,
   Tooltip,
 } from "@mui/material";
-import { useTheme } from "../../context/ThemeContext";
-import SellerLayout from "../../Components/admin/AdminLayout";
+import { useTheme } from "../../../context/ThemeContext";
+import SellerLayout from "../../../Components/admin/AdminLayout";
 
 // Icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
