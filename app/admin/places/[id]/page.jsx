@@ -9,11 +9,6 @@ import {
   Grid,
   Button,
   Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
   CircularProgress,
   Divider,
   IconButton,
@@ -24,18 +19,18 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Tooltip,
   Container,
+  Tabs,
+  Tab,
+  Tooltip,
 } from "@mui/material";
-import { useTheme } from "../../../context/ThemeContext";
-import AdminLayout from "../../../Components/admin/AdminLayout";
-import { motion } from "framer-motion";
+import { useTheme } from "../../context/ThemeContext";
+import SellerLayout from "../../Components/admin/AdminLayout";
 
 // Icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import PersonIcon from "@mui/icons-material/Person";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
 import LanguageIcon from "@mui/icons-material/Language";
@@ -45,28 +40,25 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import HistoryIcon from "@mui/icons-material/History";
-import LocalParkingIcon from "@mui/icons-material/LocalParking";
-import AccessibleIcon from "@mui/icons-material/Accessible";
-import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import StarIcon from "@mui/icons-material/Star";
+import PeopleIcon from "@mui/icons-material/People";
+import BarChartIcon from "@mui/icons-material/BarChart";
 
-// Add this function near the top of the file, before the PlaceDetails component
-
-const PlaceDetails = () => {
-  const { theme } = useTheme(); // Only get theme from context
+const PlaceDetail = () => {
+  const { theme } = useTheme();
   const router = useRouter();
   const params = useParams();
   const placeId = params.id;
 
   // State variables
   const [place, setPlace] = useState(null);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
-  const [rejectionReason, setRejectionReason] = useState("");
-  const [actionLoading, setActionLoading] = useState(false);
-  const [seller, setSeller] = useState(null);
-  const [actionSuccess, setActionSuccess] = useState(null);
+  const [activeTab, setActiveTab] = useState(0);
 
   // Fetch place details on component mount
   useEffect(() => {
@@ -79,7 +71,7 @@ const PlaceDetails = () => {
         }
 
         const response = await axios.get(
-          `https://iti-server-production.up.railway.app/api/admin/places/${placeId}`,
+          `https://iti-server-production.up.railway.app/api/seller-places/my-places/${placeId}/details`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -88,9 +80,18 @@ const PlaceDetails = () => {
         );
 
         setPlace(response.data);
-        if (response.data.seller_id) {
-          setSeller(response.data.seller_id);
-        }
+
+        // Fetch statistics
+        const statsResponse = await axios.get(
+          `https://iti-server-production.up.railway.app/api/seller-places/my-places/${placeId}/statistics`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setStats(statsResponse.data);
       } catch (error) {
         console.error("Error fetching place details:", error);
         setError("فشل في تحميل بيانات المكان. يرجى المحاولة مرة أخرى.");
@@ -138,94 +139,14 @@ const PlaceDetails = () => {
     return categories[category] || category;
   };
 
-  // Handle approve action
-  const handleApprove = async () => {
-    try {
-      setActionLoading(true);
-      const token = localStorage.getItem("token");
-
-      await axios.put(
-        `https://iti-server-production.up.railway.app/api/admin/places/${placeId}/approve`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      // Update the place status in the state
-      setPlace((prevPlace) => ({
-        ...prevPlace,
-        isApproved: true,
-        rejectionReason: null,
-      }));
-
-      setActionSuccess("تمت الموافقة على المكان بنجاح");
-
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setActionSuccess(null);
-      }, 3000);
-    } catch (error) {
-      console.error("Error approving place:", error);
-      setError("فشل في الموافقة على المكان. يرجى المحاولة مرة أخرى.");
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  // Handle reject action
-  const handleReject = async () => {
-    if (!rejectionReason.trim()) {
-      return;
-    }
-
-    try {
-      setActionLoading(true);
-      const token = localStorage.getItem("token");
-
-      await axios.put(
-        `https://iti-server-production.up.railway.app/api/admin/places/${placeId}/reject`,
-        { rejectionReason },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      // Update the place in the state
-      setPlace((prevPlace) => ({
-        ...prevPlace,
-        isApproved: false,
-        rejectionReason,
-      }));
-
-      setRejectDialogOpen(false);
-      setRejectionReason("");
-      setActionSuccess("تم رفض المكان بنجاح");
-
-      setTimeout(() => {
-        setActionSuccess(null);
-      }, 3000);
-    } catch (error) {
-      console.error("Error rejecting place:", error);
-      setError("فشل في رفض المكان. يرجى المحاولة مرة أخرى.");
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  // Open reject dialog
-  const openRejectDialog = () => {
-    setRejectionReason(place.rejectionReason || "");
-    setRejectDialogOpen(true);
+  // Handle tab change
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
   };
 
   if (loading) {
     return (
-      <AdminLayout>
+      <SellerLayout>
         <Box
           sx={{
             display: "flex",
@@ -237,79 +158,37 @@ const PlaceDetails = () => {
         >
           <CircularProgress sx={{ color: theme.colors.primary }} />
         </Box>
-      </AdminLayout>
+      </SellerLayout>
     );
   }
 
   if (error) {
     return (
-      <AdminLayout>
-        <Paper
-          sx={{
-            p: 3,
-            textAlign: "center",
-            backgroundColor: theme.colors.surface,
-            color: theme.colors.text,
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="h6" sx={{ color: "#f44336" }}>
-            {error}
-          </Typography>
-          <Button
-            variant="contained"
-            onClick={() => window.location.reload()}
-            sx={{
-              mt: 2,
-              bgcolor: theme.colors.primary,
-              color: "#fff",
-              "&:hover": { bgcolor: theme.colors.accent },
-            }}
-          >
-            إعادة المحاولة
-          </Button>
-        </Paper>
-      </AdminLayout>
+      <SellerLayout>
+        <Box sx={{ p: 3 }}>
+          <Alert severity="error">{error}</Alert>
+        </Box>
+      </SellerLayout>
     );
   }
 
   if (!place) {
     return (
-      <AdminLayout>
-        <Paper
-          sx={{
-            p: 3,
-            textAlign: "center",
-            backgroundColor: theme.colors.surface,
-            color: theme.colors.text,
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="h6">لم يتم العثور على هذا المكان</Typography>
-          <Button
-            variant="contained"
-            onClick={() => router.push("/admin/all-places")}
-            sx={{
-              mt: 2,
-              bgcolor: theme.colors.primary,
-              color: "#fff",
-              "&:hover": { bgcolor: theme.colors.accent },
-            }}
-          >
-            العودة إلى قائمة الأماكن
-          </Button>
-        </Paper>
-      </AdminLayout>
+      <SellerLayout>
+        <Box sx={{ p: 3 }}>
+          <Alert severity="info">لم يتم العثور على المكان المطلوب</Alert>
+        </Box>
+      </SellerLayout>
     );
   }
 
   return (
-    <AdminLayout>
+    <SellerLayout>
       <Container maxWidth="lg">
         <Box sx={{ mb: 3 }}>
           <Button
-            endIcon={<ArrowBackIcon />} // Changed to endIcon for RTL
-            onClick={() => router.back()}
+            endIcon={<ArrowBackIcon />} // For RTL
+            onClick={() => router.push("/seller/places")}
             variant="outlined"
             sx={{
               mb: 2,
@@ -321,808 +200,806 @@ const PlaceDetails = () => {
               },
             }}
           >
-            العودة
+            العودة إلى قائمة الأماكن
           </Button>
-
-          {actionSuccess && (
-            <Alert
-              severity="success"
-              sx={{
-                mb: 2,
-                "& .MuiAlert-icon": { color: "#4caf50" },
-                "& .MuiAlert-message": { color: theme.colors.text },
-                backgroundColor: "rgba(76, 175, 80, 0.1)",
-              }}
-            >
-              {actionSuccess}
-            </Alert>
-          )}
 
           <Paper
             elevation={1}
             sx={{
-              p: 3,
               borderRadius: 2,
               backgroundColor: theme.colors.surface,
               color: theme.colors.text,
               border: `1px solid ${theme.colors.border}`,
+              overflow: "hidden",
             }}
           >
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    gap: 2,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      flexDirection: "row-reverse", // For RTL support
-                    }}
-                  >
-                    <Typography
-                      variant="h4"
-                      component="h1"
-                      fontWeight="bold"
-                      sx={{ color: theme.colors.text, ml: 1 }}
+            <Box sx={{ borderBottom: `1px solid ${theme.colors.border}` }}>
+              <Tabs
+                value={activeTab}
+                onChange={handleTabChange}
+                textColor="inherit"
+                indicatorColor="primary"
+                sx={{
+                  "& .MuiTab-root": { color: theme.colors.textSecondary },
+                  "& .Mui-selected": { color: theme.colors.primary },
+                  "& .MuiTabs-indicator": {
+                    backgroundColor: theme.colors.primary,
+                  },
+                }}
+              >
+                <Tab label="التفاصيل" />
+                <Tab label="الإحصائيات" />
+              </Tabs>
+            </Box>
+
+            {activeTab === 0 ? (
+              <Box sx={{ p: 3 }}>
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        gap: 2,
+                        mb: 3,
+                      }}
                     >
-                      {place.name}
-                    </Typography>
-                    <CategoryIcon sx={{ color: theme.colors.primary }} />
-                  </Box>
-
-                  <Box>
-                    {place.isApproved ? (
-                      <Chip
-                        icon={<CheckCircleIcon />}
-                        label="تمت الموافقة"
-                        sx={{
-                          fontWeight: "bold",
-                          fontSize: "0.9rem",
-                          backgroundColor: "rgba(76, 175, 80, 0.1)",
-                          color: "#4caf50",
-                        }}
-                      />
-                    ) : place.rejectionReason ? (
-                      <Chip
-                        icon={<CancelIcon />}
-                        label="مرفوض"
-                        sx={{
-                          fontWeight: "bold",
-                          fontSize: "0.9rem",
-                          backgroundColor: "rgba(244, 67, 54, 0.1)",
-                          color: "#f44336",
-                        }}
-                      />
-                    ) : (
-                      <Chip
-                        icon={<HistoryIcon />}
-                        label="قيد المراجعة"
-                        sx={{
-                          fontWeight: "bold",
-                          fontSize: "0.9rem",
-                          backgroundColor: "rgba(255, 152, 0, 0.1)",
-                          color: "#ff9800",
-                        }}
-                      />
-                    )}
-                  </Box>
-                </Box>
-              </Grid>
-
-              {/* Images */}
-              <Grid item xs={12} md={6}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    position: "relative",
-                    height: 400,
-                    backgroundColor: "rgba(0,0,0,0.05)", // Subtle background for images
-                    borderRadius: 2,
-                    overflow: "hidden",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    border: `1px solid ${theme.colors.border}`,
-                  }}
-                >
-                  {place.images && place.images.length > 0 ? (
-                    <>
-                      <img
-                        src={place.images[currentImageIndex]}
-                        alt={`${place.name} - صورة ${currentImageIndex + 1}`}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "contain",
-                        }}
-                      />
-                      {place.images.length > 1 && (
-                        <>
-                          <IconButton
-                            sx={{
-                              position: "absolute",
-                              right: 8,
-                              top: "50%",
-                              transform: "translateY(-50%)",
-                              backgroundColor: "rgba(0,0,0,0.5)",
-                              color: "white",
-                              "&:hover": {
-                                backgroundColor: "rgba(0,0,0,0.7)",
-                              },
-                            }}
-                            onClick={handleNextImage}
-                          >
-                            <ArrowForwardIcon />
-                          </IconButton>
-                          <IconButton
-                            sx={{
-                              position: "absolute",
-                              left: 8,
-                              top: "50%",
-                              transform: "translateY(-50%)",
-                              backgroundColor: "rgba(0,0,0,0.5)",
-                              color: "white",
-                              "&:hover": {
-                                backgroundColor: "rgba(0,0,0,0.7)",
-                              },
-                            }}
-                            onClick={handlePreviousImage}
-                          >
-                            <ArrowBackIcon />
-                          </IconButton>
-                          <Box
-                            sx={{
-                              position: "absolute",
-                              bottom: 8,
-                              right: 8,
-                              backgroundColor: "rgba(0,0,0,0.5)",
-                              color: "white",
-                              px: 1,
-                              py: 0.5,
-                              borderRadius: "4px",
-                              fontSize: "0.75rem",
-                            }}
-                          >
-                            {currentImageIndex + 1} / {place.images.length}
-                          </Box>
-                        </>
-                      )}
-                    </>
-                  ) : (
-                    <Typography
-                      variant="body2"
-                      sx={{ color: theme.colors.textSecondary }}
-                    >
-                      لا توجد صور متاحة
-                    </Typography>
-                  )}
-                </Paper>
-
-                {/* Image thumbnails */}
-                {place.images && place.images.length > 1 && (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      mt: 2,
-                      gap: 1,
-                      overflowX: "auto",
-                      pb: 1,
-                    }}
-                  >
-                    {place.images.map((img, idx) => (
                       <Box
-                        key={idx}
-                        onClick={() => setCurrentImageIndex(idx)}
                         sx={{
-                          width: 60,
-                          height: 60,
-                          flexShrink: 0,
-                          borderRadius: "4px",
-                          overflow: "hidden",
-                          cursor: "pointer",
-                          border:
-                            idx === currentImageIndex
-                              ? "2px solid"
-                              : "2px solid transparent",
-                          borderColor:
-                            idx === currentImageIndex
-                              ? theme.colors.primary
-                              : "transparent",
+                          display: "flex",
+                          alignItems: "center",
+                          flexDirection: "row-reverse", // For RTL support
                         }}
                       >
-                        <img
-                          src={img}
-                          alt={`${place.name} - صورة ${idx + 1}`}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
-                        />
+                        <Typography
+                          variant="h4"
+                          component="h1"
+                          fontWeight="bold"
+                          sx={{ color: theme.colors.text, ml: 1 }}
+                        >
+                          {place.name}
+                        </Typography>
+                        <CategoryIcon sx={{ color: theme.colors.primary }} />
                       </Box>
-                    ))}
-                  </Box>
-                )}
 
-                {/* Seller Information */}
-                {seller && (
-                  <Card
-                    sx={{
-                      mt: 3,
-                      borderRadius: 2,
-                      backgroundColor: theme.colors.card,
-                      border: `1px solid ${theme.colors.border}`,
-                    }}
-                  >
-                    <CardContent>
-                      <Typography
-                        variant="h6"
-                        gutterBottom
-                        sx={{ color: theme.colors.text }}
-                      >
-                        معلومات البائع
-                      </Typography>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 2 }}
-                      >
-                        {seller.profileImage ? (
-                          <Box
-                            component="img"
-                            src={seller.profileImage}
-                            alt={`${seller.firstname} ${seller.lastname}`}
+                      <Box sx={{ display: "flex", gap: 1 }}>
+                        {place.isApproved ? (
+                          <Chip
+                            icon={<CheckCircleIcon />}
+                            label="تمت الموافقة"
                             sx={{
-                              width: 50,
-                              height: 50,
-                              borderRadius: "50%",
-                              objectFit: "cover",
+                              fontWeight: "bold",
+                              backgroundColor: "rgba(76, 175, 80, 0.1)",
+                              color: "#4caf50",
+                            }}
+                          />
+                        ) : place.rejectionReason ? (
+                          <Chip
+                            icon={<CancelIcon />}
+                            label="مرفوض"
+                            sx={{
+                              fontWeight: "bold",
+                              backgroundColor: "rgba(244, 67, 54, 0.1)",
+                              color: "#f44336",
                             }}
                           />
                         ) : (
-                          <Box
+                          <Chip
+                            icon={<HistoryIcon />}
+                            label="قيد المراجعة"
                             sx={{
-                              width: 50,
-                              height: 50,
-                              borderRadius: "50%",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              backgroundColor: theme.colors.primary,
-                              color: "#fff",
                               fontWeight: "bold",
-                              fontSize: "1.2rem",
+                              backgroundColor: "rgba(255, 152, 0, 0.1)",
+                              color: "#ff9800",
+                            }}
+                          />
+                        )}
+
+                        <Tooltip title="تعديل المكان">
+                          <IconButton
+                            onClick={() =>
+                              router.push(`/seller/places/${place._id}/edit`)
+                            }
+                            sx={{
+                              color: theme.colors.textSecondary,
+                              border: `1px solid ${theme.colors.border}`,
+                              "&:hover": { color: theme.colors.primary },
                             }}
                           >
-                            {seller.firstname.charAt(0)}
-                            {seller.lastname.charAt(0)}
-                          </Box>
-                        )}
-                        <Box>
-                          <Typography
-                            variant="subtitle1"
-                            fontWeight="bold"
-                            sx={{ color: theme.colors.text }}
-                          >
-                            {seller.firstname} {seller.lastname}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ color: theme.colors.textSecondary }}
-                          >
-                            {seller.email}
-                          </Typography>
-                        </Box>
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
                       </Box>
-                    </CardContent>
-                  </Card>
-                )}
-              </Grid>
+                    </Box>
+                  </Grid>
 
-              {/* Details */}
-              <Grid item xs={12} md={6}>
-                <Box sx={{ mb: 3 }}>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    fontWeight="bold"
-                    sx={{ color: theme.colors.text }}
-                  >
-                    تفاصيل المكان
-                  </Typography>
-
-                  <Box sx={{ mb: 2 }}>
-                    <Chip
-                      icon={<CategoryIcon />}
-                      label={getCategoryLabel(place.category)}
+                  {/* Images */}
+                  <Grid item xs={12} md={6}>
+                    <Paper
+                      elevation={0}
                       sx={{
-                        backgroundColor: "rgba(74, 114, 172, 0.1)",
-                        color: theme.colors.primary,
-                        fontWeight: "bold",
-                        mb: 2,
+                        position: "relative",
+                        height: 400,
+                        backgroundColor: "rgba(0,0,0,0.05)",
+                        borderRadius: 2,
+                        overflow: "hidden",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        border: `1px solid ${theme.colors.border}`,
                       }}
-                    />
-
-                    <Typography
-                      variant="body1"
-                      paragraph
-                      sx={{ color: theme.colors.text }}
                     >
-                      {place.description}
-                    </Typography>
-                  </Box>
-
-                  <Divider sx={{ my: 2, borderColor: theme.colors.border }} />
-
-                  <List dense>
-                    <ListItem>
-                      <ListItemIcon>
-                        <LocationOnIcon sx={{ color: theme.colors.primary }} />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={
-                          <Typography sx={{ color: theme.colors.text }}>
-                            العنوان
-                          </Typography>
-                        }
-                        secondary={
-                          <Typography
-                            sx={{ color: theme.colors.textSecondary }}
-                          >
-                            {`${place.address}، ${place.city}`}
-                          </Typography>
-                        }
-                      />
-                    </ListItem>
-
-                    {place.phone && (
-                      <ListItem>
-                        <ListItemIcon>
-                          <PhoneIcon sx={{ color: theme.colors.primary }} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Typography sx={{ color: theme.colors.text }}>
-                              رقم الهاتف
-                            </Typography>
-                          }
-                          secondary={
-                            <Typography
-                              sx={{ color: theme.colors.textSecondary }}
-                            >
-                              {place.phone}
-                            </Typography>
-                          }
-                        />
-                      </ListItem>
-                    )}
-
-                    {place.email && (
-                      <ListItem>
-                        <ListItemIcon>
-                          <EmailIcon sx={{ color: theme.colors.primary }} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Typography sx={{ color: theme.colors.text }}>
-                              البريد الإلكتروني
-                            </Typography>
-                          }
-                          secondary={
-                            <Typography
-                              sx={{ color: theme.colors.textSecondary }}
-                            >
-                              {place.email}
-                            </Typography>
-                          }
-                        />
-                      </ListItem>
-                    )}
-
-                    {place.website && (
-                      <ListItem>
-                        <ListItemIcon>
-                          <LanguageIcon sx={{ color: theme.colors.primary }} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Typography sx={{ color: theme.colors.text }}>
-                              الموقع الإلكتروني
-                            </Typography>
-                          }
-                          secondary={
-                            <Typography
-                              sx={{ color: theme.colors.textSecondary }}
-                            >
-                              {place.website}
-                            </Typography>
-                          }
-                        />
-                      </ListItem>
-                    )}
-
-                    {place.priceRange && (
-                      <ListItem>
-                        <ListItemIcon>
-                          <AttachMoneyIcon
-                            sx={{ color: theme.colors.primary }}
+                      {place.images && place.images.length > 0 ? (
+                        <>
+                          <img
+                            src={place.images[currentImageIndex]}
+                            alt={`${place.name} - صورة ${
+                              currentImageIndex + 1
+                            }`}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "contain",
+                            }}
                           />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Typography sx={{ color: theme.colors.text }}>
-                              متوسط الأسعار
-                            </Typography>
-                          }
-                          secondary={
-                            <Typography
-                              sx={{ color: theme.colors.textSecondary }}
-                            >
-                              {place.priceRange}
-                            </Typography>
-                          }
-                        />
-                      </ListItem>
-                    )}
-
-                    {(place.weekdayHours || place.weekendHours) && (
-                      <ListItem>
-                        <ListItemIcon>
-                          <AccessTimeIcon
-                            sx={{ color: theme.colors.primary }}
-                          />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Typography sx={{ color: theme.colors.text }}>
-                              مواعيد العمل
-                            </Typography>
-                          }
-                          secondary={
+                          {place.images.length > 1 && (
                             <>
-                              {place.weekdayHours && (
-                                <Typography
-                                  variant="body2"
-                                  component="span"
-                                  display="block"
-                                  sx={{ color: theme.colors.textSecondary }}
-                                >
-                                  أيام الأسبوع: {place.weekdayHours.from} -{" "}
-                                  {place.weekdayHours.to}
-                                </Typography>
-                              )}
-                              {place.weekendHours && (
-                                <Typography
-                                  variant="body2"
-                                  component="span"
-                                  sx={{ color: theme.colors.textSecondary }}
-                                >
-                                  عطلة نهاية الأسبوع: {place.weekendHours.from}{" "}
-                                  - {place.weekendHours.to}
-                                </Typography>
-                              )}
+                              <IconButton
+                                sx={{
+                                  position: "absolute",
+                                  right: 8,
+                                  top: "50%",
+                                  transform: "translateY(-50%)",
+                                  backgroundColor: "rgba(0,0,0,0.5)",
+                                  color: "white",
+                                  "&:hover": {
+                                    backgroundColor: "rgba(0,0,0,0.7)",
+                                  },
+                                }}
+                                onClick={handleNextImage}
+                              >
+                                <ArrowForwardIcon />
+                              </IconButton>
+                              <IconButton
+                                sx={{
+                                  position: "absolute",
+                                  left: 8,
+                                  top: "50%",
+                                  transform: "translateY(-50%)",
+                                  backgroundColor: "rgba(0,0,0,0.5)",
+                                  color: "white",
+                                  "&:hover": {
+                                    backgroundColor: "rgba(0,0,0,0.7)",
+                                  },
+                                }}
+                                onClick={handlePreviousImage}
+                              >
+                                <ArrowBackIcon />
+                              </IconButton>
+                              <Box
+                                sx={{
+                                  position: "absolute",
+                                  bottom: 8,
+                                  right: 8,
+                                  backgroundColor: "rgba(0,0,0,0.5)",
+                                  color: "white",
+                                  px: 1,
+                                  py: 0.5,
+                                  borderRadius: "4px",
+                                  fontSize: "0.75rem",
+                                }}
+                              >
+                                {currentImageIndex + 1} / {place.images.length}
+                              </Box>
                             </>
-                          }
-                        />
-                      </ListItem>
+                          )}
+                        </>
+                      ) : (
+                        <Typography
+                          variant="body2"
+                          sx={{ color: theme.colors.textSecondary }}
+                        >
+                          لا توجد صور متاحة
+                        </Typography>
+                      )}
+                    </Paper>
+
+                    {/* Image thumbnails */}
+                    {place.images && place.images.length > 1 && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          mt: 2,
+                          gap: 1,
+                          overflowX: "auto",
+                          pb: 1,
+                        }}
+                      >
+                        {place.images.map((img, idx) => (
+                          <Box
+                            key={idx}
+                            onClick={() => setCurrentImageIndex(idx)}
+                            sx={{
+                              width: 60,
+                              height: 60,
+                              flexShrink: 0,
+                              borderRadius: "4px",
+                              overflow: "hidden",
+                              cursor: "pointer",
+                              border:
+                                idx === currentImageIndex
+                                  ? "2px solid"
+                                  : "2px solid transparent",
+                              borderColor:
+                                idx === currentImageIndex
+                                  ? theme.colors.primary
+                                  : "transparent",
+                            }}
+                          >
+                            <img
+                              src={img}
+                              alt={`${place.name} - صورة ${idx + 1}`}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                              }}
+                            />
+                          </Box>
+                        ))}
+                      </Box>
                     )}
 
-                    {place.hasParkingSpace && (
-                      <ListItem>
-                        <ListItemIcon>
-                          <LocalParkingIcon
-                            sx={{ color: theme.colors.primary }}
-                          />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Typography sx={{ color: theme.colors.text }}>
-                              مواقف سيارات
-                            </Typography>
-                          }
-                          secondary={
-                            <Typography
-                              sx={{ color: theme.colors.textSecondary }}
+                    {/* Statistics summary for this view */}
+                    <Card
+                      sx={{
+                        mt: 3,
+                        borderRadius: 2,
+                        backgroundColor: theme.colors.card,
+                        border: `1px solid ${theme.colors.border}`,
+                      }}
+                    >
+                      <CardContent>
+                        <Typography
+                          variant="h6"
+                          gutterBottom
+                          sx={{ color: theme.colors.text, fontWeight: "bold" }}
+                        >
+                          نظرة عامة
+                        </Typography>
+                        <Grid container spacing={2}>
+                          <Grid item xs={6}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                mb: 1.5,
+                              }}
                             >
-                              متوفر
-                            </Typography>
-                          }
-                        />
-                      </ListItem>
-                    )}
-
-                    {place.isAccessible && (
-                      <ListItem>
-                        <ListItemIcon>
-                          <AccessibleIcon
-                            sx={{ color: theme.colors.primary }}
-                          />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Typography sx={{ color: theme.colors.text }}>
-                              مناسب لذوي الاحتياجات الخاصة
-                            </Typography>
-                          }
-                          secondary={
-                            <Typography
-                              sx={{ color: theme.colors.textSecondary }}
+                              <VisibilityIcon
+                                sx={{
+                                  color: theme.colors.primary,
+                                  mr: 1,
+                                  fontSize: 20,
+                                }}
+                              />
+                              <Typography
+                                variant="body2"
+                                sx={{ color: theme.colors.textSecondary }}
+                              >
+                                المشاهدات: <b>{stats?.views || 0}</b>
+                              </Typography>
+                            </Box>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                mb: 1.5,
+                              }}
                             >
-                              نعم
-                            </Typography>
-                          }
-                        />
-                      </ListItem>
-                    )}
-                  </List>
+                              <PeopleIcon
+                                sx={{
+                                  color: theme.colors.primary,
+                                  mr: 1,
+                                  fontSize: 20,
+                                }}
+                              />
+                              <Typography
+                                variant="body2"
+                                sx={{ color: theme.colors.textSecondary }}
+                              >
+                                الزيارات: <b>{stats?.visits || 0}</b>
+                              </Typography>
+                            </Box>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                              <StarIcon
+                                sx={{ color: "#FFC107", mr: 1, fontSize: 20 }}
+                              />
+                              <Typography
+                                variant="body2"
+                                sx={{ color: theme.colors.textSecondary }}
+                              >
+                                التقييم:{" "}
+                                <b>
+                                  {stats?.rating
+                                    ? stats.rating.toFixed(1)
+                                    : "0.0"}
+                                </b>
+                              </Typography>
+                            </Box>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                              <BarChartIcon
+                                sx={{
+                                  color: theme.colors.primary,
+                                  mr: 1,
+                                  fontSize: 20,
+                                }}
+                              />
+                              <Typography
+                                variant="body2"
+                                sx={{ color: theme.colors.textSecondary }}
+                              >
+                                المراجعات: <b>{stats?.reviewsCount || 0}</b>
+                              </Typography>
+                            </Box>
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  </Grid>
 
-                  {/* Amenities */}
-                  {place.amenities && place.amenities.length > 0 && (
-                    <Box sx={{ mb: 3, mt: 2 }}>
+                  {/* Details */}
+                  <Grid item xs={12} md={6}>
+                    <Box>
                       <Typography
                         variant="h6"
                         gutterBottom
                         fontWeight="bold"
                         sx={{ color: theme.colors.text }}
                       >
-                        المرافق والخدمات
+                        تفاصيل المكان
                       </Typography>
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                        {place.amenities.map((amenity, idx) => (
-                          <Chip
-                            key={idx}
-                            label={
-                              typeof amenity === "string"
-                                ? amenity
-                                : amenity.label
-                            }
-                            size="small"
-                            sx={{
-                              backgroundColor: "rgba(74, 114, 172, 0.1)",
-                              color: theme.colors.text,
-                            }}
-                          />
-                        ))}
-                      </Box>
-                    </Box>
-                  )}
 
-                  {/* Rejection reason if place is rejected */}
-                  {place.rejectionReason && (
-                    <Alert
-                      severity="error"
+                      <Box sx={{ mb: 2 }}>
+                        <Chip
+                          icon={<CategoryIcon />}
+                          label={getCategoryLabel(place.category)}
+                          sx={{
+                            backgroundColor: "rgba(74, 114, 172, 0.1)",
+                            color: theme.colors.primary,
+                            fontWeight: "bold",
+                            mb: 2,
+                          }}
+                        />
+
+                        <Typography
+                          variant="body1"
+                          paragraph
+                          sx={{ color: theme.colors.text }}
+                        >
+                          {place.description}
+                        </Typography>
+                      </Box>
+
+                      <Divider
+                        sx={{ my: 2, borderColor: theme.colors.border }}
+                      />
+
+                      <List dense>
+                        <ListItem>
+                          <ListItemIcon>
+                            <LocationOnIcon
+                              sx={{ color: theme.colors.primary }}
+                            />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={
+                              <Typography sx={{ color: theme.colors.text }}>
+                                العنوان
+                              </Typography>
+                            }
+                            secondary={
+                              <Typography
+                                sx={{ color: theme.colors.textSecondary }}
+                              >
+                                {`${place.address}، ${place.city}`}
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+
+                        {place.phone && (
+                          <ListItem>
+                            <ListItemIcon>
+                              <PhoneIcon sx={{ color: theme.colors.primary }} />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={
+                                <Typography sx={{ color: theme.colors.text }}>
+                                  رقم الهاتف
+                                </Typography>
+                              }
+                              secondary={
+                                <Typography
+                                  sx={{ color: theme.colors.textSecondary }}
+                                >
+                                  {place.phone}
+                                </Typography>
+                              }
+                            />
+                          </ListItem>
+                        )}
+
+                        {place.email && (
+                          <ListItem>
+                            <ListItemIcon>
+                              <EmailIcon sx={{ color: theme.colors.primary }} />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={
+                                <Typography sx={{ color: theme.colors.text }}>
+                                  البريد الإلكتروني
+                                </Typography>
+                              }
+                              secondary={
+                                <Typography
+                                  sx={{ color: theme.colors.textSecondary }}
+                                >
+                                  {place.email}
+                                </Typography>
+                              }
+                            />
+                          </ListItem>
+                        )}
+
+                        {place.website && (
+                          <ListItem>
+                            <ListItemIcon>
+                              <LanguageIcon
+                                sx={{ color: theme.colors.primary }}
+                              />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={
+                                <Typography sx={{ color: theme.colors.text }}>
+                                  الموقع الإلكتروني
+                                </Typography>
+                              }
+                              secondary={
+                                <Typography
+                                  sx={{ color: theme.colors.textSecondary }}
+                                >
+                                  {place.website}
+                                </Typography>
+                              }
+                            />
+                          </ListItem>
+                        )}
+
+                        {place.priceRange && (
+                          <ListItem>
+                            <ListItemIcon>
+                              <AttachMoneyIcon
+                                sx={{ color: theme.colors.primary }}
+                              />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={
+                                <Typography sx={{ color: theme.colors.text }}>
+                                  متوسط الأسعار
+                                </Typography>
+                              }
+                              secondary={
+                                <Typography
+                                  sx={{ color: theme.colors.textSecondary }}
+                                >
+                                  {place.priceRange}
+                                </Typography>
+                              }
+                            />
+                          </ListItem>
+                        )}
+
+                        {(place.weekdayHours || place.weekendHours) && (
+                          <ListItem>
+                            <ListItemIcon>
+                              <AccessTimeIcon
+                                sx={{ color: theme.colors.primary }}
+                              />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={
+                                <Typography sx={{ color: theme.colors.text }}>
+                                  مواعيد العمل
+                                </Typography>
+                              }
+                              secondary={
+                                <>
+                                  {place.weekdayHours && (
+                                    <Typography
+                                      variant="body2"
+                                      component="span"
+                                      display="block"
+                                      sx={{ color: theme.colors.textSecondary }}
+                                    >
+                                      أيام الأسبوع: {place.weekdayHours.from} -{" "}
+                                      {place.weekdayHours.to}
+                                    </Typography>
+                                  )}
+                                  {place.weekendHours && (
+                                    <Typography
+                                      variant="body2"
+                                      component="span"
+                                      sx={{ color: theme.colors.textSecondary }}
+                                    >
+                                      عطلة نهاية الأسبوع:{" "}
+                                      {place.weekendHours.from} -{" "}
+                                      {place.weekendHours.to}
+                                    </Typography>
+                                  )}
+                                </>
+                              }
+                            />
+                          </ListItem>
+                        )}
+                      </List>
+
+                      {/* Amenities */}
+                      {place.amenities && place.amenities.length > 0 && (
+                        <Box sx={{ mb: 3, mt: 2 }}>
+                          <Typography
+                            variant="h6"
+                            gutterBottom
+                            fontWeight="bold"
+                            sx={{ color: theme.colors.text }}
+                          >
+                            المرافق والخدمات
+                          </Typography>
+                          <Box
+                            sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}
+                          >
+                            {place.amenities.map((amenity, idx) => (
+                              <Chip
+                                key={idx}
+                                label={
+                                  typeof amenity === "string"
+                                    ? amenity
+                                    : amenity.label
+                                }
+                                size="small"
+                                sx={{
+                                  backgroundColor: "rgba(74, 114, 172, 0.1)",
+                                  color: theme.colors.text,
+                                }}
+                              />
+                            ))}
+                          </Box>
+                        </Box>
+                      )}
+
+                      {/* Rejection reason if place is rejected */}
+                      {place.rejectionReason && (
+                        <Alert
+                          severity="error"
+                          sx={{
+                            mt: 2,
+                            "& .MuiAlert-icon": { color: "#f44336" },
+                            "& .MuiAlert-message": { color: theme.colors.text },
+                            backgroundColor: "rgba(244, 67, 54, 0.1)",
+                          }}
+                        >
+                          <Typography variant="subtitle2" fontWeight="bold">
+                            سبب الرفض:
+                          </Typography>
+                          <Typography variant="body2">
+                            {place.rejectionReason}
+                          </Typography>
+                        </Alert>
+                      )}
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
+            ) : (
+              <Box sx={{ p: 3 }}>
+                <Typography
+                  variant="h5"
+                  component="h2"
+                  fontWeight="bold"
+                  sx={{ color: theme.colors.text, mb: 3 }}
+                >
+                  إحصائيات المكان
+                </Typography>
+
+                {/* Here you can add charts and statistics displays */}
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Card
                       sx={{
-                        mt: 2,
-                        "& .MuiAlert-icon": { color: "#f44336" },
-                        "& .MuiAlert-message": { color: theme.colors.text },
-                        backgroundColor: "rgba(244, 67, 54, 0.1)",
+                        borderRadius: 2,
+                        backgroundColor: theme.colors.card,
+                        border: `1px solid ${theme.colors.border}`,
+                        height: "100%",
                       }}
                     >
-                      <Typography variant="subtitle2" fontWeight="bold">
-                        سبب الرفض:
-                      </Typography>
-                      <Typography variant="body2">
-                        {place.rejectionReason}
-                      </Typography>
-                    </Alert>
-                  )}
+                      <CardContent>
+                        <Typography
+                          variant="h6"
+                          gutterBottom
+                          sx={{ color: theme.colors.text, fontWeight: "bold" }}
+                        >
+                          إحصائيات الزوار
+                        </Typography>
+                        <Grid container spacing={2}>
+                          <Grid item xs={6}>
+                            <Paper
+                              elevation={0}
+                              sx={{
+                                p: 2,
+                                textAlign: "center",
+                                backgroundColor: "rgba(74, 114, 172, 0.1)",
+                                borderRadius: 2,
+                              }}
+                            >
+                              <VisibilityIcon
+                                sx={{
+                                  color: theme.colors.primary,
+                                  fontSize: 40,
+                                  mb: 1,
+                                }}
+                              />
+                              <Typography
+                                variant="h4"
+                                sx={{
+                                  color: theme.colors.text,
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {stats?.views || 0}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: theme.colors.textSecondary }}
+                              >
+                                مشاهدة
+                              </Typography>
+                            </Paper>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Paper
+                              elevation={0}
+                              sx={{
+                                p: 2,
+                                textAlign: "center",
+                                backgroundColor: "rgba(76, 175, 80, 0.1)",
+                                borderRadius: 2,
+                              }}
+                            >
+                              <PeopleIcon
+                                sx={{ color: "#4caf50", fontSize: 40, mb: 1 }}
+                              />
+                              <Typography
+                                variant="h4"
+                                sx={{
+                                  color: theme.colors.text,
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {stats?.visits || 0}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: theme.colors.textSecondary }}
+                              >
+                                زيارة
+                              </Typography>
+                            </Paper>
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  </Grid>
 
-                  {/* Action buttons */}
-                  <Box
-                    sx={{
-                      mt: 3,
-                      pt: 2,
-                      display: "flex",
-                      justifyContent: "flex-start", // Changed to flex-start for RTL
-                      gap: 2,
-                      borderTop: "1px solid",
-                      borderColor: theme.colors.border,
-                      flexDirection: "row-reverse", // Added for RTL support
-                    }}
-                  >
-                    {!place.isApproved && !place.rejectionReason && (
-                      <Button
-                        variant="outlined"
-                        endIcon={<CancelIcon />} // Changed to endIcon for RTL
-                        onClick={openRejectDialog}
-                        disabled={actionLoading}
-                        sx={{
-                          color: "#f44336",
-                          borderColor: "rgba(244, 67, 54, 0.5)",
-                          "&:hover": {
-                            backgroundColor: "rgba(244, 67, 54, 0.05)",
-                            borderColor: "#f44336",
-                          },
-                        }}
-                      >
-                        رفض
-                      </Button>
-                    )}
-
-                    {place.rejectionReason && !place.isApproved && (
-                      <Button
-                        variant="contained"
-                        endIcon={<CheckCircleIcon />} // Changed to endIcon for RTL
-                        onClick={handleApprove}
-                        disabled={actionLoading}
-                        sx={{
-                          backgroundColor: theme.colors.primary,
-                          color: "#FFFFFF",
-                          "&:hover": {
-                            backgroundColor: theme.colors.accent,
-                          },
-                        }}
-                      >
-                        الموافقة بعد التعديل
-                      </Button>
-                    )}
-
-                    {!place.isApproved && !place.rejectionReason && (
-                      <Button
-                        variant="contained"
-                        endIcon={<CheckCircleIcon />} // Changed to endIcon for RTL
-                        onClick={handleApprove}
-                        disabled={actionLoading}
-                        sx={{
-                          backgroundColor: theme.colors.primary,
-                          color: "#FFFFFF",
-                          "&:hover": {
-                            backgroundColor: theme.colors.accent,
-                          },
-                        }}
-                      >
-                        موافقة
-                      </Button>
-                    )}
-
-                    {place.isApproved && (
-                      <Button
-                        variant="outlined"
-                        endIcon={<CancelIcon />} // Changed to endIcon for RTL
-                        onClick={openRejectDialog}
-                        disabled={actionLoading}
-                        sx={{
-                          color: "#f44336",
-                          borderColor: "rgba(244, 67, 54, 0.5)",
-                          "&:hover": {
-                            backgroundColor: "rgba(244, 67, 54, 0.05)",
-                            borderColor: "#f44336",
-                          },
-                        }}
-                      >
-                        إلغاء الموافقة
-                      </Button>
-                    )}
-                  </Box>
-                </Box>
-              </Grid>
-            </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Card
+                      sx={{
+                        borderRadius: 2,
+                        backgroundColor: theme.colors.card,
+                        border: `1px solid ${theme.colors.border}`,
+                        height: "100%",
+                      }}
+                    >
+                      <CardContent>
+                        <Typography
+                          variant="h6"
+                          gutterBottom
+                          sx={{ color: theme.colors.text, fontWeight: "bold" }}
+                        >
+                          التقييمات
+                        </Typography>
+                        <Grid container spacing={2}>
+                          <Grid item xs={6}>
+                            <Paper
+                              elevation={0}
+                              sx={{
+                                p: 2,
+                                textAlign: "center",
+                                backgroundColor: "rgba(255, 193, 7, 0.1)",
+                                borderRadius: 2,
+                              }}
+                            >
+                              <StarIcon
+                                sx={{ color: "#FFC107", fontSize: 40, mb: 1 }}
+                              />
+                              <Typography
+                                variant="h4"
+                                sx={{
+                                  color: theme.colors.text,
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {stats?.rating
+                                  ? stats.rating.toFixed(1)
+                                  : "0.0"}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: theme.colors.textSecondary }}
+                              >
+                                متوسط التقييم
+                              </Typography>
+                            </Paper>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Paper
+                              elevation={0}
+                              sx={{
+                                p: 2,
+                                textAlign: "center",
+                                backgroundColor: "rgba(33, 150, 243, 0.1)",
+                                borderRadius: 2,
+                              }}
+                            >
+                              <BarChartIcon
+                                sx={{ color: "#2196F3", fontSize: 40, mb: 1 }}
+                              />
+                              <Typography
+                                variant="h4"
+                                sx={{
+                                  color: theme.colors.text,
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {stats?.reviewsCount || 0}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: theme.colors.textSecondary }}
+                              >
+                                مراجعة
+                              </Typography>
+                            </Paper>
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                </Grid>
+              </Box>
+            )}
           </Paper>
         </Box>
       </Container>
-
-      {/* Rejection Dialog */}
-      <Dialog
-        open={rejectDialogOpen}
-        onClose={() => !actionLoading && setRejectDialogOpen(false)}
-        PaperProps={{
-          style: {
-            backgroundColor: theme.colors.surface,
-            color: theme.colors.text,
-            maxWidth: "500px",
-            width: "100%",
-            border: `1px solid ${theme.colors.border}`,
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{
-            backgroundColor: "rgba(244, 67, 54, 0.1)",
-            color: "#f44336",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          {place.isApproved
-            ? "إلغاء الموافقة على المكان"
-            : "رفض طلب إضافة مكان"}
-          <IconButton
-            aria-label="close"
-            onClick={() => !actionLoading && setRejectDialogOpen(false)}
-            sx={{ color: theme.colors.textSecondary }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={{ pt: 3 }}>
-          <Typography
-            variant="body1"
-            gutterBottom
-            sx={{ color: theme.colors.text }}
-          >
-            {place.isApproved
-              ? "أنت على وشك إلغاء الموافقة على المكان:"
-              : "أنت على وشك رفض إضافة المكان:"}{" "}
-            <strong>{place.name}</strong>
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{ mb: 3, color: theme.colors.textSecondary }}
-          >
-            سيتم إعلام صاحب المكان بسبب الرفض لمساعدته في تحسين الطلب للموافقة
-            عليه مستقبلاً.
-          </Typography>
-          <TextField
-            autoFocus
-            multiline
-            rows={4}
-            margin="dense"
-            id="rejection-reason"
-            label="سبب الرفض"
-            fullWidth
-            variant="outlined"
-            value={rejectionReason}
-            onChange={(e) => setRejectionReason(e.target.value)}
-            required
-            error={!rejectionReason.trim()}
-            helperText={!rejectionReason.trim() ? "حقل مطلوب" : ""}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                "& fieldset": { borderColor: theme.colors.border },
-                "&:hover fieldset": { borderColor: theme.colors.primary },
-                "&.Mui-focused fieldset": { borderColor: theme.colors.primary },
-              },
-              "& .MuiInputLabel-root": { color: theme.colors.textSecondary },
-              "& .MuiInputBase-input": { color: theme.colors.text },
-              "& .MuiFormHelperText-root": { color: "#f44336" },
-            }}
-          />
-        </DialogContent>
-        <DialogActions
-          sx={{
-            p: 2,
-            pt: 0,
-            flexDirection: "row-reverse", // Added for RTL support
-          }}
-        >
-          <Button
-            onClick={() => !actionLoading && setRejectDialogOpen(false)}
-            disabled={actionLoading}
-            sx={{ color: theme.colors.textSecondary }}
-          >
-            إلغاء
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleReject}
-            disabled={actionLoading || !rejectionReason.trim()}
-            sx={{
-              backgroundColor: "#f44336",
-              color: "#fff",
-              "&:hover": { backgroundColor: "#d32f2f" },
-              "&.Mui-disabled": {
-                backgroundColor: "rgba(244, 67, 54, 0.3)",
-              },
-            }}
-          >
-            {actionLoading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              "تأكيد"
-            )}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </AdminLayout>
+    </SellerLayout>
   );
 };
 
-export default PlaceDetails;
+export default PlaceDetail;
