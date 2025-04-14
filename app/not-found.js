@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Container } from "@mui/material";
 import Image from "next/image";
 import React from "react";
@@ -21,8 +21,7 @@ const NotFound = React.memo(() => {
         textAlign: "center",
       }}
     >
-      <h1
-      as={motion.h1}
+      <motion.h1
         style={{
           fontSize: "3rem",
           fontWeight: "800",
@@ -33,19 +32,17 @@ const NotFound = React.memo(() => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        إيرور يا سيدي 
-      </h1>
-      <p
-        as={motion.p}
+        إيرور يا سيدي
+      </motion.h1>
+      <motion.p
         style={{ fontSize: "2rem", fontFamily: "cursive" }}
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        الصفحة مش موجودة يمعلم 
-      </p>
-      <div
-        as={motion.div}
+        الصفحة مش موجودة يمعلم
+      </motion.p>
+      <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
@@ -55,16 +52,15 @@ const NotFound = React.memo(() => {
           alt="404"
           style={{ width: "85%", height: "35rem", objectFit: "contain" }}
         />
-      </div>
+      </motion.div>
       <Link href="/">
-        <div
-        as={motion.div}
+        <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
         >
           <NextButton style={{ marginTop: "1rem" }}>إرجع ع البيت</NextButton>
-        </div>
+        </motion.div>
       </Link>
     </Container>
   );

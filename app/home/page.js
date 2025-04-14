@@ -1,15 +1,13 @@
-import React from 'react';
-import Home from "../Components/Home";
-import { Container } from '@mui/material';
+import React from "react";
+
+import Home from "../Components/Home/Home";
 
 const page = () => {
-    return (
-      <>
-        
-          <Home />
-        
-      </>
-    );
+  return (
+    <>
+      <Home />
+    </>
+  );
 };
 
 export default page;

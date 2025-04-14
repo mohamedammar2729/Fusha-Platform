@@ -1,24 +1,22 @@
 "use client";
-import React, { useState, useCallback } from "react";
-import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
 
-import {
-  StyledButton,
-  StyledLink,
-  StyledTextField,
-} from "../styledComponent/Register/StyledRegister";
+import React, { useState, useCallback, memo } from "react";
+import { useTheme } from "../context/ThemeContext";
+import Image from "next/image";
+import axios from "axios";
 import {
   Container,
-  FormContainer,
   LeftSection,
   RightSection,
+  FormContainer,
+  StyledTextField,
   StyledTypography,
+  StyledButton,
+  StyledLink,
 } from "../styledComponent/Login/styledLogin";
-import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
-import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import axios from "axios";
-import Image from "next/image";
+import { InputAdornment, IconButton } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const MemoizedTypography = React.memo(({ children, ...props }) => (
   <StyledTypography {...props}>{children}</StyledTypography>
@@ -29,6 +27,7 @@ const MemoizedStyledTextField = React.memo(({ children, ...props }) => (
 ));
 
 const LogIn = () => {
+  const { darkMode, theme } = useTheme();
   const [showPassword, setShowPassword] = useState({
     password: false,
   });
@@ -52,11 +51,15 @@ const LogIn = () => {
       }
 
       axios
-        .post("https://iti-server-production.up.railway.app/api/login", { email, password })
+        .post("https://iti-server-production.up.railway.app/api/login", {
+          email,
+          password,
+        })
         .then((response) => {
           const { token } = response.data;
           localStorage.setItem("user", JSON.stringify(response.data.user));
           localStorage.setItem("token", token);
+          // localStorage.setItem("image", user.profileImage);
           window.location.href = "/Fusha-Platform";
         })
         .catch((err) => {
@@ -71,8 +74,8 @@ const LogIn = () => {
   );
 
   return (
-    <Container>
-      <LeftSection>
+    <Container theme={theme}>
+      <LeftSection theme={theme}>
         <div className="background-image-wrapper">
           <Image
             src="https://images.pexels.com/photos/1169754/pexels-photo-1169754.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
@@ -136,8 +139,8 @@ const LogIn = () => {
           />
         </svg>
       </LeftSection>
-      <RightSection>
-        <FormContainer>
+      <RightSection theme={theme}>
+        <FormContainer theme={theme}>
           <h2>تسجيل الدخول</h2>
           <form onSubmit={handleSubmit}>
             <MemoizedStyledTextField
@@ -148,51 +151,72 @@ const LogIn = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              $darkMode={darkMode}
             />
             <MemoizedStyledTextField
               fullWidth
               margin="dense"
-              label="الرقم السري"
+              label="كلمة المرور"
               type={showPassword.password ? "text" : "password"}
               variant="outlined"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+              $darkMode={darkMode}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
                       onClick={() => handleClickShowPassword("password")}
                       edge="end"
+                      sx={{
+                        color: darkMode ? "#AAB2D5" : "inherit",
+                      }}
                     >
                       {showPassword.password ? (
-                        <VisibilityOutlinedIcon />
+                        <VisibilityOff />
                       ) : (
-                        <VisibilityOffOutlinedIcon />
+                        <Visibility />
                       )}
                     </IconButton>
                   </InputAdornment>
                 ),
               }}
-              required
             />
             {error && (
               <MemoizedTypography
                 $sx={{ textAlign: "center", color: "red", marginBottom: 2 }}
+                theme={theme}
               >
                 {error}
               </MemoizedTypography>
             )}
-            <StyledButton variant="contained" type="submit">
+            <StyledButton
+              variant="contained"
+              type="submit"
+              theme={theme}
+              $darkMode={darkMode}
+            >
               تسجيل الدخول
             </StyledButton>
-            <MemoizedTypography $sx={{ textAlign: "center" }}>
+            <MemoizedTypography $sx={{ textAlign: "center" }} theme={theme}>
               ليس لديك حساب؟{" "}
-              <StyledLink href="/register" $sx={{ ml: 1 }}>
+              <StyledLink
+                href="/register"
+                $sx={{ ml: 1 }}
+                theme={theme}
+                $darkMode={darkMode}
+              >
                 سجل الآن
               </StyledLink>
             </MemoizedTypography>
-            <MemoizedTypography $sx={{ textAlign: "center" }}>
-              <StyledLink href="/forgot-password" $sx={{ ml: 1 }}>
+            <MemoizedTypography $sx={{ textAlign: "center" }} theme={theme}>
+              <StyledLink
+                href="/forgot-password"
+                $sx={{ ml: 1 }}
+                theme={theme}
+                $darkMode={darkMode}
+              >
                 هل نسيت كلمة المرور؟
               </StyledLink>
             </MemoizedTypography>

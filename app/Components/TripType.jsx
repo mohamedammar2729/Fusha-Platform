@@ -23,6 +23,7 @@ import img7 from "../../public/adventure.jpeg";
 import img8 from "../../public/religion.jpeg";
 import { useRouter } from "next/navigation";
 import Program from "./Program";
+import { useTheme } from "../context/ThemeContext";
 
 const testItems = [
   { id: 1, title: "ثقافية", img: img1 },
@@ -39,11 +40,11 @@ const MemoizedImage = React.memo(({ src, alt, style }) => (
   <Image src={src} alt={alt} style={style} />
 ));
 
-const MemoizedHeaderTitle = React.memo(({ children }) => (
-  <HeaderTitle>
+const MemoizedHeaderTitle = React.memo(({ children, themeColors }) => (
+  <HeaderTitle style={{ color: themeColors.text , marginTop: "1.5rem" }}>
     <span
       style={{
-        color: "#FFA500",
+        color: themeColors.primary,
         fontSize: "44px",
         fontWeight: "bold",
       }}
@@ -57,6 +58,8 @@ const MemoizedHeaderTitle = React.memo(({ children }) => (
 const TripType = ({ items = testItems }) => {
   const [selectedTitle, setSelectedTitle] = useState(null);
   const router = useRouter();
+  const { theme } = useTheme();
+  const colors = theme.colors;
 
   const handleSelect = useCallback((title) => {
     setSelectedTitle(title);
@@ -80,8 +83,12 @@ const TripType = ({ items = testItems }) => {
           }`}
           transition={{ duration: 0.3 }}
           onClick={() => handleSelect(item.title)}
+          style={{
+            backgroundColor: colors.card,
+            borderColor: colors.border,
+          }}
         >
-          <div className="card">
+          <div className="card" style={{ backgroundColor: colors.card }}>
             <input
               type="checkbox"
               className="checkbox"
@@ -99,13 +106,13 @@ const TripType = ({ items = testItems }) => {
                 }}
               />
             </div>
-            <div className="content">
+            <div className="content" style={{ color: colors.text }}>
               <p className="heading">{item.title}</p>
             </div>
           </div>
         </div>
       )),
-    [items, selectedTitle, handleSelect]
+    [items, selectedTitle, handleSelect, colors]
   );
 
   const searchParams = useSearchParams();
@@ -122,27 +129,40 @@ const TripType = ({ items = testItems }) => {
     }
   }, [searchParams]);
 
-
   return (
     <>
       {tripType && (
-        <PageContainer>
-          <TripTypeContainer>
+        <PageContainer style={{ backgroundColor: colors.background }}>
+          <TripTypeContainer style={{ backgroundColor: colors.surface }}>
             <HeaderContainer>
-              <MemoizedHeaderTitle>اختر نوع رحلتك</MemoizedHeaderTitle>
+              <MemoizedHeaderTitle themeColors={colors}>
+                اختر نوع رحلتك
+              </MemoizedHeaderTitle>
             </HeaderContainer>
 
-            <StyledWrapper>{renderItems}</StyledWrapper>
+            <StyledWrapper $themeColor={theme.colors.primary}>
+              {renderItems}
+            </StyledWrapper>
 
             <ButtonContainer>
               <ShareButton
-                style={{ marginTop: "0.5rem", marginLeft: "4rem" }}
+                style={{
+                  marginTop: "0.5rem",
+                  marginLeft: "4rem",
+                  backgroundColor: colors.primary,
+                  color: "#ffffff",
+                }}
                 onClick={handleNext}
               >
                 التالي
               </ShareButton>
               <BackButton
-                style={{ marginTop: "0.5rem" }}
+                style={{
+                  marginTop: "0.5rem",
+                  backgroundColor: colors.darkmode ? "#ffffff" : colors.primary,
+                  color: colors.darkmode ? colors.primary : "#ffffff",
+                  borderColor: colors.darkmode ? "#ffffff" : colors.primary,
+                }}
                 onClick={() => router.push("/create?showCreate=true")}
               >
                 رجوع

@@ -1,5 +1,6 @@
 import { styled, keyframes } from "@mui/system";
 import Box from "@mui/material/Box";
+import Card from "@mui/material/Card"; // Add Card import
 import { styled as stf } from "styled-components";
 import { Pagination } from "swiper/modules";
 
@@ -43,55 +44,9 @@ export const MainBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-// Use proper MUI styled API for TextBox
-export const TextBox = styled(Box)(({ theme, textAlign, mb }) => ({
-  flex: 1,
-  minHeight: "300px",
-  display: "flex",
-  flexDirection: "column",
-  margin: "3rem 1rem",
-  justifyContent: "center",
-  alignItems: textAlign === "right" ? "flex-end" : "flex-start",
-  marginBottom: mb ? `${mb * 8}px` : "0",
-  animation: `${slideIn} 1s ease-in-out`,
 
-  [theme.breakpoints.up("sm")]: {
-    margin: "0 2rem",
-    minHeight: "350px",
-  },
 
-  [theme.breakpoints.up("md")]: {
-    flex: 3.8,
-    margin: "0 5rem",
-    minHeight: "400px",
-  },
-}));
 
-// Update SliderBox to prevent overflow
-export const SliderBox = styled(Box)`
-  flex: 1;
-  min-width: 0;
-  max-width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 2.2rem;
-  padding: 10px;
-  border-radius: 20px;
-  overflow: hidden;
-
-  @media (min-width: 600px) {
-    padding: 20px;
-  }
-
-  @media (min-width: 960px) {
-    flex: 8;
-    padding: 0 24px;
-    justify-content: end;
-  }
-
-  animation: ${fadeIn} 1s ease-in-out;
-`;
 
 export const sliderSettings = {
   dots: false,
@@ -104,75 +59,10 @@ export const sliderSettings = {
   arrows: false,
 };
 
-export const SecondTextBox = styled(Box)`
-  flex: 1;
-  min-height: 300px;
-  display: flex;
-  flex-direction: column;
-  margin-right: 1rem;
-  justify-content: center;
-  align-items: end;
-  @media (min-width: 600px) {
-    margin-right: 1.5rem;
-    min-height: 350px;
-  }
-  @media (min-width: 960px) {
-    flex: 3.8;
-    margin-right: 2rem;
-    min-height: 400px;
-  }
-  animation: ${slideIn} 1s ease-in-out;
-`;
 
-// Update SecondBox to prevent overflow
-export const SecondBox = styled(Box)`
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  padding: 15px 5px;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 3;
-  gap: 6px;
-  border-radius: 20px;
-  width: 95%;
-  max-width: 100%;
-  margin: 0px auto;
-  overflow-x: hidden;
-  box-sizing: border-box;
 
-  @media (min-width: 600px) {
-    padding: 10px;
-  }
 
-  @media (min-width: 960px) {
-    flex-direction: row;
-    padding: 3px;
-  }
-`;
 
-export const RipponBox = styled(Box)`
-  position: absolute;
-  display: none;
-  @media (min-width: 600px) {
-    display: block;
-    top: 39px;
-    right: -110px;
-    padding: 10px 100px;
-    font-size: 16px;
-  }
-  @media (min-width: 960px) {
-    right: -78px;
-    padding: 10px 119px;
-    font-size: 20px;
-  }
-  background-color: red;
-  color: white;
-  transform: rotate(30deg);
-  font-weight: bold;
-  white-space: nowrap;
-  box-shadow: 2;
-`;
 
 /* -------------------------2-------------------------------------- */
 
@@ -224,26 +114,36 @@ export const StyledCard = stf.div`
   position: relative;
   width: 100%;
   max-width: 350px;
-  height: 200px;
+  height: 250px;
   margin: 0 auto;
   
   @media (min-width: 600px) {
-    height: 220px;
+    height: 280px;
   }
   
   @media (min-width: 960px) {
-    height: 250px;
+    height: 300px;
   }
   
-  border-radius: 15px;
+  border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
   background-size: cover;
   background-position: center;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.12);
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   transform-origin: center center;
   will-change: transform, filter;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%);
+    z-index: 1;
+    opacity: 0.8;
+    transition: opacity 0.5s ease;
+  }
 
   &::after {
     content: "";
@@ -252,18 +152,20 @@ export const StyledCard = stf.div`
     background: inherit;
     background-size: inherit;
     background-position: inherit;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    z-index: 1;
-    filter: brightness(0.9);
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 0;
   }
 
   &:hover {
-    transform: scale(1.03);
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+    transform: scale(1.03) translateY(-10px);
+    box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.2);
+    
+    &::before {
+      opacity: 0.5;
+    }
     
     &::after {
-      filter: blur(5px) brightness(0.8);
-      backdrop-filter: contrast(1.2);
+      transform: scale(1.1);
     }
   }
 
@@ -274,176 +176,58 @@ export const StyledCard = stf.div`
 
 export const CardTitle = stf.div`
   position: absolute;
-  top: 55%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  bottom: 20px;
+  right: 20px;
   color: white;
-  font-size: 32px;
+  font-size: 1.8rem;
   font-weight: bold;
-  text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.8);
-  opacity: 0;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   z-index: 2;
-  will-change: opacity, transform;
-  letter-spacing: 1px;
-  text-align: center;
-  line-height: 1.3;
-  padding: 8px;
-  width: 100%;
+  will-change: transform;
+  text-align: right;
+  padding: 8px 0;
+  
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    right: 0;
+    width: 0;
+    height: 3px;
+    background: #F6B17A;
+    transition: width 0.3s ease;
+  }
 
   ${StyledCard}:hover & {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateY(-10px);
-  }
-`;
-
-/* -------------------------3-------------------------------------- */
-
-// Update DownloadContainer to prevent overflow
-export const DownloadContainer = stf.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  gap: 20px;
-  padding: 30px 15px;
-  background-color: #f4fafd;
-  border-radius: 15px;
-  width: 95%;
-  max-width: 100%;
-  box-sizing: border-box;
-  margin: 0 auto;
-  overflow-x: hidden;
-
-  @media (min-width: 600px) {
-    gap: 30px;
-    padding: 40px 20px;
-  }
-
-  @media (min-width: 960px) {
-    gap: 40px;
-    padding: 60px 20px;
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    text-align: center;
-  }
-`;
-
-export const TextContent = stf.div`
-  text-align: right;
-  max-width: 400px;
-
-  @media (max-width: 768px) {
-    text-align: center;
-  }
-`;
-
-export const Title = stf.h2`
-  font-size: 1.5rem;
-  color: #1e3a8a;
-  font-weight: bold;
-  margin-bottom: 25px;
-  
-  @media (min-width: 600px) {
-    font-size: 1.75rem;
-    margin-bottom: 35px;
-  }
-  
-  @media (min-width: 960px) {
-    font-size: 2rem;
-    margin-bottom: 50px;
-  }
-`;
-
-export const StyledButtons = stf.div`
-  display: flex;
-  gap: 20px;
-
-  @media (min-width: 600px) {
-    gap: 30px;
-  }
-
-  @media (min-width: 960px) {
-    gap: 45px;
-  }
-
-  @media (max-width: 480px) {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  @media (max-width: 768px) {
-    justify-content: center;
-  }
-`;
-
-export const DownloadBtn = stf.a`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  padding: 10px 15px;
-  border-radius: 40px;
-  text-decoration: none;
-  transition: all 0.1s ease-in-out;
-
-  @media (min-width: 600px) {
-    font-size: 1.3rem;
-    padding: 10px 18px;
-  }
-
-  @media (min-width: 960px) {
-    font-size: 1.5rem;
-    padding: 12px 20px;
-  }
-
-  &:hover {
-    filter: brightness(1.2);
-    transform: translateY(-2px);
-  }
-`;
-
-// Update ImageContent in styledHome.jsx
-export const ImageContent = stf.div`
-  width: 100%;
-  max-width: 550px;
-  
-  img {
-    width: 100%;
-    height: auto;
-    max-width: 350px;
+    transform: translateY(-5px);
     
-    @media (min-width: 600px) {
-      max-width: 450px;
-    }
-    
-    @media (min-width: 960px) {
-      max-width: 550px;
+    &::after {
+      width: 70%;
     }
   }
 `;
+
 
 /* -------------------------4-------------------------------------- */
-export const StyledCard2 = stf.div`
-  padding: 16px;
-  min-height: 320px;
-  min-width: 315px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
-  background-color: ${({ $index }) => ($index % 2 === 0 ? "white" : "#1b5fa3")};
-  color: ${({ $index }) => ($index % 2 === 0 ? "#000" : "#fff")};
-  border-radius: 15px;
-  text-align: center;
-  transition: transform 0.3s;
 
-  &:hover {
-    transform: scale(1.05);
-  }
-`;
+// Update StyledCard2 to properly access theme and dark mode
+export const StyledCard2 = styled(Card)(({ theme, $index, $darkMode }) => ({
+  maxWidth: 350,
+  minHeight: 220,
+  margin: "10px auto",
+  padding: "20px",
+  textAlign: "center",
+  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+  background: $darkMode ? theme.colors?.card || "#424769" : "#ffffff",
+  color: $darkMode ? theme.colors?.text || "#FFFFFF" : "#000000",
+  borderRadius: "15px",
+  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+  "&:hover": {
+    transform: "translateY(-10px)",
+    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
+  },
+}));
 
 // Update Swiper settings to prevent overflow
 export const swiperSettings = {
@@ -468,3 +252,4 @@ export const swiperSettings = {
   centeredSlides: true,
   // Remove loop setting that might reference testimonials
 };
+
