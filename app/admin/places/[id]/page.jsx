@@ -49,6 +49,15 @@ import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import AccessibleIcon from "@mui/icons-material/Accessible";
 import CloseIcon from "@mui/icons-material/Close";
 
+// Add this function near the top of the file, before the PlaceDetails component
+
+export async function generateStaticParams() {
+  // Return an array of objects with the id parameter
+  // For an admin panel with dynamic data, you might want to return an empty array
+  // or include some default/sample IDs
+  return [];
+}
+
 const PlaceDetails = () => {
   const { theme } = useTheme(); // Only get theme from context
   const router = useRouter();
