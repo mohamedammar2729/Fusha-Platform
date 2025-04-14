@@ -1,42 +1,438 @@
 @import url("https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
-body {
-  font-family: "Amiri", serif;
+/* Enhanced Theme support with more variables */
+:root {
+  /* Base colors */
+  --primary-color: #3b5898;
+  --primary-color-light: #4d6eae;
+  --primary-color-dark: #2a4170;
+  --secondary-color: #4b72ad;
+  --accent-color: #fec20f;
+  --accent-color-light: #fed54a;
+  --accent-color-dark: #e6ac00;
+
+  /* Status colors */
+  --error-color: #f44336;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --info-color: #2196f3;
+
+  /* Text colors */
+  --text-primary: #2d3748;
+  --text-secondary: #718096;
+  --text-muted: #a0aec0;
+
+  /* Background colors */
+  --background-color: #f5f5f5;
+  --background-alt: #eaeaea;
+  --card-background: #ffffff;
+
+  /* UI elements */
+  --navbar-background: rgba(255, 255, 255, 0.85);
+  --divider-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --hover-overlay: rgba(0, 0, 0, 0.05);
+
+  /* Transitions */
+  --transition-speed: 0.3s;
+  --transition-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.amiri-regular {
-  font-family: "Amiri", serif;
-  font-weight: 400;
-  font-style: normal;
+/* Enhanced dark theme with complementary values */
+[data-theme="dark"] {
+  /* Base colors - adjusted for better contrast */
+  --primary-color: #F6B17A;
+  --primary-color-light: #7a99d8;
+  --primary-color-dark: #466cb0;
+  --secondary-color: #7a9bd4;
+  --accent-color: #ffcd3c;
+  --accent-color-light: #ffe07f;
+  --accent-color-dark: #e0b325;
+
+  /* Text colors */
+  --text-primary: #f0f0f0;
+  --text-secondary: #a0aec0;
+  --text-muted: #718096;
+
+  /* Background colors */
+  --background-color: #2D3250;
+  --background-alt: #1a1a1a;
+  --card-background: #1e1e1e;
+
+  /* UI elements */
+  --navbar-background: rgba(18, 18, 18, 0.9);
+  --divider-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --hover-overlay: rgba(255, 255, 255, 0.05);
 }
 
-/* Add to globals.css to prevent horizontal overflow */
-html,
+/* Reset and Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
 body {
   max-width: 100%;
   overflow-x: hidden;
+  scroll-behavior: smooth;
+  font-family: "Amiri", serif;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  transition: background-color var(--transition-speed),
+    color var(--transition-speed) var(--transition-function);
+  line-height: 1.6;
 }
 
-* {
-  box-sizing: border-box;
+/* Enhanced Link Styling */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color var(--transition-speed) ease,
+    transform var(--transition-speed) ease;
 }
 
-/* Fix for Swiper container on small screens */
+a:hover {
+  color: var(--primary-color-light);
+}
+
+/* Enhanced Button Defaults */
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  transition: all var(--transition-speed) var(--transition-function);
+}
+
+/* Better heading defaults */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.2;
+  margin-bottom: 0.5em;
+  color: var(--primary-color);
+  transition: color var(--transition-speed) ease;
+}
+
+/* Component specific styles */
 .swiper-container {
   width: 100%;
   max-width: 100%;
   overflow: hidden;
 }
 
-/* Make images responsive */
+.swiper-pagination-bullet {
+  background-color: var(--text-secondary) !important;
+  opacity: 0.5 !important;
+  transition: all var(--transition-speed) ease !important;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: var(--accent-color) !important;
+  opacity: 1 !important;
+  transform: scale(1.2) !important;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  color: var(--accent-color) !important;
+  transition: all var(--transition-speed) ease !important;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  color: var(--primary-color) !important;
+  transform: scale(1.1) !important;
+}
+
 img {
   max-width: 100%;
   height: auto;
+  object-fit: cover;
 }
 
-/* Add this to your global CSS */
-svg,
-img[src$=".svg"] {
-  width: auto;
-  height: auto;
+
+/* Responsiveness */
+@media (max-width: 414px) {
+  body {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+  h2 {
+    font-size: 1.6rem;
+  }
+  h3 {
+    font-size: 1.4rem;
+  }
+}
+
+/* Enhanced Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Animation Classes */
+.page-transition {
+  animation: fadeIn 0.4s var(--transition-function);
+}
+
+.slide-up {
+  animation: slideUp 0.4s var(--transition-function);
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.5s var(--transition-function);
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Navigation active indicator animation */
+@keyframes navIndicator {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+.nav-active-indicator {
+  animation: navIndicator 0.3s var(--transition-function) forwards;
+}
+
+.nav-menu-animation {
+  animation: fadeInDown 0.3s ease-out;
+}
+
+/* Make cards and sections visually consistent */
+.section {
+  padding: 4rem 2rem;
+  margin: 2rem 0;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* New active state styles for components */
+.active {
+  color: var(--accent-color);
+  font-weight: bold;
+  position: relative;
+}
+
+.active::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--accent-color);
+  animation: navIndicator 0.3s var(--transition-function) forwards;
+}
+
+/* Add this code to the CSS file */
+
+.theme-transition,
+.theme-transition *,
+.theme-transition *:before,
+.theme-transition *:after {
+  transition: all 0.5s ease !important;
+  transition-delay: 0 !important;
+}
+
+/* Add better scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* Add smooth scroll with offset for header */
+html {
+  scroll-padding-top: 80px;
+}
+
+/* Add page loading animations */
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 400ms, transform 400ms;
+}
+
+/* Add to globals.css */
+.programs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.program-card {
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .program-card img {
+    height: 180px;
+  }
+}
+
+@media print {
+  .program-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  button,
+  .overlay,
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Add these styles to your existing globals.css */
+
+/* User type selection styles */
+.user-type-selection {
+  width: 100%;
+}
+
+.user-type-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+@media (min-width: 600px) {
+  .user-type-options {
+    flex-direction: row;
+    gap: 20px;
+  }
+}
+
+.type-option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 12px;
+  border: 2px solid var(--divider-color);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+}
+
+.type-option.active {
+  border-color: var(--primary-color);
+  background-color: var(--hover-overlay);
+}
+
+[data-theme="dark"] .type-option.active {
+  border-color: var(--accent-color);
+  background-color: rgba(246, 177, 122, 0.1);
+}
+
+.type-option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px var(--shadow-color);
 }

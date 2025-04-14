@@ -1,9 +1,9 @@
 "use client";
-import { styled} from "@mui/material";
+import { styled } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Card from '@mui/material/Card';
+import Card from "@mui/material/Card";
 import { styled as stf, keyframes } from "styled-components";
 
 // Define keyframes for animations
@@ -50,11 +50,18 @@ export const StyledWrapper = stf.div`
 
     @media (max-width: 1200px) {
       width: 45%; /* 2 cards per row for medium screens */
+      height: 280px; /* Slightly reduced height */
     }
 
     @media (max-width: 768px) {
       width: 100%; /* 1 card per row for small screens */
+      height: 260px; /* Further reduced height */
+      max-width: 450px; /* Add max-width for better appearance */
       margin: 0 auto;
+    }
+
+    @media (max-width: 480px) {
+      height: 240px; /* Even smaller height for mobile */
     }
   }
 
