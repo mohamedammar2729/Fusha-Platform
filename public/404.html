@@ -18,20 +18,26 @@
         // Get everything after the repo name
         var pathToForward = location.pathname.slice(basePath.length);
 
+        // Debug logging
+        console.log("Base path:", basePath);
+        console.log("Path to forward:", pathToForward);
+
         // Store the path to forward in localStorage
         localStorage.setItem("spa-path", pathToForward);
 
         // Redirect to the homepage with query parameter
-        location.replace(
+        var redirectUrl =
           location.protocol +
-            "//" +
-            location.hostname +
-            (location.port ? ":" + location.port : "") +
-            basePath +
-            "/?route=" +
-            encodeURIComponent(pathToForward) +
-            location.search
-        );
+          "//" +
+          location.hostname +
+          (location.port ? ":" + location.port : "") +
+          basePath +
+          "/?route=" +
+          encodeURIComponent(pathToForward) +
+          location.search;
+
+        console.log("Redirecting to:", redirectUrl);
+        location.replace(redirectUrl);
       })();
     </script>
   </head>
