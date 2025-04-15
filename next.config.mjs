@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
-  output: "standalone", // Add this line to enable dynamic routes
   compiler: {
     styledComponents: true,
     emotion: true,

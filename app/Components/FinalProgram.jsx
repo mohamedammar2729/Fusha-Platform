@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import styled from "styled-components";
 import Link from "next/link";
 import axios from "axios";
@@ -28,8 +28,14 @@ import HomeIcon from "@mui/icons-material/Home";
 import SendIcon from "@mui/icons-material/Send";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
-const FinalProgram = () => {
-  const { darkMode, theme } = useTheme(); // Get theme context
+const FinalProgram = ({ programId }) => {
+  const { theme, darkMode } = useTheme();
+  const router = useRouter();
+  const params = useParams();
+
+  // Use programId from props, fallback to URL params if needed
+  const id = programId || params.final;
+
   const [hasMounted, setHasMounted] = useState(false);
   const [userProgram, setUserProgram] = useState([]);
   const [userPeople, setUserPeople] = useState("");
@@ -46,8 +52,6 @@ const FinalProgram = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [tripSchedule, setTripSchedule] = useState([]);
   const [tripTips, setTripTips] = useState([]);
-
-  const router = useRouter();
 
   useEffect(() => {
     setHasMounted(true);
