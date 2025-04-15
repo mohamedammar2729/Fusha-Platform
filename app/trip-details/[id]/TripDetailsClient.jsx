@@ -713,6 +713,20 @@ export default function TripDetailsClient() {
   const router = useRouter();
   const { darkMode, theme } = useTheme(); // Use theme context
 
+  // Add this near the top of your component
+  useEffect(() => {
+    console.log("TripDetailsClient mounted with ID:", id);
+    console.log("Current pathname:", window.location.pathname);
+    console.log("Current URL:", window.location.href);
+
+    // Debug routing data
+    const savedPath = localStorage.getItem("spa-path");
+    console.log("spa-path in localStorage:", savedPath);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    console.log("gh-redirect param:", urlParams.get("gh-redirect"));
+  }, [id]);
+
   // Add this inside your useEffect in TripDetailsClient.jsx:
   useEffect(() => {
     const fetchTripDetails = async () => {
