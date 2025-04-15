@@ -357,6 +357,23 @@ const Trips = () => {
   };
 
   const handleViewDetails = (id) => {
+    // Find the trip data for this ID
+    const tripData = items.find((item) => item._id === id);
+    if (tripData) {
+      // Cache the trip data in localStorage
+      const cachedTripsString = localStorage.getItem("cachedTrips");
+      let cachedTrips = [];
+      if (cachedTripsString) {
+        cachedTrips = JSON.parse(cachedTripsString);
+        // Remove this trip if it's already cached
+        cachedTrips = cachedTrips.filter((trip) => trip._id !== id);
+      }
+      cachedTrips.push(tripData);
+      localStorage.setItem(
+        "cachedTrips",
+        JSON.stringify(cachedTrips.slice(-10))
+      ); // Keep last 10 trips
+    }
     router.push(`/trip-details/${id}`);
   };
 

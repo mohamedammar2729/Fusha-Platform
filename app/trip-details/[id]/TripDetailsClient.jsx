@@ -713,21 +713,53 @@ export default function TripDetailsClient() {
   const router = useRouter();
   const { darkMode, theme } = useTheme(); // Use theme context
 
+  // Add this inside your useEffect in TripDetailsClient.jsx:
   useEffect(() => {
     const fetchTripDetails = async () => {
       try {
+        setLoading(true);
+
         const token = localStorage.getItem("token");
         if (!token) {
           router.push("/");
           return;
         }
 
-        const response = await axios.get(
-          `https://iti-server-production.up.railway.app/api/createprogram/${id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        // First try to get the trip from localStorage cache
+        const cachedTripsString = localStorage.getItem("cachedTrips");
+        let cachedTrips = [];
+        if (cachedTripsString) {
+          cachedTrips = JSON.parse(cachedTripsString);
+          const cachedTrip = cachedTrips.find((trip) => trip._id === id);
+          if (cachedTrip) {
+            setTrip(cachedTrip);
+          }
+        }
 
-        setTrip(response.data);
+        // Also try to fetch from API
+        try {
+          const response = await axios.get(
+            `https://iti-server-production.up.railway.app/api/createprogram/${id}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+          // Update the UI with the latest data
+          setTrip(response.data);
+
+          // Update the cache
+          const newCachedTrips = cachedTrips.filter((trip) => trip._id !== id);
+          newCachedTrips.push(response.data);
+          localStorage.setItem(
+            "cachedTrips",
+            JSON.stringify(newCachedTrips.slice(-10))
+          ); // Keep last 10 trips
+        } catch (apiError) {
+          console.error("API error:", apiError);
+          // If we already set the trip from cache, don't show an error
+          if (!trip) {
+            setError("تعذر الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت.");
+          }
+        }
 
         // Check if this trip is in favorites
         const savedFavorites = JSON.parse(
@@ -736,7 +768,7 @@ export default function TripDetailsClient() {
         setIsFavorite(savedFavorites.includes(id));
       } catch (error) {
         console.error("Failed to fetch trip details:", error);
-        setError(error.message);
+        setError("حدث خطأ أثناء تحميل بيانات الرحلة");
       } finally {
         setLoading(false);
       }
