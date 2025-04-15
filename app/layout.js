@@ -6,39 +6,12 @@ import { StyledEngineProvider } from "@mui/material/styles";
 import { ThemeProvider } from "./context/ThemeContext";
 import { useTheme } from "./context/ThemeContext";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 // Create a wrapper component to apply theme styles to body
 function ThemeWrapper({ children }) {
   const { darkMode, theme } = useTheme();
   const [userType, setUserType] = useState(null);
   const [mounted, setMounted] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    // Handle GitHub Pages SPA routing
-    if (typeof window !== "undefined") {
-      // Check if we have a 'route' query parameter
-      const url = new URL(window.location.href);
-      const route = url.searchParams.get("route");
-
-      if (route) {
-        // Remove the query parameter from the URL
-        url.searchParams.delete("route");
-        window.history.replaceState({}, document.title, url.toString());
-
-        // Navigate to the requested path
-        router.push(route);
-      }
-
-      // Alternative method using localStorage
-      const savedPath = localStorage.getItem("spa-path");
-      if (savedPath) {
-        localStorage.removeItem("spa-path");
-        router.push(savedPath);
-      }
-    }
-  }, [router]);
 
   useEffect(() => {
     // Check for user in localStorage
@@ -59,6 +32,7 @@ function ThemeWrapper({ children }) {
 
   // Choose the appropriate NavBar component
   const NavigationBar = userType === "seller" ? NavBarV2 : NavBar;
+  // Add this to prevent flash of unstyled content
 
   return (
     <body
@@ -79,13 +53,11 @@ function ThemeWrapper({ children }) {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ar" dir="rtl">
-      <head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-        />
-      </head>
+    <html lang="ar" data-theme="light">
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      />
       <ThemeProvider>
         <StyledEngineProvider injectFirst>
           <ThemeWrapper>{children}</ThemeWrapper>
