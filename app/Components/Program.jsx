@@ -704,7 +704,7 @@ const Program = () => {
           {savedItems.length > 0 && (
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
-                href="/Fusha-Platform/create/final"
+                href="/create/final"
                 style={{ textDecoration: "none" }}
               >
                 <div

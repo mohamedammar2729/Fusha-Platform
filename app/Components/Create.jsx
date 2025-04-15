@@ -186,7 +186,7 @@ export default function Create() {
       setAiDialogOpen(false);
 
       // FinalProgram component will handle the next steps
-      router.push("/Fusha-Platform/create/final");
+      router.push("/create/final");
     } catch (error) {
       console.error("Error generating AI trip:", error);
       setAiError("حدث خطأ أثناء إنشاء الرحلة. يرجى المحاولة مرة أخرى.");
