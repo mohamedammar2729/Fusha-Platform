@@ -1,3 +1,4 @@
+
 import PlaceDetailClient from "./PlaceDetailClient";
 
 // This is a server component - no "use client" directive
@@ -11,6 +12,7 @@ export async function generateStaticParams() {
   try {
     const response = await fetch(
       "https://iti-server-production.up.railway.app/api/seller-places/all-ids"
+
     );
 
     if (!response.ok) {
