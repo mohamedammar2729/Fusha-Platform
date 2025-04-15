@@ -6,6 +6,7 @@ import { StyledEngineProvider } from "@mui/material/styles";
 import { ThemeProvider } from "./context/ThemeContext";
 import { useTheme } from "./context/ThemeContext";
 import { useState, useEffect } from "react";
+import GitHubPagesRouter from "./Components/GitHubPagesRouter"; // Import the new component
 
 // Create a wrapper component to apply theme styles to body
 function ThemeWrapper({ children }) {
@@ -32,7 +33,6 @@ function ThemeWrapper({ children }) {
 
   // Choose the appropriate NavBar component
   const NavigationBar = userType === "seller" ? NavBarV2 : NavBar;
-  // Add this to prevent flash of unstyled content
 
   return (
     <body
@@ -45,6 +45,8 @@ function ThemeWrapper({ children }) {
         transition: "background-color 0.5s ease, color 0.5s ease",
       }}
     >
+      {/* Add the GitHubPagesRouter component */}
+      <GitHubPagesRouter />
       {mounted && userType !== "admin" && <NavigationBar />}
       {children}
     </body>
