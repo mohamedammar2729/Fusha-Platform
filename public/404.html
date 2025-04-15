@@ -4,40 +4,45 @@
     <meta charset="utf-8" />
     <title>Fusha Platform - Redirecting...</title>
     <script>
+      // Debug mode
+      var DEBUG = true;
+      function log(msg, data) {
+        if (DEBUG && console && console.log) {
+          console.log("404 REDIRECT: " + msg, data || "");
+        }
+      }
+
       // Single Page App routing for GitHub Pages
       (function () {
-        var pathSegmentsToKeep = 1; // Keep 'Fusha-Platform' but remove after
-        var location = window.location;
+        log("404.html script running");
 
-        // Get the repo name from URL (e.g., /Fusha-Platform)
-        var basePath = location.pathname
-          .split("/")
-          .slice(0, pathSegmentsToKeep + 1)
-          .join("/");
+        // This gets the full pathname including the repo name
+        var fullPath = window.location.pathname;
+        log("Full path:", fullPath);
 
-        // Get everything after the repo name
-        var pathToForward = location.pathname.slice(basePath.length);
+        // Assuming format is /{repo-name}/* for GitHub Pages
+        // Extract the repo name from the path
+        var pathParts = fullPath.split("/");
+        var repoName = pathParts[1]; // e.g. "Fusha-Platform"
+        log("Repo name:", repoName);
 
-        // Debug logging
-        console.log("Base path:", basePath);
-        console.log("Path to forward:", pathToForward);
+        // Everything after the repo name is the spa path
+        var spaPath = "/" + pathParts.slice(2).join("/");
+        log("SPA path to store:", spaPath);
 
-        // Store the path to forward in localStorage
-        localStorage.setItem("spa-path", pathToForward);
+        // Store path for the main app to pick up
+        localStorage.setItem("spa-path", spaPath);
 
-        // Redirect to the homepage with query parameter
+        // Redirect to the home page with a special parameter
         var redirectUrl =
-          location.protocol +
-          "//" +
-          location.hostname +
-          (location.port ? ":" + location.port : "") +
-          basePath +
-          "/?route=" +
-          encodeURIComponent(pathToForward) +
-          location.search;
+          window.location.origin +
+          "/" +
+          repoName +
+          "/?gh-redirect=" +
+          encodeURIComponent(spaPath);
 
-        console.log("Redirecting to:", redirectUrl);
-        location.replace(redirectUrl);
+        log("Redirecting to:", redirectUrl);
+        window.location.replace(redirectUrl);
       })();
     </script>
   </head>
@@ -45,5 +50,14 @@
     <h2 style="text-align: center; font-family: Arial, sans-serif">
       جاري التحميل...
     </h2>
+    <p style="text-align: center; font-family: Arial, sans-serif">
+      إذا لم يتم إعادة التوجيه تلقائيًا،
+      <a id="manual-redirect" href="/">انقر هنا</a>.
+    </p>
+    <script>
+      // Set the manual redirect link to the home page
+      document.getElementById("manual-redirect").href =
+        "/" + window.location.pathname.split("/")[1];
+    </script>
   </body>
 </html>
