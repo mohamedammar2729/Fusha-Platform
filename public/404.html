@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Fusha Platform - Redirecting...</title>
+    <script>
+      // Single Page App routing for GitHub Pages
+      (function () {
+        var pathSegmentsToKeep = 1; // Keep 'Fusha-Platform' but remove after
+        var location = window.location;
+
+        // Get the repo name from URL (e.g., /Fusha-Platform)
+        var basePath = location.pathname
+          .split("/")
+          .slice(0, pathSegmentsToKeep + 1)
+          .join("/");
+
+        // Get everything after the repo name
+        var pathToForward = location.pathname.slice(basePath.length);
+
+        // Store the path to forward in localStorage
+        localStorage.setItem("spa-path", pathToForward);
+
+        // Redirect to the homepage with query parameter
+        location.replace(
+          location.protocol +
+            "//" +
+            location.hostname +
+            (location.port ? ":" + location.port : "") +
+            basePath +
+            "/?route=" +
+            encodeURIComponent(pathToForward) +
+            location.search
+        );
+      })();
+    </script>
+  </head>
+  <body>
+    <h2 style="text-align: center; font-family: Arial, sans-serif">
+      جاري التحميل...
+    </h2>
+  </body>
+</html>
