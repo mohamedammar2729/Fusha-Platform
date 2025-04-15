@@ -17,12 +17,15 @@ import MenuItem from "@mui/material/MenuItem";
 import SearchIcon from "@mui/icons-material/Search";
 import Image from "next/image";
 
-const Section1 = ({ theme, darkMode }) => {
 const images = [
-  "/1.jpg", // These should be in your public folder
-  "/2.jpg",
-  "/3.jpg",
+  "https://images.unsplash.com/photo-1652258943679-1516be59461f?q=80&w=2564&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://images.unsplash.com/photo-1644517270263-4112379d97ca?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://images.unsplash.com/photo-1553913861-c0fddf2619ee?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
 ];
+
+
+const Section1 = ({ theme, darkMode }) => {
+
   const renderImages = useMemo(
     () =>
       images.map((src, index) => (
