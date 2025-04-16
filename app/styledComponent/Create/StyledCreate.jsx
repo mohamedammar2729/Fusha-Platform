@@ -219,13 +219,17 @@ export const InputBox = styled(Box)(({ $hasError, $darkMode }) => ({
   },
 }));
 
-export const NextButton = styled(Button)(({ $darkMode }) => ({
+export const NextButton = styled(Button)(({ $darkMode, theme }) => ({
   background: $darkMode
-    ? "linear-gradient(90deg, #F6B17A 30%, #E38E49 90%)"
-    : "linear-gradient(90deg, #e38e49 30%, #f6b17a 90%)",
+    ? `linear-gradient(90deg, ${theme?.colors?.primary || "#F6B17A"} 30%, ${
+        theme?.colors?.accent || "#E38E49"
+      } 90%)`
+    : `linear-gradient(90deg, ${theme?.colors?.primary || "#4a72ac"} 30%, ${
+        theme?.colors?.secondary || "#4a72ac"
+      } 90%)`,
   borderRadius: "30px",
   border: "none",
-  color: $darkMode ? "#2D3250" : "#fff",
+  color: $darkMode ? theme?.colors?.background || "#2D3250" : "#fff",
   fontSize: "18px",
   fontWeight: "bold",
   padding: "12px 30px",
@@ -238,17 +242,21 @@ export const NextButton = styled(Button)(({ $darkMode }) => ({
   animation: `${slideIn} 0.5s ease-in-out`,
   fontFamily: "'Cairo', sans-serif",
   boxShadow: $darkMode
-    ? "0px 4px 15px rgba(246, 177, 122, 0.4)"
-    : "0px 4px 15px rgba(227, 142, 73, 0.3)",
+    ? `0px 4px 15px ${theme?.colors?.primary}66` // 40% opacity
+    : `0px 4px 15px ${theme?.colors?.primary}4D`, // 30% opacity
 
   "&:hover": {
-    background: $darkMode ? "#2D3250" : "#ffffff",
-    color: $darkMode ? "#F6B17A" : "#e38e49",
-    border: $darkMode ? "2px solid #F6B17A" : "2px solid #e38e49",
+    background: $darkMode ? theme?.colors?.background || "#2D3250" : "#ffffff",
+    color: $darkMode
+      ? theme?.colors?.primary || "#F6B17A"
+      : theme?.colors?.primary || "#4a72ac",
+    border: $darkMode
+      ? `2px solid ${theme?.colors?.primary || "#F6B17A"}`
+      : `2px solid ${theme?.colors?.primary || "#4a72ac"}`,
     transform: "scale(1.05)",
     boxShadow: $darkMode
-      ? "0px 6px 20px rgba(246, 177, 122, 0.5)"
-      : "0px 6px 20px rgba(227, 142, 73, 0.4)",
+      ? `0px 6px 20px ${theme?.colors?.primary}80` // 50% opacity
+      : `0px 6px 20px ${theme?.colors?.primary}66`, // 40% opacity
   },
 
   "@media (max-width: 600px)": {

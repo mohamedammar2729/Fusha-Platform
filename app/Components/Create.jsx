@@ -611,7 +611,7 @@ export default function Create() {
                     },
                   },
                   "& .MuiInputLabel-shrink": {
-                    transform: "translate(0, -6px) scale(0.75)",
+                    transform: "translate(0, -10px) scale(0.75)",
                     transformOrigin: "right top",
                   },
                   "& .MuiFormHelperText-root": {
