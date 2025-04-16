@@ -456,7 +456,7 @@ const Trips = () => {
                       : "rgba(46, 123, 184, 0.4)"
                   }`,
                 }}
-                onClick={() => router.push("/create-trip")}
+                onClick={() => router.push("/create")}
               >
                 <AddIcon /> إنشاء رحلة جديدة
               </AddTripButton>
