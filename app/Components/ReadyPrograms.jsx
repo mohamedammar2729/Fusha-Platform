@@ -95,8 +95,7 @@ import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import { th } from "date-fns/locale";
-import { Subtitles } from "lucide-react";
+
 
 // Helper functions for generating random content
 const getRandomActivityTitle = () => {
@@ -236,7 +235,12 @@ const ReadyPrograms = () => {
     }
   }, [bookmarked]);
 
-  // Filter, sort, and paginate items
+  // First useEffect - Reset to page 1 when filters change (but not when currentPage changes)
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter]);
+
+  // Second useEffect - Handle filtering, sorting, and pagination
   useEffect(() => {
     // Filter logic
     let result = [...items];
@@ -270,11 +274,8 @@ const ReadyPrograms = () => {
         break;
     }
 
-    // Calculate total pages
+    // Calculate total pages based on filtered results
     setTotalPages(Math.ceil(result.length / itemsPerPage));
-
-    // Reset to page 1 when filters change
-    setCurrentPage(1);
 
     // Apply pagination
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -525,9 +526,17 @@ const ReadyPrograms = () => {
                       size="small"
                       onClick={() => handleVoiceSearch()}
                     >
-                      <MicIcon sx={{ color: theme.colors.accent }} />
+                      <MicIcon
+                        sx={{ color: theme.colors.accent, fontSize: "28px" }}
+                      />
                     </IconButton>
-                    <SearchIcon sx={{ color: theme.colors.primary }} />
+                    <SearchIcon
+                      sx={{
+                        color: theme.colors.primary,
+                        marginTop: "4px",
+                        fontSize: "28px",
+                      }}
+                    />
                   </Box>
                 </InputAdornment>
               ),

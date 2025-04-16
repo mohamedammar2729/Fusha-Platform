@@ -234,7 +234,7 @@ const EmptyStateContainer = styled(Box)`
 const MOCK_REVIEWS = [
   {
     id: 1,
-    userName: "أحمد الشمري",
+    userName: "أحمد ",
     userAvatar: "https://randomuser.me/api/portraits/men/32.jpg",
     placeId: 1,
     placeName: "كافيه الحديقة",
@@ -256,7 +256,7 @@ const MOCK_REVIEWS = [
   },
   {
     id: 2,
-    userName: "مها العتيبي",
+    userName: "مني ",
     userAvatar: "https://randomuser.me/api/portraits/women/44.jpg",
     placeId: 1,
     placeName: "كافيه الحديقة",
@@ -268,13 +268,13 @@ const MOCK_REVIEWS = [
     category: "مطاعم وكافيهات",
     likes: 8,
     images: [
-      "https://images.unsplash.com/photo-1622360075103-7e0efbe65967?w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=600&auto=format&fit=crop",
     ],
     hasReply: false,
   },
   {
     id: 3,
-    userName: "خالد الدوسري",
+    userName: "خالد ",
     userAvatar: "https://randomuser.me/api/portraits/men/46.jpg",
     placeId: 1,
     placeName: "كافيه الحديقة",
@@ -294,7 +294,7 @@ const MOCK_REVIEWS = [
   },
   {
     id: 4,
-    userName: "نورة القحطاني",
+    userName: "نورة ",
     userAvatar: "https://randomuser.me/api/portraits/women/65.jpg",
     placeId: 1,
     placeName: "كافيه الحديقة",
@@ -306,8 +306,8 @@ const MOCK_REVIEWS = [
     category: "مطاعم وكافيهات",
     likes: 15,
     images: [
-      "https://images.unsplash.com/photo-1563897539633-7d6c93be5f29?w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1556742077-0a6b3a331e5d?w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=600&auto=format&fit=crop",
     ],
     hasReply: true,
     reply: {
@@ -317,7 +317,7 @@ const MOCK_REVIEWS = [
   },
   {
     id: 5,
-    userName: "سلمان الحربي",
+    userName: " مصطفي",
     userAvatar: "https://randomuser.me/api/portraits/men/72.jpg",
     placeId: 1,
     placeName: "كافيه الحديقة",

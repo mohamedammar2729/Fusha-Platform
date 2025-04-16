@@ -9,8 +9,6 @@ import {
   MyOwnSelect,
   NextButton,
   NumberCircle,
-  StepIndicator,
-  StepText,
   FormHeader,
   FormTitle,
   FormSubtitle,
@@ -18,7 +16,7 @@ import {
   RequiredStar,
   InfoTooltip,
 } from "../styledComponent/Create/StyledCreate";
-import { Menu, MenuItem, Tooltip, Zoom } from "@mui/material";
+import { MenuItem, Tooltip, Zoom } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { StyledTextField } from "../styledComponent/Create/StyledCreate";
@@ -69,6 +67,11 @@ export default function Create() {
     amount: false,
     destination: false,
   });
+  const [errorMessages, setErrorMessages] = useState({
+    people: "هذا الحقل مطلوب",
+    amount: "هذا الحقل مطلوب",
+    destination: "هذا الحقل مطلوب",
+  });
   const [create, setCreate] = useState(true);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -82,11 +85,20 @@ export default function Create() {
   const validateForm = () => {
     const newErrors = {
       people: !form.people,
-      amount: !form.amount,
+      amount: !form.amount || parseFloat(form.amount) < 1000,
       destination: !form.destination,
     };
 
+    const newErrorMessages = {
+      people: "هذا الحقل مطلوب",
+      amount: !form.amount
+        ? "هذا الحقل مطلوب"
+        : "الميزانية يجب ان لا تقل عن 1000 جنيه",
+      destination: "هذا الحقل مطلوب",
+    };
+
     setErrors(newErrors);
+    setErrorMessages(newErrorMessages);
     return !Object.values(newErrors).some((error) => error);
   };
 
@@ -112,7 +124,22 @@ export default function Create() {
 
   const handleChange = useCallback(
     (field) => (event) => {
-      setForm((prevForm) => ({ ...prevForm, [field]: event.target.value }));
+      const value = event.target.value;
+
+      if (field === "amount" && value) {
+        const numValue = parseFloat(value);
+        if (numValue < 1000) {
+          setErrors((prev) => ({ ...prev, amount: true }));
+          setErrorMessages((prev) => ({
+            ...prev,
+            amount: "الميزانية يجب ان لا تقل عن 1000 جنيه",
+          }));
+        } else {
+          setErrors((prev) => ({ ...prev, amount: false }));
+        }
+      }
+
+      setForm((prevForm) => ({ ...prevForm, [field]: value }));
     },
     []
   );
@@ -137,7 +164,7 @@ export default function Create() {
 
       // Call the API with the user's prompt
       const response = await fetch(
-        "https://iti-server-production.up.railway.app/api/ai/generate-trip",
+        "http://localhost:4000/api/ai/generate-trip",
         {
           method: "POST",
           headers: {
@@ -233,7 +260,7 @@ export default function Create() {
                 onChange={handleChange("people")}
                 required
                 error={errors.people}
-                helperText={errors.people ? "هذا الحقل مطلوب" : ""}
+                helperText={errors.people ? errorMessages.people : ""}
                 inputProps={{ min: 1 }}
                 $darkMode={darkMode}
               />
@@ -262,15 +289,15 @@ export default function Create() {
               <StyledTextField
                 type="number"
                 fullWidth
-                placeholder="اكتب المبلغ هنا..."
+                placeholder="اكتب المبلغ هنا (الحد الأدنى 1000)..."
                 value={form.amount}
                 onChange={handleChange("amount")}
                 required
                 error={errors.amount}
-                helperText={errors.amount ? "هذا الحقل مطلوب" : ""}
-                inputProps={{ min: 0 }}
+                helperText={errors.amount ? errorMessages.amount : ""}
+                inputProps={{ min: 1000 }}
                 InputProps={{
-                  inputProps: { min: 0 },
+                  inputProps: { min: 1000 },
                 }}
                 $darkMode={darkMode}
               />
@@ -521,30 +548,85 @@ export default function Create() {
                   dir: "rtl",
                 }}
                 sx={{
+                  width: "100%",
+                  marginBottom: "20px",
+                  transition: "all 0.3s ease",
+                  "& .MuiInputBase-input": {
+                    textAlign: "right",
+                    fontSize: "0.95rem",
+                    color: darkMode ? "#FFFFFF" : "#000000",
+                    padding: "14px 16px",
+                    "&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-internal-autofill-selected":
+                      {
+                        WebkitTextFillColor: darkMode ? "#FFFFFF" : "#000000",
+                        WebkitBoxShadow: `0 0 0px 1000px ${
+                          darkMode
+                            ? "rgba(66, 71, 105, 0)"
+                            : "rgba(247, 249, 252, 0)"
+                        } inset`,
+                        transition: "background-color 5000s ease-in-out 0s",
+                        borderColor: darkMode ? "#F6B17A" : "#3b5998",
+                      },
+                  },
                   "& .MuiOutlinedInput-root": {
-                    borderRadius: "12px",
+                    borderRadius: "10px",
+                    transition: "all 0.3s ease",
                     backgroundColor: darkMode
-                      ? `${theme.colors.background}40`
-                      : "rgba(0, 0, 0, 0.02)",
+                      ? "rgba(255, 255, 255, 0.05)"
+                      : "#f7f9fc",
+                    flexDirection: "row-reverse",
+                    paddingRight: "16px",
+                    "&:hover": {
+                      backgroundColor: darkMode
+                        ? "rgba(255, 255, 255, 0.08)"
+                        : "#f0f4f8",
+                    },
+                    "&.Mui-focused": {
+                      backgroundColor: darkMode
+                        ? "rgba(255, 255, 255, 0.1)"
+                        : "#e8f0fe",
+                    },
                     "& fieldset": {
-                      borderColor: darkMode
-                        ? `${theme.colors.primary}60`
-                        : "rgba(0, 0, 0, 0.23)",
+                      borderColor: darkMode ? "#7077A1" : "#c4c4c4",
                     },
                     "&:hover fieldset": {
-                      borderColor: darkMode
-                        ? theme.colors.primary
-                        : "rgba(0, 0, 0, 0.23)",
+                      borderColor: darkMode ? "#F6B17A" : "#3b5998",
                     },
                     "&.Mui-focused fieldset": {
-                      borderColor: theme.colors.primary,
+                      borderColor: darkMode ? "#F6B17A" : "#3b5998",
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      textAlign: "right",
                     },
                   },
                   "& .MuiInputLabel-root": {
-                    color: darkMode ? theme.colors.textSecondary : undefined,
+                    color: darkMode ? "#AAB2D5" : "#555",
+                    fontSize: "0.95rem",
+                    transformOrigin: "right top",
+                    transform: "translate(0, 16px) scale(1)",
+                    right: "16px",
+                    left: "auto",
+                    "&.Mui-focused": {
+                      color: darkMode ? "#F6B17A" : "#3b5998",
+                    },
                   },
-                  "& .MuiInputBase-input": {
-                    color: darkMode ? theme.colors.text : undefined,
+                  "& .MuiInputLabel-shrink": {
+                    transform: "translate(0, -6px) scale(0.75)",
+                    transformOrigin: "right top",
+                  },
+                  "& .MuiFormHelperText-root": {
+                    marginTop: "4px",
+                    textAlign: "right",
+                    color: darkMode ? "#f6b17a" : "#d32f2f",
+                    position: "relative",
+                    minHeight: "1.25em",
+                  },
+                  "& .MuiFormLabel-asterisk": {
+                    display: "none",
+                  },
+                  // Special handling for multiline
+                  "& .MuiInputBase-inputMultiline": {
+                    paddingRight: "14px",
                   },
                 }}
               />
