@@ -117,7 +117,7 @@ const TripDetailsDialog = ({
         if (!token) return;
 
         const response = await axios.get(
-          `http://localhost:4000/api/createprogram/${tripId}`,
+          `https://iti-server-production.up.railway.app/api/createprogram/${tripId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -168,9 +168,12 @@ const TripDetailsDialog = ({
   const confirmDeleteTrip = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:4000/api/createprogram/${tripId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `https://iti-server-production.up.railway.app/api/createprogram/${tripId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       // Notify parent that trip was deleted
       if (onTripDeleted) onTripDeleted(tripId);
