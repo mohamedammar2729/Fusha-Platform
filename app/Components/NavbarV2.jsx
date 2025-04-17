@@ -242,39 +242,37 @@ const NavBarV2 = () => {
                       key={link.href}
                       onClick={() => {
                         handleCloseNavMenu();
-                        handleNavigation(link); // Use the new handler instead of direct router.push
+                        handleNavigation(link);
                       }}
                       sx={{
                         justifyContent: "flex-end",
                         borderRadius: "10px",
                         mx: 1,
                         my: 0.5,
-                        backgroundColor:
-                          pathname === link.href
-                            ? darkMode
-                              ? `${theme.colors.primary}33` // With 20% opacity
-                              : `${theme.colors.primary}1A` // With 10% opacity
-                            : "transparent",
-                        fontWeight: pathname === link.href ? "600" : "400",
+                        backgroundColor: isLinkActive(link.href)
+                          ? darkMode
+                            ? `${theme.colors.primary}33`
+                            : `${theme.colors.primary}1A`
+                          : "transparent",
+                        fontWeight: isLinkActive(link.href) ? "600" : "400",
                         transition: "all 0.3s ease",
                         "&:hover": {
                           backgroundColor: darkMode
-                            ? `${theme.colors.primary}4D` // With 30% opacity
-                            : `${theme.colors.primary}26`, // With 15% opacity
+                            ? `${theme.colors.primary}4D`
+                            : `${theme.colors.primary}26`,
                         },
                       }}
                     >
                       <Box
                         component="span"
                         sx={{
-                          color:
-                            pathname === link.href
-                              ? theme.colors.primary
-                              : darkMode
-                              ? "white"
-                              : "inherit",
+                          color: isLinkActive(link.href)
+                            ? theme.colors.primary
+                            : darkMode
+                            ? "white"
+                            : "inherit",
                           fontSize: "1rem",
-                          fontWeight: pathname === link.href ? "600" : "400",
+                          fontWeight: isLinkActive(link.href) ? "600" : "400",
                           transition: "all 0.3s ease",
                         }}
                       >
@@ -684,30 +682,28 @@ const NavBarV2 = () => {
                       onClick={() => router.push(link.href)}
                       sx={{
                         position: "relative",
-                        color:
-                          pathname === link.href
-                            ? theme.colors.primary
-                            : darkMode
-                            ? "white"
-                            : "inherit",
-                        fontWeight: pathname === link.href ? "700" : "600",
+                        color: isLinkActive(link.href)
+                          ? theme.colors.primary
+                          : darkMode
+                          ? "white"
+                          : "inherit",
+                        fontWeight: isLinkActive(link.href) ? "700" : "600",
                         transition: "color 0.3s ease",
                         "&:hover": {
                           color: theme.colors.primary,
                         },
-                        "&::after":
-                          pathname === link.href
-                            ? {
-                                content: '""',
-                                position: "absolute",
-                                width: "100%",
-                                height: "3px",
-                                bottom: "-8px",
-                                left: 0,
-                                backgroundColor: theme.colors.primary,
-                                borderRadius: "2px",
-                              }
-                            : {},
+                        "&::after": isLinkActive(link.href)
+                          ? {
+                              content: '""',
+                              position: "absolute",
+                              width: "100%",
+                              height: "3px",
+                              bottom: "-8px",
+                              left: 0,
+                              backgroundColor: theme.colors.primary,
+                              borderRadius: "2px",
+                            }
+                          : {},
                       }}
                     >
                       {link.label}
