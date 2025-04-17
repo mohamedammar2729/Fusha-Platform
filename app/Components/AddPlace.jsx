@@ -34,6 +34,15 @@ import {
   Alert,
   AlertTitle,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Fade,
+  useMediaQuery,
+  Tabs,
+  Tab,
+  Link,
 } from "@mui/material";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -66,6 +75,17 @@ import AccessibleIcon from "@mui/icons-material/Accessible";
 import PetsOutlinedIcon from "@mui/icons-material/PetsOutlined";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import SpaIcon from "@mui/icons-material/Spa";
+import RestoreIcon from "@mui/icons-material/Restore";
+import AddIcon from "@mui/icons-material/Add";
+import EventNoteIcon from "@mui/icons-material/EventNote";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import EditIcon from "@mui/icons-material/Edit";
+import PhoneIcon from "@mui/icons-material/Phone";
+import EmailIcon from "@mui/icons-material/Email";
+import LanguageIcon from "@mui/icons-material/Language";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 import { motion } from "framer-motion";
 import axios from "axios";
@@ -78,6 +98,8 @@ import { styled } from "@mui/material/styles";
 
 // Import the new component
 import AutoCloseSelect from "./AutoCloseSelect";
+
+import { useSearchParams } from "next/navigation";
 
 // Create a styled Select component
 
@@ -174,27 +196,6 @@ const AddPlace = () => {
     customSchedule: {},
   });
 
-  // Add these custom MUI styles for form fields
-  const formFieldStyles = {
-    "& .MuiOutlinedInput-root": {
-      transition: "all 0.2s ease-in-out",
-      borderRadius: 1.5,
-      "&:hover .MuiOutlinedInput-notchedOutline": {
-        borderColor: theme.colors.primary,
-      },
-      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-        borderWidth: 2,
-      },
-    },
-    "& .MuiFormLabel-root": {
-      fontSize: "0.9rem",
-      fontWeight: 500,
-    },
-    "& .MuiInputBase-input": {
-      padding: "14px 16px",
-    },
-  };
-
   // Add this after your state declarations
   const [saveStatus, setSaveStatus] = useState(null); // null, 'saving', 'saved'
 
@@ -203,7 +204,7 @@ const AddPlace = () => {
     debounce(() => {
       setSaveStatus("saving");
       try {
-        // Save current form state to localStorage
+        // Save current form state to localStorage with timestamp
         localStorage.setItem(
           "place_form_draft",
           JSON.stringify({
@@ -219,7 +220,7 @@ const AddPlace = () => {
               to: weekendHours.to.format(),
             },
             activeStep,
-            // We don't save images because they're Files/Blobs that can't be JSON serialized
+            lastSaved: new Date().toISOString(), // Add timestamp
           })
         );
 
@@ -227,7 +228,7 @@ const AddPlace = () => {
           setSaveStatus("saved");
           // Reset after 3 seconds
           setTimeout(() => setSaveStatus(null), 3000);
-        }, 800);
+        }, 2000);
       } catch (error) {
         console.error("Error auto-saving form:", error);
       }
@@ -494,7 +495,7 @@ const AddPlace = () => {
       localStorage.removeItem("placeDraft");
 
       setTimeout(() => {
-        router.push("/my-places");
+        router.push("/");
       }, 2000);
     } catch (error) {
       console.error("Error submitting place:", error);
@@ -524,31 +525,54 @@ const AddPlace = () => {
     };
   }, []);
 
+  const searchParams = useSearchParams();
+  const [draftDialogOpen, setDraftDialogOpen] = useState(false);
+  const [draftDetails, setDraftDetails] = useState(null);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   // Add a function to load draft on component mount
   useEffect(() => {
     try {
+      // Check if there's a saved draft
       const savedDraft = localStorage.getItem("place_form_draft");
-      if (savedDraft) {
+
+      // Only show dialog if there's a draft and user came from navbar
+      const fromNavbar = searchParams.get("source") === "navbar";
+
+      if (savedDraft && fromNavbar) {
         const parsedDraft = JSON.parse(savedDraft);
 
-        // Confirm before restoring
-        if (confirm("هل ترغب في استعادة المسودة المحفوظة؟")) {
-          setFormData(parsedDraft.formData);
-          setSelectedAmenities(parsedDraft.selectedAmenities);
-          setCustomHours(parsedDraft.customHours);
-          setWeekdayHours({
-            from: dayjs(parsedDraft.weekdayHours.from),
-            to: dayjs(parsedDraft.weekdayHours.to),
-          });
-          setWeekendHours({
-            from: dayjs(parsedDraft.weekendHours.from),
-            to: dayjs(parsedDraft.weekendHours.to),
-          });
-          setActiveStep(parsedDraft.activeStep);
-        } else {
-          // If user declines, clear the draft
-          localStorage.removeItem("place_form_draft");
+        // Calculate how long ago the draft was saved
+        let lastEditedTime = "Unknown time";
+        if (parsedDraft.lastSaved) {
+          const lastSaved = new Date(parsedDraft.lastSaved);
+          const now = new Date();
+          const diffMinutes = Math.floor((now - lastSaved) / (1000 * 60));
+
+          if (diffMinutes < 60) {
+            lastEditedTime = `${diffMinutes} دقيقة مضت`;
+          } else if (diffMinutes < 1440) {
+            const hours = Math.floor(diffMinutes / 60);
+            lastEditedTime = `${hours} ساعة مضت`;
+          } else {
+            const days = Math.floor(diffMinutes / 1440);
+            lastEditedTime = `${days} يوم مضت`;
+          }
         }
+
+        // Store draft details for displaying in dialog
+        setDraftDetails({
+          formName: parsedDraft.formData.name || "مكان بدون اسم",
+          progress: Math.round(
+            ((parsedDraft.activeStep + 1) / steps.length) * 100
+          ),
+          lastEdited: lastEditedTime,
+          stepName: steps[parsedDraft.activeStep]?.label || "الخطوة الأولى",
+          parsedDraft: parsedDraft,
+        });
+
+        // Show the dialog
+        setDraftDialogOpen(true);
       }
     } catch (error) {
       console.error("Error loading saved draft:", error);
@@ -560,7 +584,40 @@ const AddPlace = () => {
         localStorage.removeItem("place_form_draft");
       }
     };
-  }, [submitSuccess]);
+  }, [searchParams, submitSuccess]);
+
+  // Add the function to restore draft
+  const handleRestoreDraft = () => {
+    if (draftDetails?.parsedDraft) {
+      const { parsedDraft } = draftDetails;
+      setFormData(parsedDraft.formData);
+      setSelectedAmenities(parsedDraft.selectedAmenities);
+      setCustomHours(parsedDraft.customHours);
+      setWeekdayHours({
+        from: dayjs(parsedDraft.weekdayHours.from),
+        to: dayjs(parsedDraft.weekdayHours.to),
+      });
+      setWeekendHours({
+        from: dayjs(parsedDraft.weekendHours.from),
+        to: dayjs(parsedDraft.weekendHours.to),
+      });
+      setActiveStep(parsedDraft.activeStep);
+
+      // Close the dialog
+      setDraftDialogOpen(false);
+    }
+  };
+
+  // Add the function to discard draft
+  const handleDiscardDraft = () => {
+    localStorage.removeItem("place_form_draft");
+    setDraftDialogOpen(false);
+  };
+
+  // Add the function to close dialog without action
+  const handleCloseDialog = () => {
+    setDraftDialogOpen(false);
+  };
 
   // Get appropriate amenities for selected category
   const availableAmenities = formData.category
@@ -1617,24 +1674,115 @@ const AddPlace = () => {
                   id: "mada",
                   label: "فودافون كاش",
                   icon: (
-                    <img
-                      src="../../public/pay.png"
-                      alt="فودافون كاش"
+                    <svg
+                      version="1.1"
+                      id="Layer_1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlnsXlink="http://www.w3.org/1999/xlink"
+                      x="0px"
+                      y="0px"
+                      viewBox="0 0 122.4 122.88"
+                      style={{ enableBackground: "new 0 0 122.4 122.88" }}
                       width="24"
                       height="24"
-                    />
+                    >
+                      <style type="text/css">{`.st0{fill:#E63329;} .st1{fill:#FFFFFF;}`}</style>
+                      <g>
+                        <path
+                          className="st0"
+                          d="M122.4,61.44c0,33.92-27.5,61.44-61.43,61.44c-31.34,0-57.2-23.47-60.97-53.79v-15.3 C3.74,23.7,29.24,0.35,60.26,0h1.41C95.28,0.38,122.4,27.74,122.4,61.44L122.4,61.44z"
+                        />
+                        <path
+                          className="st1"
+                          d="M61.45,95.69c-16.87,0.06-34.44-14.34-34.52-37.48c-0.05-15.3,8.21-30.03,18.76-38.76 C55.98,10.94,70.07,5.46,82.85,5.41c1.65,0,3.38,0.14,4.44,0.49C76.11,8.23,67.21,18.64,67.24,30.43c0,0.39,0.04,0.81,0.09,1 c18.7,4.56,27.19,15.85,27.25,31.46C94.62,78.52,82.29,95.63,61.45,95.69L61.45,95.69z"
+                        />
+                      </g>
+                    </svg>
                   ),
                 },
                 {
                   id: "stcPay",
                   label: "InstaPay",
                   icon: (
-                    <img
-                      src="/icons/stcpay.svg"
-                      alt="STC Pay"
-                      width="24"
-                      height="24"
-                    />
+                    <svg
+                      version="1.1"
+                      id="Layer_1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlnsXlink="http://www.w3.org/1999/xlink"
+                      x="0px"
+                      y="0px"
+                      viewBox="0 0 1000 1000"
+                      style={{ enableBackground: "new 0 0 1000 1000" }}
+                      width="70"
+                      height="70"
+                    >
+                      <g>
+                        <path
+                          fill="#8B4B9F"
+                          d="M684.6,485.6c-4.8,19.9-23.9,35.4-44.5,35.7c-12,0.2-24,0.1-36,0.1h-2.9c-2.4,7.3-4.8,14.5-7.2,21.7h-21.7
+        c0.2-0.8,0.3-1.4,0.5-2c1.9-6,11-30.8,15-42.2c4.3,0,14.7,0.1,15.1,0.1c14.9,0,29.8,0,44.6,0c7.1,0,12.9-4.7,14.4-11.4
+        c1-4.4-1.4-7.8-5.8-8.3c-1.2-0.1-2.3-0.1-3.5-0.1c-18.8,0-37.6,0-56.3,0h-3.2c7.5-7.7,14.6-15,21.9-22.5h2.2
+        c13.9,0,27.9-0.1,41.8,0.1c3.5,0,7,0.3,10.4,1.2C681.9,461.2,687.9,472.2,684.6,485.6L684.6,485.6z"
+                        />
+                        <path
+                          fill="#8B4B9F"
+                          d="M734.3,456.5c2.8,0.8,5.2,3,6.7,5.4c1.8,3,2.5,6.3,3.4,9.7c1,3.7,1.8,7.5,2.8,11.3c1.8,7.5,3.7,15,5.6,22.5
+        c3,12,6,24,8.9,36c0.1,0.4,0.2,0.9,0.3,1.6h-82.9c7-7.6,13.7-14.9,20.5-22.3h29.5c-2.7-10.3-5.3-20.4-8.1-31
+        c-16.6,18-33,35.7-49.4,53.4h-27.1c0.9-1,1.5-1.8,2.2-2.5c21.8-23.8,43.7-47.5,65.4-71.3c2.9-3.2,6-6.2,9.5-8.7
+        c3.1-2.2,6.7-4.5,10.7-4.5C732.9,456.2,733.6,456.3,734.3,456.5L734.3,456.5z"
+                        />
+                        <path
+                          fill="#8B4B9F"
+                          d="M752,456.8h28c4.9,11.6,9.8,23.1,14.9,35c12.2-11.8,24.1-23.4,36.1-35h27.3c0.2,0.2,0.4,0.5,0.6,0.7
+        c-0.7,0.5-1.6,0.9-2.2,1.5c-19,18-38,36-56.9,54c-1,1-1.9,2.3-2.3,3.6c-3,8.8-5.8,17.6-8.7,26.4h-21.9c0.3-1,0.5-1.8,0.8-2.7
+        c2.6-7.9,5.1-15.8,7.8-23.7c0.6-1.7,0.5-3.1-0.2-4.7c-7.5-17.6-14.9-35.2-22.4-52.9C752.6,458.5,752.4,457.8,752,456.8L752,456.8z"
+                        />
+                        <path
+                          fill="#500B75"
+                          d="M511.3,515.4c0.7,2.8,5.2,18.9,7.5,27c-0.2,0.2-0.5,0.4-0.7,0.6h-83c7-7.6,13.6-14.9,20.4-22.3h29.6
+        c-2.7-10.4-5.4-20.5-8.2-31.1c-16.7,18-33.1,35.8-49.4,53.4h-26.9c0.5-0.7,0.8-1.2,1.2-1.6c23.2-25.3,46.4-50.7,69.7-75.9
+        c2.2-2.4,4.7-4.4,7.4-6c4.4-2.6,10-4.9,14.7-1.5c3.7,2.6,5.3,7.1,6.2,11.3c1.2,5.5,2.7,10.9,4,16.4
+        C506.4,495.6,508.9,505.5,511.3,515.4z"
+                        />
+                        <path
+                          fill="#500B75"
+                          d="M246.7,543.8c-4.3-1.3-6.9-4.3-9.3-8c-8-12.6-16.3-25.1-24.4-37.6c-0.5-0.7-1-1.4-1.7-2.4
+        c-5.2,16-10.4,31.6-15.5,47.3H174c0.2-0.7,0.3-1.4,0.5-2c7.9-24.2,15.8-48.5,23.9-72.7c0.9-2.8,2.6-5.6,4.6-7.7
+        c5.6-6,14-5.1,18.5,1.8c8.6,13.1,17.1,26.2,25.6,39.3c0.4,0.7,0.9,1.4,1.6,2.4c5.3-16.1,10.4-31.7,15.6-47.4h21.8
+        c-0.2,0.9-0.4,1.7-0.7,2.5c-7.9,24.1-15.8,48.2-23.7,72.2c-0.2,0.7-0.5,1.5-0.8,2.2c-1.8,4.7-4.7,8.4-9.6,10.1H246.7L246.7,543.8z"
+                        />
+                        <path
+                          fill="#500B75"
+                          d="M141,542.4c2.2-6.4,4.4-12.7,6.5-19.1c7.1-21.5,14.1-43,21.1-64.5c0.2-0.6,0.4-1.2,0.7-1.9h21.9
+        c-9.5,28.9-18.9,57.6-28.3,86.5H141C141,543,141,542.7,141,542.4z"
+                        />
+                        <path
+                          fill="#500B75"
+                          d="M382.9,456.7c-7.5,7.8-14.5,15.1-21.5,22.5c-5.7,0-11.3,0-16.9,0c-11,0-22,0-33,0c-3.9,0-5.6,2-5.3,6.2
+        c1.1,0.2,2.4,0.6,3.7,0.6c11.3,0,22.6-0.1,33.9,0.1c3.7,0.1,7.5,0.4,11,1.5c10.2,3.1,14.8,12.4,12.2,23.7
+        c-4.2,18.3-20.8,31.7-40,31.9c-21.2,0.2-42.4,0.1-63.6,0.1c-0.4,0-0.7-0.1-1.8-0.1c7.3-7.6,14.3-14.9,21.3-22.2
+        c3.6,0,7.3,0,10.9,0c13,0,26,0.1,39-0.1c2.9,0,5.8-1,8.5-2c1.4-0.5,2.7-1.9,3.5-3.3c1.7-2.7,0.8-5.1-2.1-6.2
+        c-1.8-0.6-3.8-0.9-5.7-0.9c-11.7-0.1-23.4,0-35.1-0.1c-2.9,0-5.8-0.3-8.5-1c-10.1-2.5-15.2-10.9-12.9-21.1
+        c3.5-15.9,18.2-28.6,34.6-29.3c9.6-0.4,19.3-0.2,29-0.2c11.8,0,23.7,0,35.5,0C380.5,456.7,381.4,456.7,382.9,456.7L382.9,456.7z"
+                        />
+                        <path
+                          fill="#500B75"
+                          d="M396.4,543.1h-22c7-21.4,13.9-42.5,20.9-63.9h-29.2c7.4-7.8,14.4-15,21.4-22.4H460
+        c-7.3,7.6-14.4,14.9-21.5,22.3h-21.2C410.4,500.5,403.4,521.7,396.4,543.1L396.4,543.1z"
+                        />
+                        <path
+                          fill="#FD6E66"
+                          d="M568.7,499.3c-0.6,0.4-1.2,0.8-1.8,1.3c-15.4,13.5-32.9,29-48.4,42.6c-7,0-16.5,0-23.1,0l49.9-44.2
+        c-0.6-1.1-1.1-1.9-1.5-2.7c-7.6-13.3-15.2-26.6-22.7-39.9h23.4c0.3,0.8,0.6,1.6,1,2.3c7.2,12.6,14.5,25.3,21.7,37.9
+        C567.6,497.3,568,498,568.7,499.3L568.7,499.3z"
+                        />
+                        <path
+                          fill="#FB6518"
+                          d="M601.8,498.7l-48.9,43.7l-0.8,0.7c-7,0.1-16.2,0-22.9-0.5c16.5-14.5,33-29.1,49.5-43.7
+        c-8.2-14.3-16.3-28.5-24.4-42.6h23.4c0.3,0.6,0.5,1.3,0.9,1.9c7.4,13,14.5,25.3,21.8,38.3C600.8,497.1,600.4,496.6,601.8,498.7z"
+                        />
+                      </g>
+                    </svg>
                   ),
                 },
               ].map((method) => (
@@ -1704,35 +1852,100 @@ const AddPlace = () => {
       ),
     },
     {
-      label: "المراجعة والنشر",
-      description: "راجع معلومات مكانك وارسله للمراجعة",
-      icon: <CheckCircleOutlineIcon />,
       content: (
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <Typography
-              variant="h6"
-              component="h3"
-              sx={{ mb: 3, color: theme.colors.primary, fontWeight: 500 }}
+            <Box
+              component={motion.div}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              sx={{
+                mb: 3,
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+                borderBottom: "1px solid",
+                borderColor: darkMode
+                  ? "rgba(255,255,255,0.1)"
+                  : "rgba(0,0,0,0.08)",
+                pb: 2,
+              }}
             >
-              <CheckCircleOutlineIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-              مراجعة ونشر
-            </Typography>
+              <Box
+                sx={{
+                  backgroundColor: `${theme.colors.primary}25`,
+                  p: 1,
+                  borderRadius: "50%",
+                  display: "flex",
+                }}
+              >
+                <CheckCircleOutlineIcon
+                  sx={{ fontSize: 28, color: theme.colors.primary }}
+                />
+              </Box>
+              <Box>
+                <Typography
+                  variant="h5"
+                  component="h3"
+                  sx={{ fontWeight: 600, color: theme.colors.primary }}
+                >
+                  مراجعة ونشر
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ color: theme.colors.textSecondary }}
+                >
+                  راجع معلومات مكانك بعناية قبل الإرسال
+                </Typography>
+              </Box>
+            </Box>
 
-            <Alert severity="info" sx={{ mb: 3 }}>
-              <AlertTitle>معلومات المراجعة</AlertTitle>
-              سيتم مراجعة مكانك من قبل فريقنا خلال 24-48 ساعة. سيتم إشعارك
-              بالبريد الإلكتروني عند الموافقة على مكانك أو في حال الحاجة إلى
-              تعديلات.
+            <Alert
+              severity="info"
+              sx={{
+                mb: 4,
+                borderRadius: 2,
+                boxShadow: darkMode
+                  ? "0 4px 20px rgba(0,0,0,0.2)"
+                  : "0 4px 20px rgba(0,0,0,0.05)",
+                position: "relative",
+                overflow: "hidden",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "5px",
+                  height: "100%",
+                  backgroundColor: "#2196f3",
+                },
+              }}
+            >
+              <AlertTitle sx={{ fontWeight: 600 }}>معلومات المراجعة</AlertTitle>
+              <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
+                سيتم مراجعة مكانك من قبل فريقنا خلال{" "}
+                <Box component="span" sx={{ fontWeight: 600 }}>
+                  24-48 ساعة
+                </Box>
+                . سيتم إشعارك بالبريد الإلكتروني عند الموافقة على مكانك أو في
+                حال الحاجة إلى تعديلات.
+              </Typography>
             </Alert>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+            component={motion.div}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <Paper
               elevation={0}
               sx={{
-                p: 3,
-                borderRadius: 2,
+                borderRadius: 3,
                 border: "1px solid",
                 borderColor: theme.colors.border,
                 backgroundColor: darkMode
@@ -1742,10 +1955,32 @@ const AddPlace = () => {
                 boxShadow: darkMode
                   ? "0 4px 20px rgba(0, 0, 0, 0.25)"
                   : "0 4px 20px rgba(0, 0, 0, 0.05)",
+                overflow: "hidden",
+                position: "relative",
               }}
             >
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={8}>
+              {/* Add a colorful top border */}
+              <Box
+                sx={{
+                  height: "5px",
+                  width: "100%",
+                  background: `linear-gradient(90deg, ${
+                    theme.colors.primary
+                  } 0%, ${darkMode ? "#7092c4" : "#365d8d"} 100%)`,
+                }}
+              />
+
+              {/* Preview Header */}
+              <Box
+                sx={{
+                  p: 3,
+                  pb: 1.5,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                }}
+              >
+                <Box>
                   <Typography
                     variant="h5"
                     gutterBottom
@@ -1757,32 +1992,825 @@ const AddPlace = () => {
                     }}
                   >
                     {formData.name || "اسم المكان"}
+                    {formData.name && (
+                      <Chip
+                        size="small"
+                        label={
+                          placeCategories.find(
+                            (c) => c.value === formData.category
+                          )?.label || "فئة المكان"
+                        }
+                        sx={{
+                          mr: 1.5,
+                          backgroundColor: darkMode
+                            ? `${theme.colors.primary}20`
+                            : `${theme.colors.primary}15`,
+                          color: theme.colors.primary,
+                          fontWeight: 500,
+                          borderRadius: "8px",
+                        }}
+                      />
+                    )}
                   </Typography>
 
-                  {/* Existing box with category and price chips */}
-
-                  <Typography
-                    variant="body1"
+                  <Box
                     sx={{
-                      mb: 2,
-                      color: darkMode ? theme.colors.text : theme.colors.text,
-                      lineHeight: 1.7,
+                      display: "flex",
+                      alignItems: "center",
+                      mb: 1,
+                      gap: 2,
                     }}
                   >
-                    {formData.description || "وصف المكان..."}
-                  </Typography>
+                    {formData.city && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          color: theme.colors.textSecondary,
+                        }}
+                      >
+                        <LocationOnOutlinedIcon
+                          fontSize="small"
+                          sx={{ mr: 0.5 }}
+                        />
+                        <Typography variant="body2">{formData.city}</Typography>
+                      </Box>
+                    )}
 
-                  {/* Other existing elements */}
+                    {formData.priceRange && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          color: theme.colors.textSecondary,
+                        }}
+                      >
+                        <AttachMoneyOutlinedIcon
+                          fontSize="small"
+                          sx={{ mr: 0.5 }}
+                        />
+                        <Typography variant="body2">
+                          {formData.priceRange.length} مستوى أسعار
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+                </Box>
+
+                <Button
+                  startIcon={<ArrowForwardIcon />}
+                  onClick={() => setActiveStep(0)}
+                  size="small"
+                  sx={{
+                    color: theme.colors.primary,
+                    borderRadius: "10px",
+                    "&:hover": {
+                      backgroundColor: darkMode
+                        ? "rgba(255,255,255,0.05)"
+                        : "rgba(0,0,0,0.04)",
+                    },
+                  }}
+                >
+                  تعديل المعلومات الأساسية
+                </Button>
+              </Box>
+
+              {/* Tab navigation for different sections */}
+              <Box
+                sx={{
+                  borderBottom: 1,
+                  borderColor: darkMode ? "rgba(255,255,255,0.1)" : "divider",
+                  px: 3,
+                }}
+              >
+                <Tabs
+                  value={0}
+                  sx={{
+                    "& .MuiTab-root": {
+                      minWidth: { xs: "30%", sm: "auto" },
+                      fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                      py: 1.5,
+                      fontWeight: 500,
+                      color: darkMode
+                        ? theme.colors.textSecondary
+                        : "text.secondary",
+                      "&.Mui-selected": {
+                        color: theme.colors.primary,
+                        fontWeight: 600,
+                      },
+                    },
+                    "& .MuiTabs-indicator": {
+                      backgroundColor: theme.colors.primary,
+                      height: 3,
+                      borderRadius: "3px 3px 0 0",
+                    },
+                  }}
+                >
+                  <Tab
+                    key="overview"
+                    icon={<InfoOutlinedIcon fontSize="small" />}
+                    iconPosition="start"
+                    label="نظرة عامة"
+                  />
+                  <Tab
+                    key="photos"
+                    icon={<PhotoLibraryOutlinedIcon fontSize="small" />}
+                    iconPosition="start"
+                    label="الصور"
+                  />
+                  <Tab
+                    key="amenities"
+                    icon={<FeaturedPlayListOutlinedIcon fontSize="small" />}
+                    iconPosition="start"
+                    label="المرافق"
+                  />
+                </Tabs>
+              </Box>
+
+              <Box sx={{ p: 3 }}>
+                {/* Preview Content - Main Overview */}
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={7}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 2,
+                        fontWeight: 500,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        color: darkMode ? theme.colors.text : "text.primary",
+                      }}
+                    >
+                      <DescriptionOutlinedIcon fontSize="small" />
+                      وصف المكان
+                    </Typography>
+
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        mb: 3,
+                        color: darkMode ? theme.colors.text : theme.colors.text,
+                        lineHeight: 1.8,
+                        backgroundColor: darkMode
+                          ? "rgba(255,255,255,0.03)"
+                          : "rgba(0,0,0,0.02)",
+                        p: 2,
+                        borderRadius: 2,
+                        border: "1px solid",
+                        borderColor: darkMode
+                          ? "rgba(255,255,255,0.05)"
+                          : "rgba(0,0,0,0.05)",
+                      }}
+                    >
+                      {formData.description || "وصف المكان..."}
+                    </Typography>
+
+                    <Box sx={{ mb: 3 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          mb: 2,
+                          fontWeight: 500,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          color: darkMode ? theme.colors.text : "text.primary",
+                        }}
+                      >
+                        <LocationOnOutlinedIcon fontSize="small" />
+                        الموقع ومعلومات الاتصال
+                        <Button
+                          size="small"
+                          onClick={() => setActiveStep(1)}
+                          sx={{
+                            ml: "auto",
+                            color: theme.colors.primary,
+                            minWidth: "auto",
+                            borderRadius: "8px",
+                            p: "3px 8px",
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </Button>
+                      </Typography>
+
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 2,
+                          borderRadius: 2,
+                          border: "1px solid",
+                          borderColor: darkMode
+                            ? "rgba(255,255,255,0.08)"
+                            : "rgba(0,0,0,0.06)",
+                          backgroundColor: darkMode
+                            ? "rgba(255,255,255,0.02)"
+                            : "rgba(0,0,0,0.01)",
+                        }}
+                      >
+                        <Grid container spacing={2}>
+                          <Grid item xs={12}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                mb: 1,
+                              }}
+                            >
+                              <Box
+                                sx={{
+                                  backgroundColor: darkMode
+                                    ? "rgba(255,255,255,0.05)"
+                                    : "rgba(0,0,0,0.04)",
+                                  borderRadius: "50%",
+                                  p: 0.5,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <LocationOnOutlinedIcon fontSize="small" />
+                              </Box>
+                              <Typography variant="body2">
+                                {formData.address || "العنوان التفصيلي"}
+                              </Typography>
+                            </Box>
+                          </Grid>
+
+                          <Grid item xs={12} sm={6}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                mb: 1,
+                              }}
+                            >
+                              <Box
+                                sx={{
+                                  backgroundColor: darkMode
+                                    ? "rgba(255,255,255,0.05)"
+                                    : "rgba(0,0,0,0.04)",
+                                  borderRadius: "50%",
+                                  p: 0.5,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <PhoneIcon fontSize="small" />
+                              </Box>
+                              <Typography variant="body2">
+                                {formData.phone || "رقم الهاتف"}
+                              </Typography>
+                            </Box>
+                          </Grid>
+
+                          {formData.email && (
+                            <Grid item xs={12} sm={6}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
+                                  mb: 1,
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    backgroundColor: darkMode
+                                      ? "rgba(255,255,255,0.05)"
+                                      : "rgba(0,0,0,0.04)",
+                                    borderRadius: "50%",
+                                    p: 0.5,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <EmailIcon fontSize="small" />
+                                </Box>
+                                <Typography variant="body2">
+                                  {formData.email}
+                                </Typography>
+                              </Box>
+                            </Grid>
+                          )}
+
+                          {formData.website && (
+                            <Grid item xs={12} sm={6}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
+                                  mb: 1,
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    backgroundColor: darkMode
+                                      ? "rgba(255,255,255,0.05)"
+                                      : "rgba(0,0,0,0.04)",
+                                    borderRadius: "50%",
+                                    p: 0.5,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <LanguageIcon fontSize="small" />
+                                </Box>
+                                <Typography variant="body2">
+                                  {formData.website}
+                                </Typography>
+                              </Box>
+                            </Grid>
+                          )}
+                        </Grid>
+                      </Paper>
+                    </Box>
+
+                    <Box>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          mb: 2,
+                          fontWeight: 500,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          color: darkMode ? theme.colors.text : "text.primary",
+                        }}
+                      >
+                        <AccessTimeOutlinedIcon fontSize="small" />
+                        مواعيد العمل
+                        <Button
+                          size="small"
+                          onClick={() => setActiveStep(3)}
+                          sx={{
+                            ml: "auto",
+                            color: theme.colors.primary,
+                            minWidth: "auto",
+                            borderRadius: "8px",
+                            p: "3px 8px",
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </Button>
+                      </Typography>
+
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 2,
+                          borderRadius: 2,
+                          border: "1px solid",
+                          borderColor: darkMode
+                            ? "rgba(255,255,255,0.08)"
+                            : "rgba(0,0,0,0.06)",
+                          backgroundColor: darkMode
+                            ? "rgba(255,255,255,0.02)"
+                            : "rgba(0,0,0,0.01)",
+                        }}
+                      >
+                        {!customHours ? (
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                mb: 1,
+                              }}
+                            >
+                              <span>أيام الأسبوع (الأحد - الخميس):</span>
+                              <Box component="span" sx={{ fontWeight: 500 }}>
+                                {weekdayHours.from.format("h:mm A")} -{" "}
+                                {weekdayHours.to.format("h:mm A")}
+                              </Box>
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <span>عطلة نهاية الأسبوع (الجمعة - السبت):</span>
+                              <Box component="span" sx={{ fontWeight: 500 }}>
+                                {weekendHours.from.format("h:mm A")} -{" "}
+                                {weekendHours.to.format("h:mm A")}
+                              </Box>
+                            </Typography>
+                          </Box>
+                        ) : (
+                          <Box>
+                            {/* Show custom hours per day */}
+                            {[
+                              "الأحد",
+                              "الإثنين",
+                              "الثلاثاء",
+                              "الأربعاء",
+                              "الخميس",
+                              "الجمعة",
+                              "السبت",
+                            ].map((day) => (
+                              <Typography
+                                key={day}
+                                variant="body2"
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  mb: 0.5,
+                                }}
+                              >
+                                <span>{day}:</span>
+                                <Box
+                                  component="span"
+                                  sx={{
+                                    fontWeight: 500,
+                                    color: formData.customSchedule?.[day]
+                                      ?.closed
+                                      ? "error.main"
+                                      : "inherit",
+                                  }}
+                                >
+                                  {formData.customSchedule?.[day]?.closed
+                                    ? "مغلق"
+                                    : `${
+                                        formData.customSchedule?.[day]?.from ||
+                                        "9:00"
+                                      } - ${
+                                        formData.customSchedule?.[day]?.to ||
+                                        "22:00"
+                                      }`}
+                                </Box>
+                              </Typography>
+                            ))}
+                          </Box>
+                        )}
+                      </Paper>
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={12} md={5}>
+                    {/* Preview image carousel */}
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 2,
+                        fontWeight: 500,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        color: darkMode ? theme.colors.text : "text.primary",
+                      }}
+                    >
+                      <PhotoLibraryOutlinedIcon fontSize="small" />
+                      صور المكان
+                      <Button
+                        size="small"
+                        onClick={() => setActiveStep(2)}
+                        sx={{
+                          ml: "auto",
+                          color: theme.colors.primary,
+                          minWidth: "auto",
+                          borderRadius: "8px",
+                          p: "3px 8px",
+                        }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </Button>
+                    </Typography>
+
+                    {previewImages.length > 0 ? (
+                      <Box
+                        component={motion.div}
+                        whileHover={{ scale: 1.02 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 400,
+                          damping: 10,
+                        }}
+                        sx={{
+                          position: "relative",
+                          height: 240,
+                          borderRadius: 3,
+                          overflow: "hidden",
+                          mb: 1,
+                          boxShadow: darkMode
+                            ? "0 10px 30px rgba(0, 0, 0, 0.25)"
+                            : "0 10px 30px rgba(0, 0, 0, 0.1)",
+                          "&::after": {
+                            content: '""',
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            height: "30%",
+                            background:
+                              "linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0))",
+                          },
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src={previewImages[0]}
+                          alt="صورة المكان"
+                          sx={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            bottom: 10,
+                            right: 10,
+                            zIndex: 2,
+                            backgroundColor: "rgba(0,0,0,0.6)",
+                            color: "#fff",
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: 5,
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {previewImages.length} صورة
+                        </Box>
+                      </Box>
+                    ) : (
+                      <Box
+                        sx={{
+                          height: 240,
+                          borderRadius: 3,
+                          border: "1px dashed",
+                          borderColor: "error.main",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexDirection: "column",
+                          backgroundColor: darkMode
+                            ? "rgba(255,255,255,0.02)"
+                            : "rgba(0,0,0,0.02)",
+                          color: "error.main",
+                        }}
+                      >
+                        <ErrorOutlineIcon sx={{ fontSize: 40, mb: 1 }} />
+                        <Typography variant="body2">
+                          لا توجد صور. يرجى إضافة صور للمكان
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {previewImages.length > 1 && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: 1,
+                          mt: 1,
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        {previewImages.slice(1, 4).map((img, idx) => (
+                          <Box
+                            component={motion.div}
+                            whileHover={{ scale: 1.05 }}
+                            key={idx}
+                            sx={{
+                              width: "32%",
+                              height: 70,
+                              borderRadius: 2,
+                              overflow: "hidden",
+                              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                            }}
+                          >
+                            <Box
+                              component="img"
+                              src={img}
+                              alt={`صورة ${idx + 2}`}
+                              sx={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                              }}
+                            />
+                          </Box>
+                        ))}
+                        {previewImages.length > 4 && (
+                          <Box
+                            component={motion.div}
+                            whileHover={{ scale: 1.05 }}
+                            sx={{
+                              width: "32%",
+                              height: 70,
+                              borderRadius: 2,
+                              overflow: "hidden",
+                              position: "relative",
+                              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                            }}
+                          >
+                            <Box
+                              component="img"
+                              src={previewImages[4]}
+                              alt="صورة إضافية"
+                              sx={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                filter: "brightness(0.6)",
+                              }}
+                            />
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: "#fff",
+                                fontWeight: 700,
+                                fontSize: "1.2rem",
+                              }}
+                            >
+                              +{previewImages.length - 4}
+                            </Box>
+                          </Box>
+                        )}
+                      </Box>
+                    )}
+
+                    {/* Amenities */}
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mt: 3,
+                        mb: 2,
+                        fontWeight: 500,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        color: darkMode ? theme.colors.text : "text.primary",
+                      }}
+                    >
+                      <FeaturedPlayListOutlinedIcon fontSize="small" />
+                      المرافق والخدمات
+                      <Button
+                        size="small"
+                        onClick={() => setActiveStep(3)}
+                        sx={{
+                          ml: "auto",
+                          color: theme.colors.primary,
+                          minWidth: "auto",
+                          borderRadius: "8px",
+                          p: "3px 8px",
+                        }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </Button>
+                    </Typography>
+
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                      {selectedAmenities.length > 0 ? (
+                        selectedAmenities.map((amenity) => (
+                          <Chip
+                            key={amenity.id}
+                            icon={React.cloneElement(amenity.icon, {
+                              fontSize: "small",
+                              sx: {
+                                color: darkMode
+                                  ? theme.colors.primary
+                                  : theme.colors.primary,
+                              },
+                            })}
+                            label={amenity.label}
+                            sx={{
+                              borderRadius: "10px",
+                              backgroundColor: darkMode
+                                ? "rgba(255,255,255,0.05)"
+                                : "rgba(0,0,0,0.04)",
+                              border: "1px solid",
+                              borderColor: darkMode
+                                ? "rgba(255,255,255,0.1)"
+                                : "rgba(0,0,0,0.08)",
+                              "& .MuiChip-label": {
+                                px: 1,
+                                py: 0.5,
+                              },
+                            }}
+                          />
+                        ))
+                      ) : (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ fontStyle: "italic" }}
+                        >
+                          لم يتم تحديد مرافق
+                        </Typography>
+                      )}
+                    </Box>
+
+                    {/* Payment methods */}
+                    {formData.paymentMethods &&
+                      formData.paymentMethods.length > 0 && (
+                        <Box sx={{ mt: 3 }}>
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              mb: 2,
+                              fontWeight: 500,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                              color: darkMode
+                                ? theme.colors.text
+                                : "text.primary",
+                            }}
+                          >
+                            <AttachMoneyOutlinedIcon fontSize="small" />
+                            طرق الدفع المقبولة
+                          </Typography>
+
+                          <Box
+                            sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}
+                          >
+                            {formData.paymentMethods.map((method) => (
+                              <Chip
+                                key={method}
+                                label={
+                                  method === "cash"
+                                    ? "نقدي"
+                                    : method === "credit"
+                                    ? "بطاقات ائتمانية"
+                                    : method === "mada"
+                                    ? "فودافون كاش"
+                                    : "InstaPay"
+                                }
+                                size="small"
+                                sx={{
+                                  borderRadius: "10px",
+                                  backgroundColor: darkMode
+                                    ? "rgba(255,255,255,0.05)"
+                                    : "rgba(0,0,0,0.04)",
+                                }}
+                              />
+                            ))}
+                          </Box>
+                        </Box>
+                      )}
+                  </Grid>
                 </Grid>
-
-                {/* Preview image section - unchanged */}
-              </Grid>
+              </Box>
             </Paper>
           </Grid>
 
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
+          {/* Submission Agreement Section */}
+          <Grid
+            item
+            xs={12}
+            component={motion.div}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3,
+                borderRadius: 3,
+                border: "1px solid",
+                borderColor: formData.termsAccepted
+                  ? `${theme.colors.primary}40`
+                  : errors.submit
+                  ? "error.main"
+                  : theme.colors.border,
+                backgroundColor: formData.termsAccepted
+                  ? darkMode
+                    ? `${theme.colors.primary}15`
+                    : `${theme.colors.primary}08`
+                  : darkMode
+                  ? "rgba(255,255,255,0.03)"
+                  : "rgba(0,0,0,0.01)",
+                transition: "all 0.3s ease",
+                boxShadow: formData.termsAccepted
+                  ? darkMode
+                    ? "0 4px 20px rgba(246, 177, 122, 0.15)"
+                    : "0 4px 20px rgba(74, 114, 172, 0.1)"
+                  : darkMode
+                  ? "0 4px 20px rgba(0, 0, 0, 0.25)"
+                  : "0 4px 20px rgba(0, 0, 0, 0.05)",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
                 <Checkbox
                   required
                   onChange={(e) => {
@@ -1799,28 +2827,155 @@ const AddPlace = () => {
                     "&.Mui-checked": {
                       color: darkMode ? theme.colors.primary : undefined,
                     },
+                    mt: -0.5,
                   }}
                 />
-              }
-              label={
+                <Box>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: darkMode ? theme.colors.text : theme.colors.text,
+                      fontWeight: 500,
+                      mb: 0.5,
+                    }}
+                  >
+                    الموافقة على الشروط والأحكام
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: darkMode
+                        ? theme.colors.textSecondary
+                        : theme.colors.text,
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    أوافق على{" "}
+                    <Link href="#" sx={{ color: theme.colors.primary }}>
+                      شروط وأحكام المنصة
+                    </Link>{" "}
+                    وأؤكد أن جميع المعلومات المقدمة صحيحة ودقيقة وأن لدي الحق في
+                    نشر هذه المعلومات. أفهم أن تقديم معلومات كاذبة أو مضللة قد
+                    يؤدي إلى رفض المكان.
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Add a completion checklist */}
+              <Box
+                sx={{
+                  mt: 3,
+                  pt: 2,
+                  borderTop: "1px solid",
+                  borderColor: darkMode
+                    ? "rgba(255,255,255,0.1)"
+                    : "rgba(0,0,0,0.05)",
+                }}
+              >
                 <Typography
-                  variant="body2"
-                  sx={{
-                    color: darkMode
-                      ? theme.colors.textSecondary
-                      : theme.colors.text,
-                  }}
+                  variant="subtitle2"
+                  sx={{ mb: 1, display: "flex", alignItems: "center", gap: 1 }}
                 >
-                  أوافق على شروط وأحكام المنصة وأؤكد أن جميع المعلومات المقدمة
-                  صحيحة ودقيقة
+                  <AssignmentTurnedInIcon fontSize="small" />
+                  قائمة المراجعة النهائية
                 </Typography>
-              }
-            />
+                <Grid container spacing={2}>
+                  {[
+                    {
+                      label: "معلومات المكان الأساسية",
+                      complete:
+                        !!formData.name &&
+                        !!formData.category &&
+                        !!formData.description,
+                      step: 0,
+                    },
+                    {
+                      label: "معلومات الموقع والاتصال",
+                      complete:
+                        !!formData.city &&
+                        !!formData.address &&
+                        !!formData.phone,
+                      step: 1,
+                    },
+                    {
+                      label: "صور المكان",
+                      complete: previewImages.length > 0,
+                      step: 2,
+                    },
+                    {
+                      label: "المرافق ومواعيد العمل",
+                      complete: true, // هذه ليست إلزامية
+                      step: 3,
+                    },
+                    {
+                      label: "الموافقة على الشروط",
+                      complete: !!formData.termsAccepted,
+                      step: 4,
+                    },
+                  ].map((item, idx) => (
+                    <Grid item xs={12} sm={6} md={4} key={idx}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          color: item.complete
+                            ? "success.main"
+                            : "warning.main",
+                        }}
+                      >
+                        {item.complete ? (
+                          <CheckCircleIcon fontSize="small" />
+                        ) : (
+                          <ErrorOutlineIcon fontSize="small" />
+                        )}
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            flex: 1,
+                            fontWeight: item.complete ? 400 : 500,
+                          }}
+                        >
+                          {item.label}
+                        </Typography>
+                        {!item.complete && (
+                          <Button
+                            size="small"
+                            onClick={() => setActiveStep(item.step)}
+                            variant="outlined"
+                            color="warning"
+                            sx={{
+                              minWidth: "auto",
+                              height: 24,
+                              borderRadius: "8px",
+                              py: 0,
+                              px: 1,
+                              fontSize: "0.7rem",
+                            }}
+                          >
+                            أكمل
+                          </Button>
+                        )}
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            </Paper>
           </Grid>
 
           {errors.submit && (
             <Grid item xs={12}>
-              <Alert severity="error">{errors.submit}</Alert>
+              <Alert
+                severity="error"
+                sx={{
+                  borderRadius: 2,
+                  animation: "pulse 1.5s infinite",
+                }}
+              >
+                <AlertTitle>خطأ في الإرسال</AlertTitle>
+                {errors.submit}
+              </Alert>
             </Grid>
           )}
         </Grid>
@@ -1831,7 +2986,7 @@ const AddPlace = () => {
   // If form was successfully submitted, show success message
   if (submitSuccess) {
     return (
-      <Box sx={{ p: 3, textAlign: "center" }}>
+      <Box sx={{ p: 3, textAlign: "center", marginTop: "50px" }}>
         <Box
           component={motion.div}
           initial={{ scale: 0.5, opacity: 0 }}
@@ -1847,6 +3002,7 @@ const AddPlace = () => {
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
+            marginTop: "50px",
           }}
         >
           <CheckCircleOutlineIcon
@@ -1911,6 +3067,217 @@ const AddPlace = () => {
     </Tooltip>
   );
 
+  // Add this Draft Recovery Dialog component before the final return statement
+  const DraftRecoveryDialog = () => (
+    <Dialog
+      open={draftDialogOpen}
+      onClose={handleCloseDialog}
+      TransitionComponent={Fade}
+      TransitionProps={{ timeout: 500 }}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        component: motion.div,
+        initial: { y: 50, opacity: 0 },
+        animate: { y: 0, opacity: 1 },
+        transition: { type: "spring", stiffness: 300, damping: 25 },
+        sx: {
+          borderRadius: 3,
+          overflow: "hidden",
+          backgroundColor: darkMode ? theme.colors.surface : "#ffffff",
+          border: darkMode ? `1px solid ${theme.colors.border}` : "none",
+          boxShadow: darkMode
+            ? "0 8px 32px rgba(0,0,0,0.2)"
+            : "0 8px 32px rgba(0,0,0,0.1)",
+        },
+      }}
+    >
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "6px",
+          background: `linear-gradient(90deg, ${theme.colors.primary} 0%, ${
+            darkMode ? "#7092c4" : "#365d8d"
+          } 100%)`,
+        }}
+      />
+
+      <DialogTitle
+        sx={{
+          pb: 1,
+          pt: 3,
+          display: "flex",
+          direction: "rtl",
+          alignItems: "center",
+          gap: 1.5,
+          fontWeight: 700,
+          color: darkMode ? theme.colors.primary : theme.colors.primary,
+        }}
+      >
+        <EventNoteIcon sx={{ fontSize: 28 }} />
+        وجدنا مسودة محفوظة
+      </DialogTitle>
+
+      <DialogContent>
+        <Box sx={{ mb: 3 }}>
+          <Typography
+            variant="body1"
+            sx={{
+              mb: 1,
+              direction: "rtl",
+              color: darkMode ? theme.colors.text : theme.colors.textSecondary,
+            }}
+          >
+            هل ترغب في استعادة المسودة المحفوظة أم بدء نموذج جديد؟
+          </Typography>
+
+          <Paper
+            elevation={0}
+            component={motion.div}
+            whileHover={{
+              scale: 1.02,
+              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+            }}
+            sx={{
+              p: 3,
+              direction: "rtl",
+              my: 2,
+              borderRadius: 2,
+              border: "1px solid",
+              borderColor: darkMode
+                ? `${theme.colors.primary}40`
+                : `${theme.colors.primary}30`,
+              backgroundColor: darkMode
+                ? `${theme.colors.primary}15`
+                : `${theme.colors.primary}08`,
+            }}
+          >
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              flexWrap="wrap"
+            >
+              <Box>
+                <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>
+                  {draftDetails?.formName}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ color: theme.colors.textSecondary, mb: 1 }}
+                >
+                  آخر تعديل: {draftDetails?.lastEdited}
+                </Typography>
+              </Box>
+
+              <Box
+                component={motion.div}
+                whileHover={{ rotate: 5 }}
+                sx={{
+                  backgroundColor: darkMode
+                    ? `${theme.colors.primary}25`
+                    : `${theme.colors.primary}15`,
+                  px: 2,
+                  py: 0.5,
+                  borderRadius: 4,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  fontWeight={600}
+                  color={theme.colors.primary}
+                >
+                  {draftDetails?.progress}% مكتمل
+                </Typography>
+              </Box>
+            </Stack>
+
+            <Divider
+              sx={{
+                my: 2,
+                borderColor: darkMode
+                  ? "rgba(255,255,255,0.1)"
+                  : "rgba(0,0,0,0.06)",
+              }}
+            />
+
+            <Stack direction="row" alignItems="center" spacing={2}>
+              <Typography
+                variant="body2"
+                sx={{ color: theme.colors.textSecondary }}
+              >
+                توقفت عند :
+              </Typography>
+              <Chip
+                label={draftDetails?.stepName}
+                size="small"
+                sx={{
+                  backgroundColor: darkMode
+                    ? `${theme.colors.primary}30`
+                    : `${theme.colors.primary}15`,
+                  color: theme.colors.primary,
+                  fontWeight: 500,
+                }}
+              />
+            </Stack>
+          </Paper>
+        </Box>
+      </DialogContent>
+
+      <DialogActions sx={{ px: 3, py: 3, justifyContent: "center", gap: 2 }}>
+        <Button
+          variant="outlined"
+          startIcon={<DeleteIcon />}
+          onClick={handleDiscardDraft}
+          sx={{
+            borderRadius: 2,
+            borderColor: darkMode ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
+            color: darkMode ? theme.colors.textSecondary : "text.secondary",
+            px: 2,
+            py: 1,
+            "&:hover": {
+              borderColor: darkMode
+                ? "rgba(255,255,255,0.3)"
+                : "rgba(0,0,0,0.2)",
+              backgroundColor: darkMode
+                ? "rgba(255,255,255,0.05)"
+                : "rgba(0,0,0,0.02)",
+            },
+          }}
+        >
+          {isMobile ? "نموذج جديد" : "بدء نموذج جديد"}
+        </Button>
+
+        <Button
+          component={motion.button}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.98 }}
+          variant="contained"
+          startIcon={<RestoreIcon />}
+          onClick={handleRestoreDraft}
+          sx={{
+            borderRadius: 2,
+            px: 2,
+            py: 1,
+            backgroundColor: theme.colors.primary,
+            color: darkMode ? "#000" : "#fff",
+            boxShadow: darkMode
+              ? "0 4px 12px rgba(246,177,122,0.3)"
+              : "0 4px 12px rgba(74,114,172,0.25)",
+          }}
+        >
+          استعادة المسودة
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
   return (
     <Box
       sx={{
@@ -1921,6 +3288,8 @@ const AddPlace = () => {
         direction: "rtl",
       }}
     >
+      <DraftRecoveryDialog />
+
       <Paper
         elevation={0}
         sx={{
@@ -2336,9 +3705,9 @@ const AddPlace = () => {
                       onClick={handleSubmit}
                       disabled={isSubmitting || !formData.termsAccepted}
                       sx={{
-                        borderRadius: "25px",
-                        px: 3.5,
-                        py: 1.2,
+                        borderRadius: "10px",
+                        px: 1,
+                        py: 1,
                         fontSize: "0.95rem",
                         fontWeight: 500,
                         bgcolor: theme.colors.primary,
@@ -2366,7 +3735,12 @@ const AddPlace = () => {
                         isSubmitting ? (
                           <CircularProgress size={20} color="inherit" />
                         ) : (
-                          <SendIcon sx={{ transform: "scaleX(-1)" }} />
+                          <SendIcon
+                            sx={{
+                              transform: "scaleX(-1)",
+                              marginRight: "10px",
+                            }}
+                          />
                         )
                       }
                     >

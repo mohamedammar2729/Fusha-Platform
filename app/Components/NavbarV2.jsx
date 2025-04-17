@@ -44,7 +44,11 @@ const MemoizedNavItem = React.memo(({ children, ...props }) => (
 const NavBarV2 = () => {
   const navLinks = [
     { href: "/", label: "الرئيسية" },
-    { href: "/addplace", label: "إحجز مكانك", authRequired: true },
+    {
+      href: "/addplace?source=navbar",
+      label: "إحجز مكانك",
+      authRequired: true,
+    },
     { href: "/review", label: "تقييم العملاء", authRequired: true },
     { href: "/contact", label: "تواصل معنا" },
   ];
@@ -129,7 +133,6 @@ const NavBarV2 = () => {
   }, []);
 
   if (!mounted) return null;
-
 
   return (
     <NavBarWrapper
