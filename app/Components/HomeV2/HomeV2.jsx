@@ -133,60 +133,6 @@ const HomeV2 = () => {
         transition: "all 0.3s ease",
       }}
     >
-      {/* <Box
-        sx={{
-          position: "sticky",
-          top: 65,
-          zIndex: 10,
-          backgroundColor: darkMode ? "rgba(45, 50, 80, 0.9)" : "#f5f7fa",
-          backdropFilter: "blur(10px)",
-          borderBottom: "1px solid",
-          borderColor: darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
-          display: { xs: "none", md: "block" },
-          marginTop: 0, // Add this to remove any default margin
-          height: "50px",
-        }}
-      >
-        <Box
-          sx={{
-            maxWidth: 1200,
-            mx: "auto",
-            px: 4,
-            display: "flex",
-            justifyContent: "center",
-            gap: 4,
-          }}
-        >
-          {[
-            { label: "المميزات", href: "#benefits" },
-            { label: "كيفية التسجيل", href: "#how-to-register" },
-            { label: "الفئات", href: "#categories" },
-            { label: "الخطط", href: "#plans" },
-            { label: "الآراء", href: "#testimonials" },
-            { label: "الأسئلة الشائعة", href: "#faqs" },
-          ].map((item, index) => (
-            <Button
-              key={index}
-              color="inherit"
-              sx={{
-                fontSize: "0.95rem",
-                color: theme.colors.text,
-                opacity: 0.8,
-                "&:hover": {
-                  opacity: 1,
-                  backgroundColor: "transparent",
-                  color: theme.colors.primary,
-                },
-              }}
-              component="a"
-              href={item.href}
-            >
-              {item.label}
-            </Button>
-          ))}
-        </Box>
-      </Box> */}
-
       {/* Hero Section - Fixed Version */}
       <Suspense fallback={<SectionSkeleton />}>
         <HeroSection
@@ -268,41 +214,6 @@ const HomeV2 = () => {
         <FooterSection theme={theme} darkMode={darkMode} />
       </Suspense>
 
-      <Box
-        sx={{
-          position: "fixed",
-          bottom: { xs: 20, md: 40 },
-          right: { xs: 20, md: 40 },
-          zIndex: 100,
-        }}
-      >
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
-        >
-          <Button
-            variant="contained"
-            component={Link}
-            href="/register?type=seller"
-            sx={{
-              borderRadius: "50px",
-              padding: "12px 24px",
-              boxShadow: "0 8px 16px rgba(74, 114, 172, 0.3)",
-              backgroundColor: theme.colors.primary,
-              "&:hover": {
-                backgroundColor: darkMode ? "#7092c4" : "#365d8d",
-                transform: "translateY(-5px)",
-                boxShadow: "0 12px 24px rgba(74, 114, 172, 0.4)",
-              },
-              transition: "all 0.3s ease",
-            }}
-            startIcon={<AddBusinessIcon />}
-          >
-            سجل مكانك الآن
-          </Button>
-        </motion.div>
-      </Box>
     </Box>
   );
 };

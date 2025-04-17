@@ -645,20 +645,20 @@ const FooterSection = ({ theme, darkMode }) => {
           transition={{ delay: 1, duration: 0.5 }}
         >
           <Button
-            variant="contained"
             component={Link}
-            href="/register?type=seller"
+            href="/register"
             sx={{
               borderRadius: "50px",
               padding: "12px 24px",
               boxShadow: "0 8px 16px rgba(74, 114, 172, 0.3)",
               backgroundColor: theme.colors.primary,
+              color: darkMode ? "#2D3250" : "#FFFFFF", // Dark text for dark mode, white text for light mode
+              fontWeight: "500",
+              transition: "background-color 0.3s ease", // Only transition the background-color
               "&:hover": {
-                backgroundColor: darkMode ? "#7092c4" : "#365d8d",
-                transform: "translateY(-5px)",
-                boxShadow: "0 12px 24px rgba(74, 114, 172, 0.4)",
+                backgroundColor: darkMode ? "#f7c093" : "#3B5898",
+                color: darkMode ? "#2D3250" : "#FFFFFF", // Keep the same text color on hover
               },
-              transition: "all 0.3s ease",
             }}
             startIcon={<AddBusinessIcon />}
           >
