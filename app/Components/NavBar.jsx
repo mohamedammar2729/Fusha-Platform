@@ -143,6 +143,15 @@ const NavBar = () => {
     }
   }, []);
 
+    const isLinkActive = (linkHref) => {
+      if (linkHref === "/") {
+        // For home page, require exact match to avoid matching all paths
+        return pathname === "/" || pathname === "";
+      }
+      // For other pages, check if pathname starts with the link href
+      return pathname.startsWith(linkHref);
+    };
+
   // Prevent hydration mismatch
   if (!mounted) return null;
 
@@ -603,13 +612,15 @@ const NavBar = () => {
                         position: "relative",
                         color:
                           pathname === link.href
-                            ? darkMode
-                              ? theme.colors.primary
-                              : theme.colors.primary
+                            ? theme.colors.primary
                             : darkMode
                             ? "white"
                             : "inherit",
                         fontWeight: pathname === link.href ? "700" : "600",
+                        transition: "color 0.3s ease",
+                        "&:hover": {
+                          color: theme.colors.primary,
+                        },
                         "&::after":
                           pathname === link.href
                             ? {
@@ -619,9 +630,7 @@ const NavBar = () => {
                                 height: "3px",
                                 bottom: "-8px",
                                 left: 0,
-                                backgroundColor: darkMode
-                                  ? theme.colors.primary
-                                  : theme.colors.primary,
+                                backgroundColor: theme.colors.primary,
                                 borderRadius: "2px",
                               }
                             : {},
