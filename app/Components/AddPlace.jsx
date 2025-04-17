@@ -99,8 +99,6 @@ import { styled } from "@mui/material/styles";
 // Import the new component
 import AutoCloseSelect from "./AutoCloseSelect";
 
-import { useSearchParams } from "next/navigation";
-
 // Create a styled Select component
 
 // Pre-defined place categories matching the ones in HomeV2.jsx
@@ -478,7 +476,7 @@ const AddPlace = () => {
 
       // Submit to API
       const response = await axios.post(
-        "https://iti-server-production.up.railway.app/api/seller-places",
+        "https://iti-server-production.up.railway.app/seller-places",
         placeData,
         {
           headers: {
@@ -525,7 +523,6 @@ const AddPlace = () => {
     };
   }, []);
 
-  const searchParams = useSearchParams();
   const [draftDialogOpen, setDraftDialogOpen] = useState(false);
   const [draftDetails, setDraftDetails] = useState(null);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -536,10 +533,14 @@ const AddPlace = () => {
       // Check if there's a saved draft
       const savedDraft = localStorage.getItem("place_form_draft");
 
-      // Only show dialog if there's a draft and user came from navbar
-      const fromNavbar = searchParams.get("source") === "navbar";
+      // Check if we navigated from navbar
+      const fromNavbar = localStorage.getItem("navFrom") === "navbar";
+      const navTime = parseInt(localStorage.getItem("navFromTime") || "0");
 
-      if (savedDraft && fromNavbar) {
+      // Only consider the navbar flag valid for 5 seconds (to prevent showing dialog if user refreshes page)
+      const isRecentNavigation = Date.now() - navTime < 5000;
+
+      if (savedDraft && fromNavbar && isRecentNavigation) {
         const parsedDraft = JSON.parse(savedDraft);
 
         // Calculate how long ago the draft was saved
@@ -573,6 +574,10 @@ const AddPlace = () => {
 
         // Show the dialog
         setDraftDialogOpen(true);
+
+        // Clear the navigation flag
+        localStorage.removeItem("navFrom");
+        localStorage.removeItem("navFromTime");
       }
     } catch (error) {
       console.error("Error loading saved draft:", error);
@@ -583,8 +588,11 @@ const AddPlace = () => {
       if (submitSuccess) {
         localStorage.removeItem("place_form_draft");
       }
+      // Also clean up navigation flags
+      localStorage.removeItem("navFrom");
+      localStorage.removeItem("navFromTime");
     };
-  }, [searchParams, submitSuccess]);
+  }, [submitSuccess]);
 
   // Add the function to restore draft
   const handleRestoreDraft = () => {

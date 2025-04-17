@@ -45,9 +45,10 @@ const NavBarV2 = () => {
   const navLinks = [
     { href: "/", label: "الرئيسية" },
     {
-      href: "/addplace?source=navbar",
+      href: "/addplace", // Remove the query parameter
       label: "إحجز مكانك",
       authRequired: true,
+      customHandler: true, // Add this flag to indicate it needs special handling
     },
     { href: "/review", label: "تقييم العملاء", authRequired: true },
     { href: "/contact", label: "تواصل معنا" },
@@ -119,6 +120,18 @@ const NavBarV2 = () => {
   const handleDarkModeToggle = useCallback(() => {
     toggleTheme();
   }, [toggleTheme]);
+
+  const handleNavigation = (link) => {
+    if (link.customHandler) {
+      // Set a flag in localStorage to indicate navigation from navbar
+      localStorage.setItem("navFrom", "navbar");
+      // Set a timestamp to expire this flag after a reasonable time
+      localStorage.setItem("navFromTime", Date.now());
+      router.push(link.href);
+    } else {
+      router.push(link.href);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -220,7 +233,7 @@ const NavBarV2 = () => {
                       key={link.href}
                       onClick={() => {
                         handleCloseNavMenu();
-                        router.push(link.href);
+                        handleNavigation(link); // Use the new handler instead of direct router.push
                       }}
                       sx={{
                         justifyContent: "flex-end",
@@ -579,7 +592,7 @@ const NavBarV2 = () => {
                     transition={{ type: "spring", stiffness: 300 }}
                   >
                     <MemoizedNavItem
-                      onClick={() => router.push(link.href)}
+                      onClick={() => handleNavigation(link)} // Use the new handler here too
                       sx={{
                         position: "relative",
                         color:
