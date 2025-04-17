@@ -164,7 +164,7 @@ export default function Create() {
 
       // Call the API with the user's prompt
       const response = await fetch(
-        "http://localhost:4000/api/ai/generate-trip",
+        "https://iti-server-production.up.railway.app/ai/generate-trip",
         {
           method: "POST",
           headers: {
