@@ -11,8 +11,7 @@ import {
   Divider,
   IconButton,
   List,
-  ListItem,
-  ListItemButton, // Add this import
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Avatar,
@@ -21,16 +20,18 @@ import {
   Badge,
   useMediaQuery,
   Container,
-  Paper,
   Tooltip,
+  Collapse,
+  ListItem,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../../context/ThemeContext";
 
 // Icons
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PlaceIcon from "@mui/icons-material/Place";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -42,8 +43,11 @@ import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
-const drawerWidth = 260;
+const drawerWidth = 250;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -59,10 +63,50 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
       }),
-      marginRight: 0,
+      marginRight: `${drawerWidth}px`, // Add this to account for drawer width
     }),
   })
 );
+
+// Custom styled components for enhanced design
+const SidebarHeader = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  borderBottom: `1px solid ${theme.colors?.border || "rgba(0,0,0,0.1)"}`,
+  marginBottom: theme.spacing(2),
+}));
+
+const SidebarFooter = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderTop: `1px solid ${theme.colors?.border || "rgba(0,0,0,0.1)"}`,
+  marginTop: "auto",
+}));
+
+const MenuItemButton = styled(ListItemButton)(({ theme, active }) => ({
+  margin: "6px 14px",
+  padding: "10px 12px",
+  borderRadius: "12px",
+  transition: "all 0.2s ease-in-out",
+  backgroundColor: active ? `${theme.colors?.primary}15` : "transparent",
+  borderRight: active ? `3px solid ${theme.colors?.primary}` : "none",
+  "&:hover": {
+    backgroundColor: active
+      ? `${theme.colors?.primary}20`
+      : `${theme.colors?.primary}10`,
+  },
+}));
+
+const UserProfile = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2, 3),
+  display: "flex",
+  alignItems: "center",
+  marginBottom: theme.spacing(2),
+  borderRadius: "12px",
+  backgroundColor: `${theme.colors?.primary}10`,
+  margin: theme.spacing(0, 2, 2, 2),
+}));
 
 const AdminLayout = ({ children }) => {
   const { darkMode, toggleTheme, theme } = useTheme();
@@ -73,7 +117,20 @@ const AdminLayout = ({ children }) => {
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
   const [mounted, setMounted] = useState(false);
   const [adminUser, setAdminUser] = useState(null);
-  const [showTitle, setShowTitle] = useState(true);
+  const [placesSubmenuOpen, setPlacesSubmenuOpen] = useState(false);
+
+  // Check if path is in places section to auto-expand submenu
+  useEffect(() => {
+    const placesRelatedPaths = [
+      "/admin/all-places",
+      "/admin/pending-places",
+      "/admin/approved-places",
+      "/admin/rejected-places",
+    ];
+    if (placesRelatedPaths.some((path) => pathname?.startsWith(path))) {
+      setPlacesSubmenuOpen(true);
+    }
+  }, [pathname]);
 
   // Fix: Use a direct media query string instead of theme function
   const isMobile = useMediaQuery("(max-width:900px)");
@@ -105,7 +162,6 @@ const AdminLayout = ({ children }) => {
 
   const handleDrawerToggle = () => {
     setOpen(!open);
-    setTimeout(() => setShowTitle(!open), open ? 100 : 300);
   };
 
   const handleProfileMenu = (event) => {
@@ -130,8 +186,17 @@ const AdminLayout = ({ children }) => {
     router.push("/login");
   };
 
-  const menuItems = [
+  const togglePlacesSubmenu = () => {
+    setPlacesSubmenuOpen(!placesSubmenuOpen);
+  };
+
+  const mainMenuItems = [
     { text: "الرئيسية", icon: <DashboardIcon />, path: "/admin" },
+    { text: "المستخدمين", icon: <PeopleIcon />, path: "/admin/users" },
+    { text: "الإعدادات", icon: <SettingsIcon />, path: "/admin/settings" },
+  ];
+
+  const placesMenuItems = [
     {
       text: "الطلبات المعلقة",
       icon: <PendingIcon />,
@@ -142,9 +207,16 @@ const AdminLayout = ({ children }) => {
       icon: <CheckCircleOutlineIcon />,
       path: "/admin/approved-places",
     },
-    { text: "جميع الأماكن", icon: <PlaceIcon />, path: "/admin/all-places" },
-    { text: "المستخدمين", icon: <PeopleIcon />, path: "/admin/users" },
-    { text: "الإعدادات", icon: <SettingsIcon />, path: "/admin/settings" },
+    {
+      text: "الأماكن المرفوضة",
+      icon: <CancelIcon />,
+      path: "/admin/rejected-places",
+    },
+    {
+      text: "جميع الأماكن",
+      icon: <PlaceIcon />,
+      path: "/admin/all-places",
+    },
   ];
 
   return (
@@ -163,12 +235,21 @@ const AdminLayout = ({ children }) => {
           zIndex: (theme) => theme.zIndex.drawer + 1,
           backgroundColor: darkMode ? theme.colors.surface : "#fff",
           color: theme.colors.text,
+          direction: "rtl",
           boxShadow: darkMode
             ? "0 2px 10px rgba(0, 0, 0, 0.3)"
             : "0 2px 10px rgba(0, 0, 0, 0.1)",
         }}
       >
         <Toolbar>
+          <IconButton
+            color="inherit"
+            onClick={handleDrawerToggle}
+            sx={{ display: { lg: "none" }, mr: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
+
           <Typography
             variant="h6"
             component="div"
@@ -219,14 +300,6 @@ const AdminLayout = ({ children }) => {
                 )}
               </IconButton>
             </Tooltip>
-
-            <IconButton
-              color="inherit"
-              onClick={handleDrawerToggle}
-              sx={{ display: { lg: "none" } }}
-            >
-              <MenuIcon />
-            </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
@@ -315,106 +388,179 @@ const AdminLayout = ({ children }) => {
         </MenuItem>
       </Menu>
 
-      {/* Sidebar Drawer */}
+      {/* Enhanced Right Sidebar Drawer */}
       <Drawer
         sx={{
           width: drawerWidth,
           flexShrink: 0,
+          position: "relative",
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
             backgroundColor: darkMode ? theme.colors.surface : "#fff",
-            borderRight: `1px solid ${
+            borderLeft: `1px solid ${
               darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"
             }`,
+            borderRight: "none",
             boxShadow: darkMode ? "0 0 15px rgba(0, 0, 0, 0.2)" : "none",
             paddingTop: "64px",
+            right: 0,
+            left: "auto",
           },
           display: open ? "block" : "none",
+          // Add this line to control the docked drawer width
+          "& .MuiDrawer-docked": {
+            width: open ? "auto" : 0,
+          },
         }}
         variant="permanent"
-        anchor="left"
+        anchor="right"
       >
         <Box
           sx={{
             display: "flex",
             flexDirection: "column",
             height: "100%",
-            overflow: "hidden",
           }}
         >
-          {/* Nav Menu */}
-          <List sx={{ flexGrow: 1, direction: "rtl" }}>
-            {menuItems.map((item) => (
-              <ListItemButton
-                key={item.text}
-                onClick={() => router.push(item.path)}
-                sx={{
-                  backgroundColor:
-                    pathname === item.path
-                      ? darkMode
-                        ? "rgba(246, 177, 122, 0.15)"
-                        : "rgba(74, 114, 172, 0.1)"
-                      : "transparent",
-                  borderRight:
-                    pathname === item.path
-                      ? `3px solid ${theme.colors.primary}`
-                      : "3px solid transparent",
-                  mb: 0.5,
-                  borderRadius: "0 8px 8px 0",
-                  "&:hover": {
-                    backgroundColor: darkMode
-                      ? "rgba(255, 255, 255, 0.05)"
-                      : "rgba(0, 0, 0, 0.05)",
-                  },
-                }}
-              >
+          {/* User Profile Section */}
+          <UserProfile>
+            <Avatar
+              src={adminUser?.profileImage}
+              alt={adminUser?.firstname}
+              sx={{
+                width: 45,
+                height: 45,
+                mr: 2,
+                bgcolor: theme.colors.primary,
+                boxShadow: "0 3px 10px rgba(0,0,0,0.2)",
+              }}
+            >
+              {adminUser?.firstname?.charAt(0)}
+            </Avatar>
+            <Box>
+              <Typography variant="subtitle1" fontWeight="500">
+                {adminUser?.firstname} {adminUser?.lastname}
+              </Typography>
+              <Typography variant="body2" color={theme.colors.textSecondary}>
+                مدير النظام
+              </Typography>
+            </Box>
+          </UserProfile>
+
+          {/* Main Menu */}
+          <List sx={{ flexGrow: 0 }}>
+            {mainMenuItems.map((item) => (
+              <ListItem key={item.text} disablePadding>
+                <MenuItemButton
+                  active={pathname === item.path ? 1 : 0}
+                  onClick={() => router.push(item.path)}
+                  sx={{ direction: "rtl" }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 40,
+                      color:
+                        pathname === item.path
+                          ? theme.colors.primary
+                          : theme.colors.textSecondary,
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.text}
+                    sx={{
+                      "& .MuiTypography-root": {
+                        fontWeight: pathname === item.path ? 600 : 400,
+                        color:
+                          pathname === item.path
+                            ? theme.colors.primary
+                            : theme.colors.text,
+                      },
+                    }}
+                  />
+                </MenuItemButton>
+              </ListItem>
+            ))}
+
+            {/* Places Collapsible Section */}
+            <ListItem disablePadding>
+              <MenuItemButton onClick={togglePlacesSubmenu}>
                 <ListItemIcon
                   sx={{
-                    color:
-                      pathname === item.path
-                        ? theme.colors.primary
-                        : theme.colors.textSecondary,
                     minWidth: 40,
+                    color: pathname?.includes("/places")
+                      ? theme.colors.primary
+                      : theme.colors.textSecondary,
                   }}
                 >
-                  {item.icon}
+                  <PlaceIcon />
                 </ListItemIcon>
                 <ListItemText
-                  primary={item.text}
+                  primary="إدارة الأماكن"
                   sx={{
-                    color:
-                      pathname === item.path
+                    "& .MuiTypography-root": {
+                      fontWeight: pathname?.includes("/places") ? 600 : 400,
+                      color: pathname?.includes("/places")
                         ? theme.colors.primary
                         : theme.colors.text,
+                    },
                   }}
                 />
-              </ListItemButton>
-            ))}
+                {placesSubmenuOpen ? (
+                  <ExpandLessIcon sx={{ color: theme.colors.textSecondary }} />
+                ) : (
+                  <ExpandMoreIcon sx={{ color: theme.colors.textSecondary }} />
+                )}
+              </MenuItemButton>
+            </ListItem>
+
+            <Collapse in={placesSubmenuOpen} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {placesMenuItems.map((item) => (
+                  <ListItem key={item.text} disablePadding>
+                    <MenuItemButton
+                      active={pathname === item.path ? 1 : 0}
+                      onClick={() => router.push(item.path)}
+                      sx={{ pl: 6 }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 35,
+                          color:
+                            pathname === item.path
+                              ? theme.colors.primary
+                              : theme.colors.textSecondary,
+                        }}
+                      >
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.text}
+                        sx={{
+                          "& .MuiTypography-root": {
+                            fontSize: "0.95rem",
+                            fontWeight: pathname === item.path ? 600 : 400,
+                            color:
+                              pathname === item.path
+                                ? theme.colors.primary
+                                : theme.colors.text,
+                          },
+                        }}
+                      />
+                    </MenuItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </Collapse>
           </List>
 
           {/* Logout button at bottom */}
-          <List sx={{ direction: "rtl" }}>
-            <Divider
-              sx={{
-                mb: 1,
-                backgroundColor: darkMode
-                  ? "rgba(255,255,255,0.1)"
-                  : "rgba(0,0,0,0.1)",
-              }}
-            />
-            <ListItemButton
-              onClick={handleLogout}
-              sx={{
-                "&:hover": {
-                  backgroundColor: darkMode
-                    ? "rgba(255, 255, 255, 0.05)"
-                    : "rgba(0, 0, 0, 0.05)",
-                },
-              }}
-            >
+          <SidebarFooter>
+            <MenuItemButton onClick={handleLogout}>
               <ListItemIcon
-                sx={{ color: theme.colors.textSecondary, minWidth: 40 }}
+                sx={{ minWidth: 40, color: theme.colors.textSecondary }}
               >
                 <LogoutIcon />
               </ListItemIcon>
@@ -422,24 +568,39 @@ const AdminLayout = ({ children }) => {
                 primary="تسجيل الخروج"
                 sx={{ color: theme.colors.text }}
               />
-            </ListItemButton>
-          </List>
+            </MenuItemButton>
+          </SidebarFooter>
         </Box>
       </Drawer>
 
       {/* Main Content */}
       <Main
         open={open}
-        sx={{ marginTop: "64px", width: "100%", p: { xs: 2, md: 3 } }}
+        sx={{
+          marginTop: "64px",
+          width: open ? `calc(100% - ${drawerWidth}px)` : "100%", // Adjust width based on drawer state
+          p: { xs: 2, md: 3 },
+        }}
       >
-        <Container maxWidth="xl" sx={{ py: 2 }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            {children}
-          </motion.div>
+        <Container
+          maxWidth="xl"
+          sx={{
+            py: 2,
+            px: { xs: 1, sm: 2 },
+            direction: "rtl", // Reduce padding on smaller screens
+          }}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </Container>
       </Main>
     </Box>
