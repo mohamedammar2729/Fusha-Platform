@@ -3062,13 +3062,10 @@ const AddPlace = () => {
           boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
           zIndex: 1000,
           "&:hover": {
-            backgroundColor: darkMode ? "#7092c4" : "#365d8d",
+            backgroundColor: darkMode ? "#F6B17A" : "#365d8d",
           },
         }}
-        onClick={() => {
-          // Show help dialog or redirect to help page
-          alert("سيتم توجيهك إلى صفحة المساعدة");
-        }}
+        
       >
         <HelpOutlineIcon sx={{ fontSize: 28 }} />
       </IconButton>
