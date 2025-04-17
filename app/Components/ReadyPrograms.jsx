@@ -344,51 +344,6 @@ const ReadyPrograms = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
-  const handlePrintProgram = (item) => {
-    const printWindow = window.open("", "_blank");
-    const programHTML = `
-      <!DOCTYPE html>
-      <html dir="rtl">
-      <head>
-        <title>فسحة ${item.type_trip}</title>
-        <meta charset="UTF-8">
-        <style>
-          body { font-family: Arial, sans-serif; padding: 20px; }
-          .header { text-align: center; margin-bottom: 20px; }
-          .program { line-height: 1.6; white-space: pre-line; }
-          .details { margin: 20px 0; }
-          .detail { margin: 5px 0; }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h1>فسحة ${item.type_trip}</h1>
-          <p>موقع: ${item.location}</p>
-        </div>
-        <div class="details">
-          <p class="detail">عدد الأشخاص: ${item.person_num}</p>
-          <p class="detail">المدة: ${item.duration || "7 أيام"}</p>
-          <p class="detail">الميزانية: ${item.budget} جنية</p>
-          <p class="detail">التقييم: ${item.rate}/5</p>
-        </div>
-        <div class="program">
-          ${item.program}
-        </div>
-      </body>
-      </html>
-    `;
-
-    printWindow.document.open();
-    printWindow.document.write(programHTML);
-    printWindow.document.close();
-
-    // Wait for content to load then print
-    setTimeout(() => {
-      printWindow.print();
-    }, 500);
-  };
-
   // Get unique locations for filter
   const locations = ["all", ...new Set(items.map((item) => item.location))];
 
@@ -1641,51 +1596,7 @@ const ReadyPrograms = () => {
                   >
                     عرض التفاصيل الكاملة
                   </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<PrintIcon />}
-                    onClick={() => handlePrintProgram(item)}
-                    sx={{
-                      py: 1.2,
-                      px: 3,
-                      borderRadius: "12px",
-                      color: "var(--primary-color)",
-                      borderColor: "var(--primary-color)",
-                      "&:hover": {
-                        boxShadow: "0 5px 15px rgba(59, 88, 152, 0.15)",
-                        borderColor: "var(--primary-color)",
-                        background: darkMode
-                          ? "rgba(59, 88, 152, 0.1)"
-                          : "rgba(59, 88, 152, 0.05)",
-                        transform: "translateY(-2px)",
-                      },
-                    }}
-                  >
-                    طباعة البرنامج
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<EditIcon />}
-                    sx={{
-                      py: 1.2,
-                      px: 3,
-                      borderRadius: "12px",
-                      color: "var(--accent-color)",
-                      borderColor: "var(--accent-color)",
-                      "&:hover": {
-                        boxShadow: "0 5px 15px rgba(255, 194, 15, 0.15)",
-                        borderColor: "var(--accent-color)",
-                        background: darkMode
-                          ? "rgba(255, 194, 15, 0.1)"
-                          : "rgba(255, 194, 15, 0.05)",
-                        transform: "translateY(-2px)",
-                      },
-                    }}
-                  >
-                    تعديل البرنامج
-                  </Button>
                 </Stack>
-
                 <AnimatePresence>
                   {expandedItem === item._id && (
                     <motion.div
