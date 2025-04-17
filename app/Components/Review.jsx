@@ -578,7 +578,7 @@ const Review = () => {
       if (isNaN(date.getTime())) {
         return "تاريخ غير صالح";
       }
-      return new Intl.DateTimeFormat("ar-EG", {
+      return new Intl.DateTimeFormat("ar-SA", {
         year: "numeric",
         month: "long",
         day: "numeric",

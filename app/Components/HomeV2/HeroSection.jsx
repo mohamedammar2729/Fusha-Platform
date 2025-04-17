@@ -255,7 +255,6 @@ const HeroSection = ({ theme, darkMode, prefersReducedMotion }) => {
                         whileTap={{ scale: 0.95 }}
                       >
                         <Button
-                          component={Link}
                           size="large"
                           sx={{
                             px: 3,
