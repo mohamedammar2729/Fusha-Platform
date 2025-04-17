@@ -476,7 +476,7 @@ const AddPlace = () => {
 
       // Submit to API
       const response = await axios.post(
-        "https://iti-server-production.up.railway.app/seller-places",
+        "https://iti-server-production.up.railway.app/api/seller-places",
         placeData,
         {
           headers: {
