@@ -256,7 +256,6 @@ const HeroSection = ({ theme, darkMode, prefersReducedMotion }) => {
                       >
                         <Button
                           component={Link}
-                          href="/learn-more"
                           size="large"
                           sx={{
                             px: 3,
