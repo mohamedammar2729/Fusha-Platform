@@ -133,6 +133,15 @@ const NavBarV2 = () => {
     }
   };
 
+    const isLinkActive = (linkHref) => {
+      if (linkHref === "/") {
+        // For home page, require exact match to avoid matching all paths
+        return pathname === "/" || pathname === "";
+      }
+      // For other pages, check if pathname starts with the link href
+      return pathname.startsWith(linkHref);
+    };
+
   useEffect(() => {
     setMounted(true);
     const savedUser = localStorage.getItem("user");
@@ -355,123 +364,123 @@ const NavBarV2 = () => {
                   {darkMode ? "الوضع النهاري" : "الوضع الليلي"}
                 </Box>
                 <DarkmodeButton onClick={(e) => e.stopPropagation()}>
-                                  <label className="switch">
-                                    <input
-                                      id="input"
-                                      type="checkbox"
-                                      checked={darkMode}
-                                      onChange={(e) => {
-                                        e.stopPropagation();
-                                        handleDarkModeToggle();
-                                        setTimeout(() => {
-                                          handleCloseNavMenu();
-                                        }, 400);
-                                      }}
-                                    />
-                                    <div className="slider round">
-                                      <div className="sun-moon">
-                                        <svg
-                                          id="moon-dot-1"
-                                          className="moon-dot"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="moon-dot-2"
-                                          className="moon-dot"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="moon-dot-3"
-                                          className="moon-dot"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="light-ray-1"
-                                          className="light-ray"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="light-ray-2"
-                                          className="light-ray"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="light-ray-3"
-                                          className="light-ray"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="cloud-1"
-                                          className="cloud-dark"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="cloud-2"
-                                          className="cloud-dark"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="cloud-3"
-                                          className="cloud-dark"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="cloud-4"
-                                          className="cloud-light"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="cloud-5"
-                                          className="cloud-light"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="cloud-6"
-                                          className="cloud-light"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                      </div>
-                                      <div className="stars">
-                                        <svg id="star-1" className="star" viewBox="0 0 20 20">
-                                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
-                                        </svg>
-                                        <svg id="star-2" className="star" viewBox="0 0 20 20">
-                                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
-                                        </svg>
-                                        <svg id="star-3" className="star" viewBox="0 0 20 20">
-                                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
-                                        </svg>
-                                        <svg id="star-4" className="star" viewBox="0 0 20 20">
-                                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
-                                        </svg>
-                                      </div>
-                                    </div>
-                                  </label>
-                                </DarkmodeButton>
+                  <label className="switch">
+                    <input
+                      id="input"
+                      type="checkbox"
+                      checked={darkMode}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        handleDarkModeToggle();
+                        setTimeout(() => {
+                          handleCloseNavMenu();
+                        }, 400);
+                      }}
+                    />
+                    <div className="slider round">
+                      <div className="sun-moon">
+                        <svg
+                          id="moon-dot-1"
+                          className="moon-dot"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="moon-dot-2"
+                          className="moon-dot"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="moon-dot-3"
+                          className="moon-dot"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="light-ray-1"
+                          className="light-ray"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="light-ray-2"
+                          className="light-ray"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="light-ray-3"
+                          className="light-ray"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="cloud-1"
+                          className="cloud-dark"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="cloud-2"
+                          className="cloud-dark"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="cloud-3"
+                          className="cloud-dark"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="cloud-4"
+                          className="cloud-light"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="cloud-5"
+                          className="cloud-light"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="cloud-6"
+                          className="cloud-light"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                      </div>
+                      <div className="stars">
+                        <svg id="star-1" className="star" viewBox="0 0 20 20">
+                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
+                        </svg>
+                        <svg id="star-2" className="star" viewBox="0 0 20 20">
+                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
+                        </svg>
+                        <svg id="star-3" className="star" viewBox="0 0 20 20">
+                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
+                        </svg>
+                        <svg id="star-4" className="star" viewBox="0 0 20 20">
+                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </label>
+                </DarkmodeButton>
               </Box>
               {/* Login/Register options for mobile */}
               {!user && (
@@ -672,18 +681,20 @@ const NavBarV2 = () => {
                     transition={{ type: "spring", stiffness: 300 }}
                   >
                     <MemoizedNavItem
-                      onClick={() => handleNavigation(link)} // Use the new handler here too
+                      onClick={() => router.push(link.href)}
                       sx={{
                         position: "relative",
                         color:
                           pathname === link.href
-                            ? darkMode
-                              ? theme.colors.primary
-                              : theme.colors.primary
+                            ? theme.colors.primary
                             : darkMode
                             ? "white"
                             : "inherit",
                         fontWeight: pathname === link.href ? "700" : "600",
+                        transition: "color 0.3s ease",
+                        "&:hover": {
+                          color: theme.colors.primary,
+                        },
                         "&::after":
                           pathname === link.href
                             ? {
@@ -693,9 +704,7 @@ const NavBarV2 = () => {
                                 height: "3px",
                                 bottom: "-8px",
                                 left: 0,
-                                backgroundColor: darkMode
-                                  ? theme.colors.primary
-                                  : theme.colors.primary,
+                                backgroundColor: theme.colors.primary,
                                 borderRadius: "2px",
                               }
                             : {},
@@ -747,117 +756,117 @@ const NavBarV2 = () => {
                 whileTap={{ scale: 0.95 }}
               >
                 <DarkmodeButton>
-                                  <label className="switch">
-                                    <input
-                                      id="input"
-                                      type="checkbox"
-                                      checked={darkMode}
-                                      onChange={handleDarkModeToggle}
-                                    />
-                                    <div className="slider round">
-                                      <div className="sun-moon">
-                                        <svg
-                                          id="moon-dot-1"
-                                          className="moon-dot"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="moon-dot-2"
-                                          className="moon-dot"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="moon-dot-3"
-                                          className="moon-dot"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="light-ray-1"
-                                          className="light-ray"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="light-ray-2"
-                                          className="light-ray"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="light-ray-3"
-                                          className="light-ray"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="cloud-1"
-                                          className="cloud-dark"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="cloud-2"
-                                          className="cloud-dark"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="cloud-3"
-                                          className="cloud-dark"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="cloud-4"
-                                          className="cloud-light"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="cloud-5"
-                                          className="cloud-light"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                        <svg
-                                          id="cloud-6"
-                                          className="cloud-light"
-                                          viewBox="0 0 100 100"
-                                        >
-                                          <circle cx={50} cy={50} r={50} />
-                                        </svg>
-                                      </div>
-                                      <div className="stars">
-                                        <svg id="star-1" className="star" viewBox="0 0 20 20">
-                                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
-                                        </svg>
-                                        <svg id="star-2" className="star" viewBox="0 0 20 20">
-                                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
-                                        </svg>
-                                        <svg id="star-3" className="star" viewBox="0 0 20 20">
-                                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
-                                        </svg>
-                                        <svg id="star-4" className="star" viewBox="0 0 20 20">
-                                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
-                                        </svg>
-                                      </div>
-                                    </div>
-                                  </label>
-                                </DarkmodeButton>
+                  <label className="switch">
+                    <input
+                      id="input"
+                      type="checkbox"
+                      checked={darkMode}
+                      onChange={handleDarkModeToggle}
+                    />
+                    <div className="slider round">
+                      <div className="sun-moon">
+                        <svg
+                          id="moon-dot-1"
+                          className="moon-dot"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="moon-dot-2"
+                          className="moon-dot"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="moon-dot-3"
+                          className="moon-dot"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="light-ray-1"
+                          className="light-ray"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="light-ray-2"
+                          className="light-ray"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="light-ray-3"
+                          className="light-ray"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="cloud-1"
+                          className="cloud-dark"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="cloud-2"
+                          className="cloud-dark"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="cloud-3"
+                          className="cloud-dark"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="cloud-4"
+                          className="cloud-light"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="cloud-5"
+                          className="cloud-light"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                        <svg
+                          id="cloud-6"
+                          className="cloud-light"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle cx={50} cy={50} r={50} />
+                        </svg>
+                      </div>
+                      <div className="stars">
+                        <svg id="star-1" className="star" viewBox="0 0 20 20">
+                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
+                        </svg>
+                        <svg id="star-2" className="star" viewBox="0 0 20 20">
+                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
+                        </svg>
+                        <svg id="star-3" className="star" viewBox="0 0 20 20">
+                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
+                        </svg>
+                        <svg id="star-4" className="star" viewBox="0 0 20 20">
+                          <path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </label>
+                </DarkmodeButton>
               </motion.div>
             </Box>
 
