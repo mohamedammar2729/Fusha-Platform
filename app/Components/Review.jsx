@@ -47,7 +47,7 @@ import {
   Timeline as TimelineIcon,
   Refresh as RefreshIcon,
 } from "@mui/icons-material";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, color } from "framer-motion";
 import styled, {
   ThemeProvider as StyledThemeProvider,
 } from "styled-components";
@@ -578,7 +578,7 @@ const Review = () => {
       if (isNaN(date.getTime())) {
         return "تاريخ غير صالح";
       }
-      return new Intl.DateTimeFormat("ar-SA", {
+      return new Intl.DateTimeFormat("ar-EG", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -1406,22 +1406,6 @@ const Review = () => {
                 </ReviewHeader>
 
                 {/* Filter Chips */}
-          {/* <Box mb={2}>
-            {[5, 4, 3, 2, 1].map((rating) => (
-              <FilterChip
-                key={rating}
-                label={`${rating} ${
-                  rating === 5 ? "نجوم" : rating > 1 ? "نجوم" : "نجمة"
-                }`}
-                $active={selectedRating === rating}
-                onClick={() =>
-                  setSelectedRating(selectedRating === rating ? 0 : rating)
-                }
-                icon={<StarIcon fontSize="small"/>}
-                />
-            ))}
-          </Box> */}
-
           {/* Tabs for filtering */}
           <Tabs
             value={currentTab}
@@ -1589,6 +1573,7 @@ const Review = () => {
                                 label={review.category}
                                 size="small"
                                 sx={{
+                                  color:darkMode,
                                   borderRadius: 4,
                                   backgroundColor: darkMode
                                     ? "rgba(255,255,255,0.08)"
