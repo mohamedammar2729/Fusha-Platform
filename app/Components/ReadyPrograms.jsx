@@ -2472,55 +2472,6 @@ const ReadyPrograms = () => {
                           >
                             حجز البرنامج
                           </Button>
-
-                          <Button
-                            variant="outlined"
-                            startIcon={<PrintIcon />}
-                            onClick={() => handlePrintProgram(item)}
-                            sx={{
-                              py: 1.2,
-                              px: 3,
-                              borderRadius: "12px",
-                              color: "var(--primary-color)",
-                              borderColor: "var(--primary-color)",
-                              fontWeight: 500,
-                              transition: "all 0.3s ease",
-                              "&:hover": {
-                                boxShadow: "0 5px 15px rgba(59, 88, 152, 0.15)",
-                                borderColor: "var(--primary-color)",
-                                background: darkMode
-                                  ? "rgba(59, 88, 152, 0.1)"
-                                  : "rgba(59, 88, 152, 0.05)",
-                                transform: "translateY(-2px)",
-                              },
-                            }}
-                          >
-                            طباعة البرنامج
-                          </Button>
-
-                          <Button
-                            variant="outlined"
-                            startIcon={<EditIcon />}
-                            sx={{
-                              py: 1.2,
-                              px: 3,
-                              borderRadius: "12px",
-                              color: "var(--text-secondary)",
-                              borderColor: "var(--text-secondary)",
-                              fontWeight: 500,
-                              transition: "all 0.3s ease",
-                              "&:hover": {
-                                color: "var(--text-primary)",
-                                borderColor: "var(--text-primary)",
-                                background: darkMode
-                                  ? "rgba(255,255,255,0.05)"
-                                  : "rgba(0,0,0,0.03)",
-                                transform: "translateY(-2px)",
-                              },
-                            }}
-                          >
-                            تعديل البرنامج
-                          </Button>
                         </Box>
                       </Box>
                     </motion.div>
