@@ -1026,7 +1026,7 @@ const ReadyPrograms = () => {
                       top: 0,
                       left: 0,
                       bgcolor: theme.colors.accent,
-                      color: white,
+                      color: "white",
                       px: 2,
                       py: 0.5,
                       borderBottomRightRadius: 10,
