@@ -2000,7 +2000,7 @@ const ReadyPrograms = () => {
                               <Grid item xs={12} md={6}>
                                 <Box
                                   component="img"
-                                  src="/hotel-placeholder.jpg"
+                                  src="https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=600"
                                   alt="صورة الفندق"
                                   onError={(e) => {
                                     e.target.src = "/placeholder-hotel.jpg";
