@@ -2959,7 +2959,7 @@ const ReadyPrograms = () => {
                 aria-label="back to top"
                 sx={{
                   backgroundColor: darkMode
-                    ? "rgba(97, 130, 195, 0.9)"
+                    ? "#F6B17A"
                     : "rgba(59, 88, 152, 0.9)",
                   color: "#fff",
                   width: "50px",
