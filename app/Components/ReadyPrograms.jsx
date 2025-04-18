@@ -2967,7 +2967,7 @@ const ReadyPrograms = () => {
                   boxShadow: "0 4px 14px rgba(0, 0, 0, 0.15)",
                   "&:hover": {
                     backgroundColor: darkMode
-                      ? "var(--primary-color-light)"
+                      ? "#df9456"
                       : "var(--primary-color)",
                     transform: "translateY(-5px)",
                   },
