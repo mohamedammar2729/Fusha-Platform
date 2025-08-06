@@ -43,18 +43,11 @@ const port = 5000;
 // Increase payload size limit - ADD THIS BEFORE OTHER MIDDLEWARE
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
-// app.use(
-//   cors({
-//     origin: [process.env.FRONTEND_URL || "https://mohamedammar2729.github.io"],
-//     credentials: true,
-//   })
-// );
+
 
 app.use(cookieParser());
 app.use(bodyParser.json({ limit: "50mb" })); // Increase this limit too
 
-// Serve static files from the public directory
-app.use(express.static(path.join(__dirname, "public")));
 
 // Define API routes
 app.use("/api/user", userRouter); // use the user router
@@ -72,14 +65,6 @@ app.use("/api/seller-places", sellerPlaceRouter);
 
 app.get("/", (req, res) => {
   res.send("API is Working");
-});
-
-// Add a catch-all route handler for undefined routes
-app.use("*", (req, res) => {
-  res.status(404).json({
-    status: "error",
-    message: "Route not found",
-  });
 });
 
 /* ====================================================================================== */
