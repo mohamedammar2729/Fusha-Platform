@@ -70,18 +70,8 @@ app.use("/api/seller-places", sellerPlaceRouter); // use the sellerPlace router
 app.use("/api/admin", adminRouter); // Add this line
 app.use("/api/seller-places", sellerPlaceRouter);
 
-// Add a route handler for the root path
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "public.html"));
-});
-
-// Add a route to check API status
-app.get("/api", (req, res) => {
-  res.json({
-    status: "success",
-    message: "API is running",
-    version: "1.0.0",
-  });
+  res.send("API is Working");
 });
 
 // Add a catch-all route handler for undefined routes
