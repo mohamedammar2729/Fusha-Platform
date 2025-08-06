@@ -9,7 +9,6 @@ const bcrypt = require("bcrypt");
 const cookieOptions = {
   expires: new Date(Date.now() + 3600000),
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production" ? true : false,
   sameSite: "Lax",
 };
 

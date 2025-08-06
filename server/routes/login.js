@@ -11,7 +11,6 @@ const bcrypt = require("bcrypt");
 const cookieOptions = {
   expires: new Date(Date.now() + 3600000),
   httpOnly: true, // the cookie can not be accessed by the client
-  secure: process.env.NODE_ENV === "production" ? true : false, // only secure cookie in production
   sameSite: "Lax", // protect against CSRF attacks
 };
 
